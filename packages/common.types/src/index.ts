@@ -3,12 +3,12 @@
  * Add your own types here
  */
 
-// Example: Base types
-export interface BaseType {
-  id: number;
-  created_at: string;
-  updated_at: string;
-}
+export type ParticipantTypeT = {
+  id: string;
+  name: string;
+  isMuted: boolean;
+  isVideoEnabled: boolean;
+};
 
 // Example: Add your types here
 // export type StatusType = 'active' | 'inactive' | 'pending';

@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from '@xipkg/link';
 import { TelegramFilled, MailRounded } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
-import { Logo } from './Logo';
 import { LinkTanstack } from './LinkTanstack';
+import { Logo } from './Logo';
 
 export type ErrorPagePropsT = {
   title: string;
