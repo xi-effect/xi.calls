@@ -46,4 +46,3 @@ export const useGetUserById = (id: number, enabled = true) => {
     enabled: enabled && !!id,
   });
 };
-

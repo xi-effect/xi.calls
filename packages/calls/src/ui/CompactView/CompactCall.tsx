@@ -28,7 +28,6 @@ import { ScreenShareButton } from '../Bottom/ScreenShareButton';
 import { RaiseHandButton } from '../Bottom/RaiseHandButton';
 import { useVideoBlur, useModeSync } from '../../hooks';
 import { useRoom } from '../../providers/RoomProvider';
-import { useCurrentUser } from 'common.services';
 
 export const CompactCall = ({ saveUserChoices = true }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({

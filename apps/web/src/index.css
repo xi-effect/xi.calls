@@ -9,9 +9,9 @@
 @source "../src";
 @source "../node_modules/@xipkg";
 
-// Добавьте @source директивы для ваших пакетов здесь
+/* // Добавьте @source директивы для ваших пакетов здесь */
 @source "../../../packages/common.ui/src";
-// @source "../../../packages/your-package/src";
+/* // @source "../../../packages/your-package/src"; */
 
 /* app.css или globals.css */
 html {

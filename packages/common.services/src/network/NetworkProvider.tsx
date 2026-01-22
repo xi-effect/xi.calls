@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NetworkProvider as NetworkContextProvider } from 'common.utils';
+// import { NetworkProvider as NetworkContextProvider } from 'common.utils';
 import { useNetworkControl } from './useNetworkControl';
 
 interface NetworkProviderProps {
@@ -53,17 +53,17 @@ export const NetworkProvider: React.FC<NetworkProviderProps> = ({
   children,
   suppressNotifications = false,
 }) => {
-  const { shouldShowNotification } = useNetworkControl({
-    suppressNotifications,
-    suppressOnAuthErrors: true,
-    suppressOnAppExit: true,
-  });
+  // const { shouldShowNotification } = useNetworkControl({
+  //   suppressNotifications,
+  //   suppressOnAuthErrors: true,
+  //   suppressOnAppExit: true,
+  // });
 
   return (
-    <NetworkContextProvider shouldShowNotification={shouldShowNotification}>
-      <NetworkProviderContent suppressNotifications={suppressNotifications}>
-        {children}
-      </NetworkProviderContent>
-    </NetworkContextProvider>
+    // <NetworkContextProvider shouldShowNotification={shouldShowNotification}>
+    <NetworkProviderContent suppressNotifications={suppressNotifications}>
+      {children}
+    </NetworkProviderContent>
+    // </NetworkContextProvider>
   );
 };

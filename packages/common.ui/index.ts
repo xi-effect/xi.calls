@@ -1,1 +1,1 @@
-export { ErrorPage, Skeleton, LoadingScreen, LinkTanstack } from './src/ui';
+export { ErrorPage, Skeleton, LoadingScreen, LinkTanstack } from './src';

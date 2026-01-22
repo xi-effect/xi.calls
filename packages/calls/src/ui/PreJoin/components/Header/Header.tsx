@@ -2,14 +2,16 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { Button } from '@xipkg/button';
 import { ArrowLeft } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
-import { useGetClassroom } from '../../../../../../common.services/src/classrooms/useGetClassroom';
+import { useCalls } from '../../../../providers/CallsProvider';
 
 /* eslint-disable no-irregular-whitespace */
 export const Header = () => {
   const navigate = useNavigate();
   const { callId } = useParams({ strict: false }) as { callId: string };
 
-  const { data: classroom } = useGetClassroom(Number(callId));
+  const { room } = useCalls();
+
+  const { data: classroom } = room.useGetClassroom(Number(callId));
 
   return (
     <div className="mb-4 flex flex-row items-center gap-2">

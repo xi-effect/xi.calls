@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { facingModeFromLocalTrack, LocalVideoTrack, LocalAudioTrack } from 'livekit-client';
 import { Controls } from './Controls';
-import { useCurrentUser } from 'common.services';
 import { usePersistentUserChoices } from '../../../../hooks/usePersistentUserChoices';
 import { useCannotUseDevice } from '../../../../hooks/useCannotUseDevice';
 import { openPermissionsDialog } from '../../../../store/permissions';

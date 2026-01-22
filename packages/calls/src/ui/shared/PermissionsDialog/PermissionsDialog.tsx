@@ -3,8 +3,8 @@ import { Modal, ModalContent, ModalHeader, ModalTitle } from '@xipkg/modal';
 import { Button } from '@xipkg/button';
 import { usePermissionsStore, closePermissionsDialog } from '../../../store/permissions';
 import { useWatchPermissions } from '../../../hooks/useWatchPermissions';
-import { isSafari } from '../../../utils/livekit';
 import { Settings } from '@xipkg/icons';
+import { isSafari } from '../../../utils/livekit';
 
 /**
  * Singleton component - ensures permissions sync runs only once across the app.

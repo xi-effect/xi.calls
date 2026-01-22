@@ -5,17 +5,17 @@ import LocalStorageBackend from 'i18next-localstorage-backend';
 
 // Динамические импорты переводов для уменьшения размера основного бандла
 // Добавьте импорты переводов из ваших пакетов здесь
-const loadTranslations = async () => {
-  // Пример: const [{ commonEn, commonRu }] = await Promise.all([import('common.ui')]);
-  
-  return {
-    // Добавьте ваши переводы здесь
-  };
-};
+// const loadTranslations = async () => {
+//   // Пример: const [{ commonEn, commonRu }] = await Promise.all([import('common.ui')]);
+
+//   return {
+//     // Добавьте ваши переводы здесь
+//   };
+// };
 
 // Инициализация i18n с динамической загрузкой переводов
 const initI18n = async () => {
-  const translations = await loadTranslations();
+  // const translations = await loadTranslations();
 
   const resources = {
     en: {

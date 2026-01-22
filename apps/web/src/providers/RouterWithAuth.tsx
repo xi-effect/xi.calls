@@ -18,8 +18,8 @@ export const RouterWithAuth = () => {
       <AuthSocketBridge>
         <ThemeProvider>
           <NetworkProvider>
-              <RouterWithAuthContext />
-              <Toaster visibleToasts={3} expand />
+            <RouterWithAuthContext />
+            <Toaster visibleToasts={3} expand />
           </NetworkProvider>
         </ThemeProvider>
       </AuthSocketBridge>

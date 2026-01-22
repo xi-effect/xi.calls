@@ -15,17 +15,22 @@ import { Button } from '@xipkg/button';
 import { TooltipContent, Tooltip, TooltipTrigger } from '@xipkg/tooltip';
 import { useCallStore } from '../../store/callStore';
 import { useNavigate, useParams } from '@tanstack/react-router';
-// import { useCurrentUser, useGetClassroom } from 'common.services';
 import { toast } from 'sonner';
 import { env } from 'common.env';
 import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { Settings } from './Settings';
 import { ONBOARDING_IDS } from '../Onboarding/CallsOnboarding';
+import { useCalls } from '../../providers/CallsProvider';
 
 export const UpBar = () => {
   const { callId } = useParams({ strict: false });
-  const { data: classroom } = useGetClassroom(Number(callId));
+
+  const { room, auth } = useCalls();
+  const { data: classroom } = room.useGetClassroom(Number(callId));
+
+  const { data: user } = auth.useCurrentUser();
+
   const carouselType = useCallStore((state) => state.carouselType);
   const { isFullScreenSupported, isFullScreen, toggleFullScreen } = useFullScreen(
     'videoConferenceContainer',
@@ -87,7 +92,6 @@ export const UpBar = () => {
     toast.success('Ссылка скопирована. Отравьте её ученикам');
   };
 
-  const { data: user } = useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
 
   useEffect(() => {

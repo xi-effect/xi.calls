@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePermissionsStore } from '../store/permissions';
-import { isSafari } from '../../utils/livekit';
+import { isSafari } from '../utils/livekit';
 
 const POLLING_TIME = 500;
 

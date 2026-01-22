@@ -6,7 +6,7 @@ import type { SignupData, AuthContextT } from './types';
 
 /**
  * Example AuthProvider - adapt to your authentication needs
- * 
+ *
  * This is a basic implementation. You should:
  * 1. Implement your authentication API endpoints
  * 2. Add token management (localStorage, cookies, etc.)
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // } else {
       //   setIsAuthenticated(false);
       // }
-      
+
       // For now, default to false
       setIsAuthenticated(false);
     };

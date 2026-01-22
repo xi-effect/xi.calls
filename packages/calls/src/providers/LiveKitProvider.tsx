@@ -1,5 +1,5 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { serverUrl, serverUrlDev, isDevMode, devToken } from '../utils/config';
+import { serverUrl, serverUrlDev, isDevMode, devToken } from '../config/config';
 import { useCallStore } from '../store/callStore';
 import { useRoom } from './RoomProvider';
 import { useParams, useLocation, useNavigate, useSearch } from '@tanstack/react-router';

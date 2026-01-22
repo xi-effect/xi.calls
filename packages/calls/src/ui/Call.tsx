@@ -1,12 +1,13 @@
+import { useEffect } from 'react';
 import { ActiveRoom } from './Room/ActiveRoom';
 import { PreJoin } from './PreJoin';
 import { useCallStore } from '../store/callStore';
 import { useInitUserDevices, useVideoSecurity } from '../hooks';
-import './shared/VideoTrack/video-security.css';
-import { useEffect } from 'react';
 import { useLocation } from '@tanstack/react-router';
+import './shared/VideoTrack/video-security.css';
+import { CallsDeps, CallsProvider } from '../providers/CallsProvider';
 
-export const Call = () => {
+export const Call = ({ deps }: { deps: CallsDeps }) => {
   const isStarted = useCallStore((state) => state.isStarted);
 
   useInitUserDevices();
@@ -27,8 +28,12 @@ export const Call = () => {
   }, [pathname, mode, updateStore]);
 
   return (
-    <div className="h-[calc(100vh-64px)]">
-      <div className="flex h-full w-full flex-col">{isStarted ? <ActiveRoom /> : <PreJoin />}</div>
-    </div>
+    <CallsProvider deps={deps}>
+      <div className="h-[calc(100vh-64px)]">
+        <div className="flex h-full w-full flex-col">
+          {isStarted ? <ActiveRoom /> : <PreJoin />}
+        </div>
+      </div>
+    </CallsProvider>
   );
 };

@@ -13,7 +13,6 @@ import { ScreenShareButton } from './ScreenShareButton';
 import { WhiteBoardButton } from './WhiteBoardButton';
 import { RaiseHandButton } from './RaiseHandButton';
 import { ChatButton } from './ChatButton';
-import { useCurrentUser } from 'common.services';
 import { useCallStore } from '../../store';
 import { cn } from '@xipkg/utils';
 import { useNavigate } from '@tanstack/react-router';
@@ -22,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useModeSync } from '../../hooks';
 import { useRoom } from '../../providers/RoomProvider';
+import { useCalls } from '../../providers/CallsProvider';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
@@ -63,7 +63,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const updateStore = useCallStore((state) => state.updateStore);
   const { room } = useRoom();
 
-  const { data: user } = useCurrentUser();
+  const { auth } = useCalls();
+  const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
 
   const navigate = useNavigate();

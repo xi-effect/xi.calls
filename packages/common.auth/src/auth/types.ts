@@ -1,6 +1,3 @@
-import { UseMutationResult } from '@tanstack/react-query';
-import { AxiosError, AxiosResponse } from 'axios';
-
 // Example: Define your signup data type
 export type SignupData = {
   email: string;

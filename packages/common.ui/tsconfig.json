@@ -1,7 +1,12 @@
 {
-  "include": ["src/**/*"],
-  "extends": [
-    "common.typescript/tsconfig.app.json",
+  "include": [
+    "src/**/*",
+    "../calls/src/ui/Call.tsx",
+    "../calls/src/hooks",
+    "../calls/src/providers",
+    "../calls/src/store",
+    "../calls/src/config/grid.ts"
   ],
+  "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]
 }

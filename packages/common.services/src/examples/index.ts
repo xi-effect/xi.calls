@@ -5,4 +5,3 @@ export { useGetUsers, useGetUserById } from './useGetResource';
 export { useCreateUser } from './useCreateResource';
 export { useUpdateUser } from './useUpdateResource';
 export { useDeleteUser } from './useDeleteResource';
-

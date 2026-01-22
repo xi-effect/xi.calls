@@ -46,11 +46,9 @@ const createNetworkErrorInterceptor = async (instance: AxiosInstance): Promise<A
     (response) => response,
     async (error: AxiosError) => {
       // Check if error is related to authentication
-      const isAuthError =
-        error.response?.status === 401 ||
-        error.response?.status === 403;
-        // Add your auth endpoint check here if needed
-        // || error.config?.url?.includes('/auth/check');
+      const isAuthError = error.response?.status === 401 || error.response?.status === 403;
+      // Add your auth endpoint check here if needed
+      // || error.config?.url?.includes('/auth/check');
 
       // If this is an auth error, don't show network notifications
       if (isAuthError) {
