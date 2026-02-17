@@ -1,15 +1,15 @@
 import { createContext, FC, useContext } from 'react';
 import { AuthPortT, CallAuthPortT, ClassroomPortT } from '../config/ports';
 
-export type CallsDepsT = {
+export type CallsProviderDepsT = {
   auth: AuthPortT;
   room: ClassroomPortT;
   callAuth: CallAuthPortT;
 };
 
-const CallsContext = createContext<CallsDepsT | null>(null);
+const CallsContext = createContext<CallsProviderDepsT | null>(null);
 
-export const CallsProvider: FC<{ deps: CallsDepsT; children: React.ReactNode }> = ({
+export const CallsProvider: FC<{ deps: CallsProviderDepsT; children: React.ReactNode }> = ({
   deps,
   children,
 }) => <CallsContext.Provider value={deps}>{children}</CallsContext.Provider>;

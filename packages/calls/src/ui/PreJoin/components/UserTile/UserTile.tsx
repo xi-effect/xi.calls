@@ -6,7 +6,7 @@ import { usePersistentUserChoices } from '../../../../hooks/usePersistentUserCho
 import { useCannotUseDevice } from '../../../../hooks/useCannotUseDevice';
 import { openPermissionsDialog } from '../../../../store/permissions';
 import { Button } from '@xipkg/button';
-import { SecureVideo } from '../../../shared';
+import { SecureVideo } from '../../../../../../common.ui/src/ui/shared';
 
 const UserTileUI = ({
   audioTrack,

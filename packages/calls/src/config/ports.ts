@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StartCallDataT } from '../types';
+import { StartCallDataT } from 'common.types';
 
 export type AuthPortT = {
   useCurrentUser(disabled?: boolean): {

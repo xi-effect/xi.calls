@@ -22,9 +22,9 @@ import {
   useParticipantInfo,
 } from '@livekit/components-react';
 import { MicrophoneOff, RedLine } from '@xipkg/icons';
-import { VideoTrack } from '../shared';
+import { VideoTrack } from '../../../../common.ui/src/ui/shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
-import { FocusToggle } from '../shared/FocusToggle';
+import { FocusToggle } from '../../../../common.ui/src/ui/shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from './RaisedHandIndicator';
 

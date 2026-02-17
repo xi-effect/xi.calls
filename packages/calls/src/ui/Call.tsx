@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import { ActiveRoom } from './Room/ActiveRoom';
 import { PreJoin } from './PreJoin';
-import { useCallStore } from '../store/callStore';
-import { useInitUserDevices, useVideoSecurity } from '../hooks';
+import { useCallStore } from 'calls.store';
+import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
 import { useLocation } from '@tanstack/react-router';
 import './shared/VideoTrack/video-security.css';
-import { CallsDeps, CallsProvider } from '../providers/CallsProvider';
+import { CallsProvider } from '../providers';
+import { ActiveRoom } from './Room';
+import { CallsProviderDepsT } from '../providers';
 
-export const Call = ({ deps }: { deps: CallsDeps }) => {
+export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   const isStarted = useCallStore((state) => state.isStarted);
 
   useInitUserDevices();

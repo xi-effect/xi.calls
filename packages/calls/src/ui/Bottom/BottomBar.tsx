@@ -6,20 +6,20 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { DevicesBar } from '../shared/DevicesBar/DevicesBar';
+import { DevicesBar } from '../../../../common.ui/src/ui/shared/DevicesBar/DevicesBar';
 import { useCallback } from 'react';
 import { DisconnectButton } from './DisconnectButton';
 import { ScreenShareButton } from './ScreenShareButton';
 import { WhiteBoardButton } from './WhiteBoardButton';
 import { RaiseHandButton } from './RaiseHandButton';
 import { ChatButton } from './ChatButton';
-import { useCallStore } from '../../store';
+import { useCallStore } from 'calls.store';
 import { cn } from '@xipkg/utils';
 import { useNavigate } from '@tanstack/react-router';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
-import { useModeSync } from '../../hooks';
+import { useModeSync } from 'calls.hooks';
 import { useRoom } from '../../providers/RoomProvider';
 import { useCalls } from '../../providers/CallsProvider';
 
@@ -112,7 +112,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
       <div className="flex w-full flex-row justify-between p-4">
         <div />
         <div className="flex flex-row gap-4">
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
+          <div className="bg-gray-0 border-gray-10 flex h-12 w-[92px] items-center justify-center gap-1 rounded-2xl border">
             <DevicesBar
               microTrack={microphoneTrack?.track as LocalAudioTrack}
               microEnabled={isMicrophoneEnabled}
@@ -131,7 +131,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               className="relative"
             />
           </div>
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-gray-0 border-gray-10 flex h-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <ScreenShareButton />
             {isTutor && <WhiteBoardButton />}
             <ChatButton />
@@ -146,7 +146,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                   size="m"
                   variant="default"
                   onClick={handleBackToBoard}
-                  className="bg-brand-100 hover:bg-brand-80 absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl"
+                  className="bg-brand-100 hover:bg-brand-80 absolute top-1 left-[-132px] m-0 h-10 w-32 rounded-xl"
                 >
                   <WhiteBoard className="fill-gray-0" />
                   <span className="ml-2">К доске</span>
@@ -157,7 +157,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               </TooltipContent>
             </Tooltip>
           )}
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-gray-0 border-gray-10 flex h-12 w-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <DisconnectButton />
           </div>
         </div>
