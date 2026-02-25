@@ -4,7 +4,7 @@ import {
   type GridBreakpoint,
   getGridLayoutsForScreen,
   getOptimalGridLayout,
-} from '../../../common.config/src/grid/grid';
+} from 'common.config';
 
 /**
  * Улучшенный хук для адаптивных настроек сетки с поддержкой кастомных gridLayouts

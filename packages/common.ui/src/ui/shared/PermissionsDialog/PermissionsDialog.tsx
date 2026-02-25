@@ -4,7 +4,7 @@ import { Button } from '@xipkg/button';
 import { usePermissionsStore, closePermissionsDialog } from 'calls.store';
 import { useWatchPermissions } from 'calls.hooks';
 import { Settings } from '@xipkg/icons';
-import { isSafari } from '../../../../../calls/src/utils/livekit';
+import { isSafari } from 'common.utils';
 
 /**
  * Singleton component - ensures permissions sync runs only once across the app.

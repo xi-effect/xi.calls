@@ -13,7 +13,8 @@
   "dependencies": {
     "common.types": "*",
     "common.config": "*",
-    "calls.store": "*"
+    "calls.store": "*",
+    "calls.hooks": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

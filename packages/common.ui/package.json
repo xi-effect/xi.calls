@@ -4,7 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./styles": "./src/styles/index.ts"
+    "./video-security.css": "./src/styles/video-security.css",
+    "./driver.css": "./src/styles/driver.css"
   },
   "license": "MIT",
   "scripts": {
@@ -12,7 +13,12 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "framer-motion": "12.34.3",
     "@xipkg/button": "4.1.0",
+    "@xipkg/badge": "2.0.12",
+    "@xipkg/sheet": "2.0.12",
+    "@xipkg/link": "2.0.12",
+    "@xipkg/dropdown": "3.0.12",
     "@xipkg/icons": "3.0.3",
     "@xipkg/modal": "4.3.1",
     "@xipkg/label": "2.0.12",

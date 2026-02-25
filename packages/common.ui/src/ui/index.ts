@@ -10,3 +10,5 @@ export {
 } from './shared';
 export { VideoGrid } from './VideoGrid';
 export { ParticipantName, ParticipantTile, RaisedHandIndicator } from './Participant';
+export { CallsOnboarding } from './Onboarding';
+export { CompactView, CompactCall, CompactNavigationControls } from './CompactView';

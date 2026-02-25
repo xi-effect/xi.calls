@@ -5,7 +5,7 @@ import { useCallStore } from 'calls.store';
 import { ONBOARDING_IDS } from 'common.config';
 import { driver, type DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import '../../utils/driver.css';
+import '../../styles/driver.css';
 
 const ONBOARDING_STORAGE_KEY = 'calls_onboarding_completed';
 

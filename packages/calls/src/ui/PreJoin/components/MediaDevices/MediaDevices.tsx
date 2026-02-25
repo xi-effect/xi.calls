@@ -1,14 +1,14 @@
-import { Button } from '@xipkg/button';
-import { MediaDeviceMenu } from './MediaDeviceMenu';
-import { usePersistentUserChoices } from 'calls.hooks';
 import { useMemo } from 'react';
-import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { useCallStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
+import { Button } from '@xipkg/button';
+import { Switch } from '@xipkg/switcher';
+import { Label } from '@xipkg/label';
 import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert';
 import { InfoCircle } from '@xipkg/icons';
-import { Label } from '@xipkg/label';
-import { Switch } from '@xipkg/switcher';
+import { MediaDeviceMenu } from './MediaDeviceMenu';
+import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
+import { usePersistentUserChoices } from 'calls.hooks';
+import { useCallStore } from 'calls.store';
+import { useRoom } from 'calls.providers';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 
 interface MediaDevicesProps {

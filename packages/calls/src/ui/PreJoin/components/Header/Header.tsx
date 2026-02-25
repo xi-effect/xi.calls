@@ -26,7 +26,7 @@ export const Header = () => {
             }}
             type="button"
             variant="ghost"
-            className="flex size-[40px] items-center justify-center rounded-[12px] p-0"
+            className="flex size-10 items-center justify-center rounded-xl p-0"
           >
             <ArrowLeft className="fill-gray-100" />
           </Button>

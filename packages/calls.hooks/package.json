@@ -13,7 +13,9 @@
   "dependencies": {
     "zustand": "5.0.3",
     "calls.store": "*",
-    "common.types": "*"
+    "common.types": "*",
+    "common.utils": "*",
+    "common.config": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
