@@ -5,3 +5,4 @@ export { useFetching } from './src/api';
 export { ONBOARDING_IDS } from './src/onboarding';
 
 export { GRID_CONFIG, getGridLayoutsForScreen, getOptimalGridLayout } from './src/grid';
+export { serverUrl, serverUrlDev, isDevMode, devToken } from './src';

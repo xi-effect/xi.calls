@@ -7,6 +7,8 @@ import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
 import '../utils/video-security.css';
 import { TooltipProvider } from '@xipkg/tooltip';
+import { LiveKitProvider } from '../providers';
+import { isDevMode, devToken } from 'common.config';
 
 export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   const isStarted = useCallStore((state) => state.isStarted);
@@ -28,15 +30,23 @@ export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
     }
   }, [pathname, mode, updateStore]);
 
+  useEffect(() => {
+    if (isDevMode) {
+      updateStore('token', devToken);
+    }
+  }, [updateStore]);
+
   return (
-    <CallsProvider deps={deps}>
-      <TooltipProvider>
-        <div className="h-[calc(100vh-64px)]">
-          <div className="flex h-full w-full flex-col">
-            {isStarted ? <ActiveRoom /> : <PreJoin />}
+    <LiveKitProvider>
+      <CallsProvider deps={deps}>
+        <TooltipProvider>
+          <div className="h-[calc(100vh-64px)]">
+            <div className="flex h-full w-full flex-col">
+              {isStarted ? <ActiveRoom /> : <PreJoin />}
+            </div>
           </div>
-        </div>
-      </TooltipProvider>
-    </CallsProvider>
+        </TooltipProvider>
+      </CallsProvider>
+    </LiveKitProvider>
   );
 };

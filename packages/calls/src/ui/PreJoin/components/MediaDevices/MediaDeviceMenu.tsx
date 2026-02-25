@@ -103,7 +103,7 @@ export const MediaDeviceMenu = ({
   }
 
   return (
-    <div className={`${warnDisable ? 'border-orange-80 rounded-[8px] border-2' : null}`}>
+    <div className={`${warnDisable ? 'border-orange-80 rounded-lg border-2' : null}`}>
       <Select
         onValueChange={(value) => handleActiveChange(value, kind)}
         defaultValue={devices?.length > 0 ? initialSelection : undefined}

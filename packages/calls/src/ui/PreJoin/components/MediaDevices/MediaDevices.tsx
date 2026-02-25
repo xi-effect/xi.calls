@@ -147,7 +147,7 @@ export const MediaDevices = ({ audioTrack, videoTrack }: MediaDevicesProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-gray-30 flex flex-col justify-between rounded-[16px] border p-5">
+      <div className="border-gray-30 flex flex-col justify-between rounded-2xl border p-5">
         <div>
           <div className="mb-8">
             <h2 className="mb-1 font-sans">Камера</h2>

@@ -25,7 +25,7 @@ importers:
         version: 0.6.14(prettier@3.8.1)
       turbo:
         specifier: ^2.4.0
-        version: 2.8.10
+        version: 2.8.11
       typescript:
         specifier: 5.7.3
         version: 5.7.3
@@ -104,10 +104,10 @@ importers:
         version: 5.73.3(@tanstack/react-query@5.73.3)(react@19.2.4)
       '@tanstack/react-router-devtools':
         specifier: ^1.117.1
-        version: 1.162.9(@tanstack/react-router@1.128.8)(@tanstack/router-core@1.162.9)(csstype@3.2.3)(react-dom@19.2.4)(react@19.2.4)
+        version: 1.163.2(@tanstack/react-router@1.128.8)(@tanstack/router-core@1.163.2)(csstype@3.2.3)(react-dom@19.2.4)(react@19.2.4)
       '@tanstack/router-plugin':
         specifier: ^1.109.2
-        version: 1.162.9(@tanstack/react-router@1.128.8)(vite@6.4.1)
+        version: 1.163.2(@tanstack/react-router@1.128.8)(vite@6.4.1)
       '@types/react':
         specifier: ^19.0.8
         version: 19.2.14
@@ -297,7 +297,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -385,7 +385,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -446,7 +446,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -480,6 +480,12 @@ importers:
 
   packages/calls.providers:
     dependencies:
+      calls.store:
+        specifier: '*'
+        version: link:../calls.store
+      common.config:
+        specifier: '*'
+        version: link:../common.config
       common.types:
         specifier: '*'
         version: link:../common.types
@@ -504,7 +510,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -562,7 +568,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -602,6 +608,9 @@ importers:
       axios:
         specifier: 1.8.1
         version: 1.8.1
+      common.env:
+        specifier: '*'
+        version: link:../common.env
       react:
         specifier: '19'
         version: 19.2.4
@@ -623,7 +632,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -675,7 +684,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -729,7 +738,7 @@ importers:
         version: 0.4.26(eslint@9.39.3)
       eslint-plugin-turbo:
         specifier: ^2.4.4
-        version: 2.8.10(eslint@9.39.3)(turbo@2.8.10)
+        version: 2.8.11(eslint@9.39.3)(turbo@2.8.11)
       globals:
         specifier: ^15.14.0
         version: 15.15.0
@@ -763,7 +772,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -859,7 +868,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/tailwind':
         specifier: 0.8.1
         version: 0.8.1
@@ -914,7 +923,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@xipkg/eslint':
         specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3)
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
@@ -2752,7 +2761,7 @@ packages:
     dependencies:
       '@eslint/object-schema': 2.1.7
       debug: 4.4.3
-      minimatch: 3.1.3
+      minimatch: 3.1.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2782,7 +2791,7 @@ packages:
       ignore: 5.3.2
       import-fresh: 3.3.1
       js-yaml: 4.1.1
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
@@ -4628,12 +4637,12 @@ packages:
       '@tanstack/query-core': 5.73.3
       react: 19.2.4
 
-  /@tanstack/react-router-devtools@1.162.9(@tanstack/react-router@1.128.8)(@tanstack/router-core@1.162.9)(csstype@3.2.3)(react-dom@19.2.4)(react@19.2.4):
-    resolution: {integrity: sha512-8xDqykw8MYWj4JoNfiJR/ZnocRBlfFeDSOQWVoWlnZKlciLCJ9dVfXuXQJlDlWr3JdmsWyyRvruZBnYr1YlUcg==}
+  /@tanstack/react-router-devtools@1.163.2(@tanstack/react-router@1.128.8)(@tanstack/router-core@1.163.2)(csstype@3.2.3)(react-dom@19.2.4)(react@19.2.4):
+    resolution: {integrity: sha512-gk/tC+vx8eoNNIM27vfb/bZTXQjpopw7tZA4WkRQWLh9A8PG3V6QjMQysbPcRRO5m7KtdCbTk51ZG4ERi0J1kA==}
     engines: {node: '>=20.19'}
     peerDependencies:
-      '@tanstack/react-router': ^1.162.9
-      '@tanstack/router-core': ^1.162.9
+      '@tanstack/react-router': ^1.163.2
+      '@tanstack/router-core': ^1.163.2
       react: '>=18.0.0 || >=19.0.0'
       react-dom: '>=18.0.0 || >=19.0.0'
     peerDependenciesMeta:
@@ -4641,8 +4650,8 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-router': 1.128.8(react-dom@19.2.4)(react@19.2.4)
-      '@tanstack/router-core': 1.162.9
-      '@tanstack/router-devtools-core': 1.162.9(@tanstack/router-core@1.162.9)(csstype@3.2.3)
+      '@tanstack/router-core': 1.163.2
+      '@tanstack/router-devtools-core': 1.163.2(@tanstack/router-core@1.163.2)(csstype@3.2.3)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
     transitivePeerDependencies:
@@ -4688,8 +4697,8 @@ packages:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  /@tanstack/router-core@1.162.9:
-    resolution: {integrity: sha512-eG7C0oVtZbFOkfvsaF8UyGuNjEc1BfIfD5EzQNwG4vqLKOAyY5SMFBCNjabAi2sglRhL0ZOwKon1SExusU5fxA==}
+  /@tanstack/router-core@1.163.2:
+    resolution: {integrity: sha512-mD0Pav6kcpS317XSJN+wCZaxLLngDhlwgzPNca56dWCp8YKPEvhhj/Zdl+LdRlJQ2VJ5BOy7FbOV1hErc9Nj5Q==}
     engines: {node: '>=20.19'}
     dependencies:
       '@tanstack/history': 1.161.4
@@ -4701,28 +4710,28 @@ packages:
       tiny-warning: 1.0.3
     dev: true
 
-  /@tanstack/router-devtools-core@1.162.9(@tanstack/router-core@1.162.9)(csstype@3.2.3):
-    resolution: {integrity: sha512-fX54Aub/mS9KVrWy/CSe5+vu/pSez45RojzBZYK4KLMA8HsTxQ4/jjBfHwGg6FaqXKL52b72f4BAB+Cx559rIA==}
+  /@tanstack/router-devtools-core@1.163.2(@tanstack/router-core@1.163.2)(csstype@3.2.3):
+    resolution: {integrity: sha512-IrbSK30AtMOgCLXTbvhnVsU6BGjhwB8EjfZIQLtUPDvFsP0RH3/2ZiWRA3a0EsQhxkl+fxIVByVP7wgyRzkZPQ==}
     engines: {node: '>=20.19'}
     peerDependencies:
-      '@tanstack/router-core': ^1.162.9
+      '@tanstack/router-core': ^1.163.2
       csstype: ^3.0.10
     peerDependenciesMeta:
       csstype:
         optional: true
     dependencies:
-      '@tanstack/router-core': 1.162.9
+      '@tanstack/router-core': 1.163.2
       clsx: 2.1.1
       csstype: 3.2.3
       goober: 2.1.18(csstype@3.2.3)
       tiny-invariant: 1.3.3
     dev: true
 
-  /@tanstack/router-generator@1.162.9:
-    resolution: {integrity: sha512-yVYFL/b0hRNRDTJn7+k/BEgRICIV064G2aAkvioRx2apYaMaDvWPAYSSFkNM/4etA+J16ATMhK30513glQmVug==}
+  /@tanstack/router-generator@1.163.2:
+    resolution: {integrity: sha512-6LjU3+8iKEgt8iOaYCmCnQCs0jsOhc7z8fa1yAYlj3s82uYWv3g5CB9mwv8wZXblXBQWOl+hW4PI6WNjP/CK9w==}
     engines: {node: '>=20.19'}
     dependencies:
-      '@tanstack/router-core': 1.162.9
+      '@tanstack/router-core': 1.163.2
       '@tanstack/router-utils': 1.161.4
       '@tanstack/virtual-file-routes': 1.161.4
       prettier: 3.8.1
@@ -4734,12 +4743,12 @@ packages:
       - supports-color
     dev: true
 
-  /@tanstack/router-plugin@1.162.9(@tanstack/react-router@1.128.8)(vite@6.4.1):
-    resolution: {integrity: sha512-RnvDntkf4d8YxuG0zxqb9BqLnDhbCjpyzOAG/Jw9AV3d0kih0UcTbAZCzfoDAiGMuztOsAWMyiVXcoy5LnPKag==}
+  /@tanstack/router-plugin@1.163.2(@tanstack/react-router@1.128.8)(vite@6.4.1):
+    resolution: {integrity: sha512-SrVILMz/c15RYWxIMG+bf/glLbP/O9DUxOg0E7bo9pooBxGPvgWSlEzHNjhVekLhK5l7fiuQZzKsfksVeIEqDA==}
     engines: {node: '>=20.19'}
     peerDependencies:
       '@rsbuild/core': '>=1.0.2'
-      '@tanstack/react-router': ^1.162.9
+      '@tanstack/react-router': ^1.163.2
       vite: '>=5.0.0 || >=6.0.0 || >=7.0.0'
       vite-plugin-solid: ^2.11.10
       webpack: '>=5.92.0'
@@ -4762,8 +4771,8 @@ packages:
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
       '@tanstack/react-router': 1.128.8(react-dom@19.2.4)(react@19.2.4)
-      '@tanstack/router-core': 1.162.9
-      '@tanstack/router-generator': 1.162.9
+      '@tanstack/router-core': 1.163.2
+      '@tanstack/router-generator': 1.163.2
       '@tanstack/router-utils': 1.161.4
       '@tanstack/virtual-file-routes': 1.161.4
       chokidar: 3.6.0
@@ -5006,7 +5015,7 @@ packages:
       '@typescript-eslint/types': 8.56.1
       '@typescript-eslint/visitor-keys': 8.56.1
       debug: 4.4.3
-      minimatch: 10.2.2
+      minimatch: 10.2.3
       semver: 7.7.4
       tinyglobby: 0.2.15
       ts-api-utils: 2.4.0(typescript@5.7.3)
@@ -5332,14 +5341,14 @@ packages:
       - react-dom
     dev: false
 
-  /@xipkg/eslint@3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.10)(typescript@5.7.3):
+  /@xipkg/eslint@3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3):
     resolution: {integrity: sha512-ZzUkhFj4MYc5s5DPu5JeGHaccM+eMoNwHaSnVfBMprkbI34nC579e1nkYP8YG3LoEgfCi5DVA581jEVpyY4YZw==}
     dependencies:
       '@typescript-eslint/parser': 8.56.1(eslint@9.39.3)(typescript@5.7.3)
       eslint-config-airbnb: 19.0.4(eslint-plugin-import@2.31.0)(eslint-plugin-jsx-a11y@6.10.2)(eslint-plugin-react-hooks@5.1.0)(eslint-plugin-react@7.37.2)(eslint@9.39.3)
       eslint-config-next: 15.1.2(eslint@9.39.3)(typescript@5.7.3)
       eslint-config-prettier: 9.1.0(eslint@9.39.3)
-      eslint-config-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.10)
+      eslint-config-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.11)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.56.1)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3)
       eslint-plugin-react: 7.37.2(eslint@9.39.3)
       eslint-plugin-react-hooks: 5.1.0(eslint@9.39.3)
@@ -6554,15 +6563,15 @@ packages:
       eslint: 9.39.3
     dev: true
 
-  /eslint-config-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.10):
+  /eslint-config-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.11):
     resolution: {integrity: sha512-LMV1ZUNmzPxUEYf61N5SCtGxCx8+ZNnrHQhYshDdQCbqUUAdpCYq65foRzCTnHz9Ge57/ll9mWXllZHrsLyNAg==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
     dependencies:
       eslint: 9.39.3
-      eslint-plugin-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.10)
-      turbo: 2.8.10
+      eslint-plugin-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.11)
+      turbo: 2.8.11
     dev: true
 
   /eslint-import-resolver-node@0.3.9:
@@ -6655,7 +6664,7 @@ packages:
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       object.fromentries: 2.0.8
       object.groupby: 1.0.3
       object.values: 1.2.1
@@ -6686,7 +6695,7 @@ packages:
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
       language-tags: 1.0.9
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       object.fromentries: 2.0.8
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
@@ -6739,7 +6748,7 @@ packages:
       estraverse: 5.3.0
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       object.entries: 1.1.9
       object.fromentries: 2.0.8
       object.values: 1.2.1
@@ -6766,7 +6775,7 @@ packages:
       estraverse: 5.3.0
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       object.entries: 1.1.9
       object.fromentries: 2.0.8
       object.values: 1.2.1
@@ -6777,18 +6786,7 @@ packages:
       string.prototype.repeat: 1.0.0
     dev: true
 
-  /eslint-plugin-turbo@2.8.10(eslint@9.39.3)(turbo@2.8.10):
-    resolution: {integrity: sha512-IeXO+znCnyQgy28TxqjvABC5DQOr+BzbhV6arDN+najkuEJ8czGeEni9qOInxoLFgNUJcy9kAVUqmGm2X93ZXw==}
-    peerDependencies:
-      eslint: '>6.6.0'
-      turbo: '>2.0.0'
-    dependencies:
-      dotenv: 16.0.3
-      eslint: 9.39.3
-      turbo: 2.8.10
-    dev: true
-
-  /eslint-plugin-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.10):
+  /eslint-plugin-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.11):
     resolution: {integrity: sha512-DTrc61/Ppvq5xt7tAukmmcL3o8aAKFi5SPTLZF2w5UeFpFuEM7ZptFdoTsdNZfQpOWKJ+sF7quv7usO11IP/kQ==}
     peerDependencies:
       eslint: '>6.6.0'
@@ -6796,7 +6794,7 @@ packages:
     dependencies:
       dotenv: 16.0.3
       eslint: 9.39.3
-      turbo: 2.8.10
+      turbo: 2.8.11
     dev: true
 
   /eslint-scope@8.4.0:
@@ -6863,7 +6861,7 @@ packages:
       is-glob: 4.0.3
       json-stable-stringify-without-jsonify: 1.0.1
       lodash.merge: 4.6.2
-      minimatch: 3.1.3
+      minimatch: 3.1.4
       natural-compare: 1.4.0
       optionator: 0.9.4
     transitivePeerDependencies:
@@ -6977,7 +6975,7 @@ packages:
     resolution: {integrity: sha512-ct/ckWBV/9Dg3MlvCXsLcSUyoWwv9mCKqlhLNB2DAuXR/NZolSXlQqP5dyy6guWlPXBhodZyZ5lGPQcbQDxrEQ==}
     engines: {node: 20 || >=22}
     dependencies:
-      minimatch: 10.2.2
+      minimatch: 10.2.3
     dev: true
 
   /fill-range@7.1.1:
@@ -7202,7 +7200,7 @@ packages:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.2.3
-      minimatch: 10.2.2
+      minimatch: 10.2.3
       minipass: 7.1.3
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.2
@@ -8053,15 +8051,15 @@ packages:
       mime-db: 1.52.0
     dev: false
 
-  /minimatch@10.2.2:
-    resolution: {integrity: sha512-+G4CpNBxa5MprY+04MbgOw1v7So6n5JY166pFi9KfYwT78fxScCeSNQSNzp6dpPSW2rONOps6Ocam1wFhCgoVw==}
+  /minimatch@10.2.3:
+    resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
     engines: {node: 18 || 20 || >=22}
     dependencies:
       brace-expansion: 5.0.3
     dev: true
 
-  /minimatch@3.1.3:
-    resolution: {integrity: sha512-M2GCs7Vk83NxkUyQV1bkABc4yxgz9kILhHImZiBPAZ9ybuvCb0/H7lEl5XvIg3g+9d4eNotkZA5IWwYl0tibaA==}
+  /minimatch@3.1.4:
+    resolution: {integrity: sha512-twmL+S8+7yIsE9wsqgzU3E8/LumN3M3QELrBZ20OdmQ9jB2JvW5oZtBEmft84k/Gs5CG9mqtWc6Y9vW+JEzGxw==}
     dependencies:
       brace-expansion: 1.1.12
     dev: true
@@ -9180,64 +9178,64 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /turbo-darwin-64@2.8.10:
-    resolution: {integrity: sha512-A03fXh+B7S8mL3PbdhTd+0UsaGrhfyPkODvzBDpKRY7bbeac4MDFpJ7I+Slf2oSkCEeSvHKR7Z4U71uKRUfX7g==}
+  /turbo-darwin-64@2.8.11:
+    resolution: {integrity: sha512-XKaCWaz4OCt77oYYvGCIRpvYD4c/aNaKjRkUpv+e8rN3RZb+5Xsyew4yRO+gaHdMIUhQznXNXfHlhs+/p7lIhA==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64@2.8.10:
-    resolution: {integrity: sha512-sidzowgWL3s5xCHLeqwC9M3s9M0i16W1nuQF3Mc7fPHpZ+YPohvcbVFBB2uoRRHYZg6yBnwD4gyUHKTeXfwtXA==}
+  /turbo-darwin-arm64@2.8.11:
+    resolution: {integrity: sha512-VvynLHGUNvQ9k7GZjRPSsRcK4VkioTfFb7O7liAk4nHKjEcMdls7GqxzjVWgJiKz3hWmQGaP9hRa9UUnhVWCxA==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64@2.8.10:
-    resolution: {integrity: sha512-YK9vcpL3TVtqonB021XwgaQhY9hJJbKKUhLv16osxV0HkcQASQWUqR56yMge7puh6nxU67rQlTq1b7ksR1T3KA==}
+  /turbo-linux-64@2.8.11:
+    resolution: {integrity: sha512-cbSn37dcm+EmkQ7DD0euy7xV7o2el4GAOr1XujvkAyKjjNvQ+6QIUeDgQcwAx3D17zPpDvfDMJY2dLQadWnkmQ==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64@2.8.10:
-    resolution: {integrity: sha512-3+j2tL0sG95iBJTm+6J8/45JsETQABPqtFyYjVjBbi6eVGdtNTiBmHNKrbvXRlQ3ZbUG75bKLaSSDHSEEN+btQ==}
+  /turbo-linux-arm64@2.8.11:
+    resolution: {integrity: sha512-+trymp2s2aBrhS04l6qFxcExzZ8ffndevuUB9c5RCeqsVpZeiWuGQlWNm5XjOmzoMayxRARZ5ma7yiWbGMiLqQ==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64@2.8.10:
-    resolution: {integrity: sha512-hdeF5qmVY/NFgiucf8FW0CWJWtyT2QPm5mIsX0W1DXAVzqKVXGq+Zf+dg4EUngAFKjDzoBeN6ec2Fhajwfztkw==}
+  /turbo-windows-64@2.8.11:
+    resolution: {integrity: sha512-3kJjFSM4yw1n9Uzmi+XkAUgCae19l/bH6RJ442xo7mnZm0tpOjo33F+FYHoSVpIWVMd0HG0LDccyafPSdylQbA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64@2.8.10:
-    resolution: {integrity: sha512-QGdr/Q8LWmj+ITMkSvfiz2glf0d7JG0oXVzGL3jxkGqiBI1zXFj20oqVY0qWi+112LO9SVrYdpHS0E/oGFrMbQ==}
+  /turbo-windows-arm64@2.8.11:
+    resolution: {integrity: sha512-JOM4uF2vuLsJUvibdR6X9QqdZr6BhC6Nhlrw4LKFPsXZZI/9HHLoqAiYRpE4MuzIwldCH/jVySnWXrI1SKto0g==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo@2.8.10:
-    resolution: {integrity: sha512-OxbzDES66+x7nnKGg2MwBA1ypVsZoDTLHpeaP4giyiHSixbsiTaMyeJqbEyvBdp5Cm28fc+8GG6RdQtic0ijwQ==}
+  /turbo@2.8.11:
+    resolution: {integrity: sha512-H+rwSHHPLoyPOSoHdmI1zY0zy0GGj1Dmr7SeJW+nZiWLz2nex8EJ+fkdVabxXFMNEux+aywI4Sae8EqhmnOv4A==}
     hasBin: true
     optionalDependencies:
-      turbo-darwin-64: 2.8.10
-      turbo-darwin-arm64: 2.8.10
-      turbo-linux-64: 2.8.10
-      turbo-linux-arm64: 2.8.10
-      turbo-windows-64: 2.8.10
-      turbo-windows-arm64: 2.8.10
+      turbo-darwin-64: 2.8.11
+      turbo-darwin-arm64: 2.8.11
+      turbo-linux-64: 2.8.11
+      turbo-linux-arm64: 2.8.11
+      turbo-windows-64: 2.8.11
+      turbo-windows-arm64: 2.8.11
     dev: true
 
   /type-check@0.4.0:

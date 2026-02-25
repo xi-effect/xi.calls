@@ -7,12 +7,14 @@
 @import '@xipkg/tailwind/index.css';
 
 @source "../src";
-@source "../node_modules/@xipkg";
+@source "../../../node_modules/@xipkg";
 
 /* // Добавьте @source директивы для ваших пакетов здесь */
 @source "../../../packages/common.ui/src";
 @source "../../../packages/calls/src";
-@source "../../../packages/chat/src";
+@source "../../../packages/calls.chat/src";
+@source "../../../packages/calls/node_modules/@xipkg";
+@source "../../../packages/common.ui/node_modules/@xipkg";
 
 /* // @source "../../../packages/your-package/src"; */
 

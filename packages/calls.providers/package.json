@@ -11,7 +11,9 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "common.types": "*"
+    "common.types": "*",
+    "common.config": "*",
+    "calls.store": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

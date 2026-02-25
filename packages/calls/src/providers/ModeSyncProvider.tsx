@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react';
-import { useModeSync } from '../hooks';
-import { useRoom } from '../../../calls.providers/src/RoomProvider';
-import { useCallStore } from '../store/callStore';
+import { useModeSync } from 'calls.hooks';
+import { useRoom } from 'calls.providers';
+import { useCallStore } from 'calls.store';
 
 type ModeSyncProviderProps = {
   children: ReactNode;

@@ -1,2 +1,2 @@
-export { CallsProvider, useCalls, RoomProvider, useRoom } from './src';
+export { CallsProvider, useCalls, RoomProvider, useRoom, LiveKitProvider } from './src';
 export type { CallsProviderDepsT } from './src/';

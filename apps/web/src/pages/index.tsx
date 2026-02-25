@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Call } from 'calls.main';
-import { RoomProvider } from 'calls.providers';
+import { LiveKitProvider, RoomProvider } from 'calls.providers';
 
 const devDeps = {
   auth: {
@@ -51,7 +51,9 @@ function HomePage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <RoomProvider>
-        <Call deps={devDeps} />
+        <LiveKitProvider>
+          <Call deps={devDeps} />
+        </LiveKitProvider>
       </RoomProvider>
     </div>
   );
