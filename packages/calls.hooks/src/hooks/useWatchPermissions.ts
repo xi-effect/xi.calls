@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { usePermissionsStore } from '../store/permissions';
+import { usePermissionsStore } from 'calls.store';
 import { isSafari } from '../../../calls/src/utils/livekit';
 
 const POLLING_TIME = 500;

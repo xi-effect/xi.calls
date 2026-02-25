@@ -11,6 +11,9 @@
 
 /* // Добавьте @source директивы для ваших пакетов здесь */
 @source "../../../packages/common.ui/src";
+@source "../../../packages/calls/src";
+@source "../../../packages/chat/src";
+
 /* // @source "../../../packages/your-package/src"; */
 
 /* app.css или globals.css */

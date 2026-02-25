@@ -2,11 +2,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { facingModeFromLocalTrack, LocalVideoTrack, LocalAudioTrack } from 'livekit-client';
 import { Controls } from './Controls';
-import { usePersistentUserChoices } from '../../../../hooks/usePersistentUserChoices';
-import { useCannotUseDevice } from '../../../../hooks/useCannotUseDevice';
-import { openPermissionsDialog } from '../../../../store/permissions';
+import { useCannotUseDevice, usePersistentUserChoices } from 'calls.hooks';
+import { openPermissionsDialog } from 'calls.store';
 import { Button } from '@xipkg/button';
-import { SecureVideo } from '../../../../../../common.ui/src/ui/shared';
+import { SecureVideo } from 'common.ui';
+import { useCalls } from 'calls.providers';
 
 const UserTileUI = ({
   audioTrack,
@@ -150,7 +150,10 @@ interface UserTileProps {
 }
 
 export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
-  const { data: user } = useCurrentUser();
+  const { auth } = useCalls();
+  const { data: user } = auth.useCurrentUser();
+  console.log(user);
+
   const { userId } = user;
 
   const {

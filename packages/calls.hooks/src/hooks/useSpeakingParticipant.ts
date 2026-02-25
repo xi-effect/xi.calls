@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { Track, RoomEvent } from 'livekit-client';
 import { useTracks } from '@livekit/components-react';
-import { useRoom } from '../../../calls/src/providers/RoomProvider';
-import type { TrackReference } from '@livekit/components-core';
 import { isTrackReference } from '@livekit/components-core';
+import { Track, RoomEvent } from 'livekit-client';
+import type { TrackReference } from '@livekit/components-core';
+import { useRoom } from 'calls.providers';
 
 export const useSpeakingParticipant = (): TrackReference | null => {
   const { room } = useRoom();

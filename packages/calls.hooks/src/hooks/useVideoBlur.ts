@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { LocalVideoTrack } from 'livekit-client';
 import { BackgroundProcessor, supportsBackgroundProcessors } from '@livekit/track-processors';
-import { useUserChoicesStore } from '../store/userChoices';
+import { useUserChoicesStore } from 'calls.store';
 
 export function useVideoBlur(videoTrack: LocalVideoTrack | null | undefined) {
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);

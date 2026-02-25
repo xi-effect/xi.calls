@@ -1,5 +1,5 @@
 import { createContext, FC, useContext } from 'react';
-import { AuthPortT, CallAuthPortT, ClassroomPortT } from '../config/ports';
+import { AuthPortT, CallAuthPortT, ClassroomPortT } from './config';
 
 export type CallsProviderDepsT = {
   auth: AuthPortT;

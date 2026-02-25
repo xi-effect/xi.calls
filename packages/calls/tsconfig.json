@@ -1,5 +1,12 @@
 {
-  "include": ["src/**/*", "../common.ui/src/config", "src/hooks"],
+  "include": [
+    "src/**/*",
+    "../common.ui/src/config",
+    "src/hooks",
+    "../calls.providers/src/RoomProvider.tsx",
+    "../calls.chat/src/Chat",
+    "../common.config/src/grid/grid.ts"
+  ],
   "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]
 }

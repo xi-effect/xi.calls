@@ -1,6 +1,6 @@
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Header, UserTile, MediaDevices } from './components';
-import { PermissionsDialog } from '../../../../common.ui/src/ui/shared/PermissionsDialog';
+import { PermissionsDialog } from 'common.ui';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
   Track,
@@ -10,9 +10,11 @@ import {
   createLocalAudioTrack,
 } from 'livekit-client';
 import { usePreviewTracks } from '@livekit/components-react';
-import { usePersistentUserChoices } from '../../hooks/usePersistentUserChoices';
-import { useResolveInitiallyDefaultDeviceId } from '../../hooks/useResolveInitiallyDefaultDeviceId';
-import { useVideoBlur } from '../../hooks';
+import {
+  useVideoBlur,
+  useResolveInitiallyDefaultDeviceId,
+  usePersistentUserChoices,
+} from 'calls.hooks';
 
 export const PreJoin = () => {
   const {

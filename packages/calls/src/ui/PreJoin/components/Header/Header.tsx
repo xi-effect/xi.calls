@@ -2,7 +2,7 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { Button } from '@xipkg/button';
 import { ArrowLeft } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
-import { useCalls } from '../../../../providers/CallsProvider';
+import { useCalls } from 'calls.providers';
 
 /* eslint-disable no-irregular-whitespace */
 export const Header = () => {

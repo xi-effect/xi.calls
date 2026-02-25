@@ -1,5 +1,5 @@
 import { Hand } from '@xipkg/icons';
-import { useCallStore } from '../../store/callStore';
+import { useCallStore } from 'calls.store';
 
 type RaisedHandIndicatorProps = {
   participantId: string;

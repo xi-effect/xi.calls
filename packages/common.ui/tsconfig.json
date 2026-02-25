@@ -5,7 +5,8 @@
     "../calls/src/hooks",
     "../calls/src/providers",
     "../calls/src/store",
-    "../calls/src/config/grid.ts"
+    "../common.config/src/grid/grid.ts",
+    "../calls.providers/src/RoomProvider.tsx"
   ],
   "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]

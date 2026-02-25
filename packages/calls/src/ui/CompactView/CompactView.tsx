@@ -12,11 +12,11 @@ import {
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
-import { useCallStore } from '../../store/callStore';
-import type { Corner } from '../../store/callStore';
+import { useCallStore } from 'calls.store';
+import type { Corner } from 'calls.store';
 import { useNavigate, useRouter, useSearch, useLocation } from '@tanstack/react-router';
-import { useRoom } from '../../providers/RoomProvider';
-import { useParticipantJoinSync } from '../../hooks/useParticipantJoinSync';
+import { useRoom } from 'calls.providers';
+import { useParticipantJoinSync } from 'calls.hooks';
 
 type CompactViewProps = {
   children: React.ReactNode;

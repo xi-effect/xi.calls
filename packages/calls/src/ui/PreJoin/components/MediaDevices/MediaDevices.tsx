@@ -1,10 +1,10 @@
 import { Button } from '@xipkg/button';
 import { MediaDeviceMenu } from './MediaDeviceMenu';
-import { usePersistentUserChoices } from '../../../../hooks/usePersistentUserChoices';
+import { usePersistentUserChoices } from 'calls.hooks';
 import { useMemo } from 'react';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { useCallStore } from '../../../../store/callStore';
-import { useRoom } from '../../../../providers/RoomProvider';
+import { useCallStore } from 'calls.store';
+import { useRoom } from 'calls.providers';
 import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert';
 import { InfoCircle } from '@xipkg/icons';
 import { Label } from '@xipkg/label';

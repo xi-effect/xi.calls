@@ -11,14 +11,14 @@ import {
   usePagination,
   useSwipe,
 } from '@livekit/components-react';
-import { useSize, useAdaptiveGrid, useEmptyItemContainerOfUser } from '../../hooks';
+import { useSize, useAdaptiveGrid, useEmptyItemContainerOfUser } from 'calls.hooks';
 import { ParticipantTile } from '../Participant';
 import { SliderVideoGrid } from './SliderVideoGrid';
 import { HorizontalFocusLayout } from './HorizontalFocusLayout';
 import { VerticalFocusLayout } from './VerticalFocusLayout';
 import { GridPaginationControls } from './GridPaginationControls';
-import { useCallStore } from '../../store/callStore';
-import { GRID_CONFIG, getGridLayoutsForScreen } from '../../config/grid';
+import { useCallStore } from 'calls.store';
+import { GRID_CONFIG, getGridLayoutsForScreen } from 'common.config';
 
 export interface PaginationIndicatorProps {
   totalPageCount: number;

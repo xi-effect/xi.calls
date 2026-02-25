@@ -14,8 +14,8 @@ import {
 } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
 import { CarouselContainer, GridLayout } from './VideoGridLayout';
-import { useCallStore } from '../../store/callStore';
-import { useScreenShareCleanup } from '../../hooks/useScreenShareCleanup';
+import { useCallStore } from 'calls.store';
+import { useScreenShareCleanup } from 'calls.hooks';
 import '../../styles/grid.css';
 
 export const VideoGrid = ({ ...props }: VideoConferenceProps) => {

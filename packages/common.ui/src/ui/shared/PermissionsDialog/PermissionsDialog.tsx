@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from '@xipkg/modal';
 import { Button } from '@xipkg/button';
-import { usePermissionsStore, closePermissionsDialog } from '../../../store/permissions';
-import { useWatchPermissions } from '../../../hooks/useWatchPermissions';
+import { usePermissionsStore, closePermissionsDialog } from 'calls.store';
+import { useWatchPermissions } from 'calls.hooks';
 import { Settings } from '@xipkg/icons';
 import { isSafari } from '../../../../../calls/src/utils/livekit';
 

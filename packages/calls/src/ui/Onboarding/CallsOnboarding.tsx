@@ -1,20 +1,13 @@
 import { useEffect, useRef } from 'react';
-import { driver, type DriveStep } from 'driver.js';
-import 'driver.js/dist/driver.css';
-import 'common.ui/utils/driver.css';
 import { createRoot } from 'react-dom/client';
 import { Close } from '@xipkg/icons';
-import { useCallStore } from '../../store/callStore';
+import { useCallStore } from 'calls.store';
+import { ONBOARDING_IDS } from 'common.config';
+import { driver, type DriveStep } from 'driver.js';
+import 'driver.js/dist/driver.css';
+import '../../utils/driver.css';
 
 const ONBOARDING_STORAGE_KEY = 'calls_onboarding_completed';
-
-// ID элементов для онбординга
-export const ONBOARDING_IDS = {
-  WHITEBOARD_BUTTON: 'calls-onboarding-whiteboard-button',
-  LINK_BUTTON: 'calls-onboarding-link-button',
-  SETTINGS_BUTTON: 'calls-onboarding-settings-button',
-  BACK_BUTTON: 'calls-onboarding-back-button',
-} as const;
 
 export const CallsOnboarding = () => {
   const isStarted = useCallStore((state) => state.isStarted);

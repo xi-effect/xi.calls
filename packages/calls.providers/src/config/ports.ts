@@ -18,7 +18,7 @@ export type ClassroomPortT = {
     isLoading: boolean;
     isError: boolean;
   };
-  useAddClassroomMaterials: () => void;
+  useAddClassroomMaterials: () => { addClassroomMaterials: any };
   useGetClassroomMaterialsList(params: {
     classroomId: string;
     content_type: string;

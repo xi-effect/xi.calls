@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { useCallStore } from '../store/callStore';
+import { useCallStore } from 'calls.store';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
 
 const MODE_SYNC_MESSAGE_TYPE = 'mode_sync';

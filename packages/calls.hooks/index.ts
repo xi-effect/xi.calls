@@ -20,4 +20,5 @@ export {
   useVideoBlur,
   useVideoSecurity,
   useWatchPermissions,
+  useCompactNavigation,
 } from './src';

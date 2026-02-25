@@ -3,7 +3,7 @@ import { WhiteBoard } from '@xipkg/icons';
 import { useState } from 'react';
 import { WhiteboardsModal } from './WhiteboardsModal';
 import { Button } from '@xipkg/button';
-import { ONBOARDING_IDS } from '../Onboarding/CallsOnboarding';
+import { ONBOARDING_IDS } from 'common.config';
 
 export const WhiteBoardButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -4,9 +4,9 @@ import { Textarea } from '@xipkg/textarea';
 import { Send, Close } from '@xipkg/icons';
 import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
-import { useChat } from '../../hooks/useChat';
-import { useCallStore } from '../../store/callStore';
-import { useCurrentUser } from 'common.services';
+import { useChat } from 'calls.hooks';
+import { useCallStore } from 'calls.store';
+import { useCalls } from 'calls.providers';
 import { cn } from '@xipkg/utils';
 
 export const Chat = () => {
@@ -14,7 +14,8 @@ export const Chat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendChatMessage, closeChat } = useChat();
   const { chatMessages, isChatOpen } = useCallStore();
-  const { data: currentUser } = useCurrentUser();
+  const { auth } = useCalls();
+  const { data: currentUser } = auth.useCurrentUser();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

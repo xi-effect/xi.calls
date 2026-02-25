@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallStore } from 'calls.store';
 import { useNavigate } from '@tanstack/react-router';
-import { useCalls } from '../../../calls/src/providers';
+import { useCalls } from 'calls.providers';
 import { StartCallDataT } from 'common.types';
 
 export const useStartCall = () => {

@@ -1,10 +1,9 @@
 import { useEffect, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { RoomEvent, RemoteParticipant } from 'livekit-client';
-import { useRoom } from '../../../calls/src/providers/RoomProvider';
-import { useCallStore } from '../store/callStore';
+import { useRoom, useCalls } from 'calls.providers';
+import { useCallStore } from 'calls.store';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
-import { useCurrentUser } from 'common.services';
 
 const STATE_REQUEST_MESSAGE_TYPE = 'state_request';
 const STATE_RESPONSE_MESSAGE_TYPE = 'state_response';
@@ -28,7 +27,8 @@ export const useParticipantJoinSync = () => {
   const { room } = useRoom();
   const navigate = useNavigate();
   const { sendMessageToParticipant } = useLiveKitDataChannel();
-  const { data: user } = useCurrentUser();
+  const { auth } = useCalls();
+  const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
   const mode = useCallStore((state) => state.mode);
   const activeBoardId = useCallStore((state) => state.activeBoardId);

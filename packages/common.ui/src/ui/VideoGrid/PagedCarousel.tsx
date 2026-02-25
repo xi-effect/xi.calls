@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PaginationControls } from './PaginationControls';
-import { useSize } from '../../hooks/useSize';
+import { useSize } from 'calls.hooks';
 
 type Orientation = 'vertical' | 'horizontal';
 

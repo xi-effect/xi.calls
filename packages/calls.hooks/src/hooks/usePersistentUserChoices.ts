@@ -1,5 +1,5 @@
-import { useUserChoicesStore } from '../store/userChoices';
-import type { VideoResolution } from '../store/userChoices';
+import { useUserChoicesStore } from 'calls.store';
+import type { VideoResolution } from 'calls.store';
 import type { VideoQuality } from 'livekit-client';
 
 export function usePersistentUserChoices() {

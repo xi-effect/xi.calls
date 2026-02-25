@@ -1,15 +1,20 @@
 import { useCallback } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { DevicesBar } from '../shared';
 import {
   useLocalParticipant,
   usePersistentUserChoices,
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { DisconnectButton } from '../Bottom/DisconnectButton';
-import { useCompactNavigation } from '../../hooks/useCompactNavigation';
+import {
+  DisconnectButton,
+  ScreenShareButton,
+  ParticipantTile,
+  RaiseHandButton,
+  DevicesBar,
+} from 'common.ui';
+import { useCompactNavigation } from 'calls.hooks';
 import { Maximize } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
@@ -21,13 +26,10 @@ import {
   DropdownMenuTrigger,
 } from '@xipkg/dropdown';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useCallStore } from '../../store/callStore';
+import { useCallStore } from 'calls.store';
 import { CompactNavigationControls } from './CompactNavigationControls';
-import { ParticipantTile } from '../Participant';
-import { ScreenShareButton } from '../Bottom/ScreenShareButton';
-import { RaiseHandButton } from '../Bottom/RaiseHandButton';
-import { useVideoBlur, useModeSync } from '../../hooks';
-import { useRoom } from '../../providers/RoomProvider';
+import { useVideoBlur, useModeSync } from 'calls.hooks';
+import { useRoom, useCalls } from 'calls.providers';
 
 export const CompactCall = ({ saveUserChoices = true }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -96,6 +98,7 @@ export const CompactCall = ({ saveUserChoices = true }) => {
   // Безопасно получаем параметры call из URL
   const search = useSearch({ strict: false }) as { call?: string };
   const { call } = search;
+  const { auth } = useCalls();
 
   const navigate = useNavigate();
   const updateStore = useCallStore((state) => state.updateStore);
@@ -104,7 +107,7 @@ export const CompactCall = ({ saveUserChoices = true }) => {
   const activeClassroom = useCallStore((state) => state.activeClassroom);
   const { room } = useRoom();
   const token = useCallStore((state) => state.token);
-  const { data: user } = useCurrentUser();
+  const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
 
   const handleMaximize = (syncToAll: boolean = false) => {

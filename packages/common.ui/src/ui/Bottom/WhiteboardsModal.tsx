@@ -14,13 +14,9 @@ import { Checkbox } from '@xipkg/checkbox';
 import { useState } from 'react';
 import { Close, Search } from '@xipkg/icons';
 import { useNavigate, useParams } from '@tanstack/react-router';
-import { useCallStore } from '../../store';
-import { useModeSync } from '../../hooks';
-import {
-  useCurrentUser,
-  useGetClassroomMaterialsList,
-  useAddClassroomMaterials,
-} from 'common.services';
+import { useCallStore } from 'calls.store';
+import { useModeSync } from 'calls.hooks';
+import { useCalls } from 'calls.providers';
 
 // Типы материалов определены в common.types -> ClassroomMaterialsT
 
@@ -34,21 +30,22 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   const { callId } = useParams({ strict: false });
   const updateStore = useCallStore((state) => state.updateStore);
   const { syncModeToOthers } = useModeSync();
-  const { data: user } = useCurrentUser();
+  const { auth, room } = useCalls();
+  const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBoardId, setSelectedBoardId] = useState<number | null>(null);
   const [isCollaborativeMode, setIsCollaborativeMode] = useState(true);
 
   // Хук для создания новой доски
-  const { addClassroomMaterials } = useAddClassroomMaterials();
+  const { addClassroomMaterials } = room.useAddClassroomMaterials();
 
   // Загружаем список досок кабинета (classroomId == callId)
   const {
     data: boards,
     isLoading,
     isError,
-  } = useGetClassroomMaterialsList({
+  } = room.useGetClassroomMaterialsList({
     classroomId: callId || '',
     content_type: 'board',
     disabled: !callId || !isTutor,

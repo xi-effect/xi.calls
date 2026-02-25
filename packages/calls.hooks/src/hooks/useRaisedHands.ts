@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
-import { useCallStore } from '../store/callStore';
-import { useRoom } from '../../../calls/src/providers/RoomProvider';
+import { useCallStore } from 'calls.store';
+import { useRoom } from 'calls.providers';
 
 const RAISE_HAND_MESSAGE_TYPE = 'raise_hand';
 const LOWER_HAND_MESSAGE_TYPE = 'lower_hand';

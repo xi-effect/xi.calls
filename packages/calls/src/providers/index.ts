@@ -1,5 +1,3 @@
 export { LiveKitProvider } from './LiveKitProvider';
-export { RoomProvider } from './RoomProvider';
+export { RoomProvider } from '../../../calls.providers/src/RoomProvider';
 export { ModeSyncProvider } from './ModeSyncProvider';
-export { CallsProvider, useCalls } from './CallsProvider';
-export type { CallsProviderDepsT } from './CallsProvider';

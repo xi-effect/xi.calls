@@ -20,8 +20,8 @@ import { env } from 'common.env';
 import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { Settings } from './Settings';
-import { ONBOARDING_IDS } from '../Onboarding/CallsOnboarding';
-import { useCalls } from '../../providers/CallsProvider';
+import { useCalls } from 'calls.providers';
+import { ONBOARDING_IDS } from 'common.config';
 
 export const UpBar = () => {
   const { callId } = useParams({ strict: false });

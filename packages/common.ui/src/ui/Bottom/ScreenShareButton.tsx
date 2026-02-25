@@ -1,7 +1,7 @@
 import { Track, LocalVideoTrack } from 'livekit-client';
 import { supportsScreenSharing } from '@livekit/components-core';
 import { useTrackToggle } from '@livekit/components-react';
-import { TrackToggle } from '../../../../common.ui/src/ui/shared/TrackToggle/TrackToggle';
+import { TrackToggle } from '../shared/TrackToggle/TrackToggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 
 export const ScreenShareButton = ({ className }: { className?: string }) => {

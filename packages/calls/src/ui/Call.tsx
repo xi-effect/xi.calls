@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { PreJoin } from './PreJoin';
-import { useCallStore } from 'calls.store';
-import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
 import { useLocation } from '@tanstack/react-router';
-import './shared/VideoTrack/video-security.css';
-import { CallsProvider } from '../providers';
+import { CallsProviderDepsT, CallsProvider } from 'calls.providers';
+import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
+import { useCallStore } from 'calls.store';
+import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
-import { CallsProviderDepsT } from '../providers';
+import '../utils/video-security.css';
+import { TooltipProvider } from '@xipkg/tooltip';
 
 export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   const isStarted = useCallStore((state) => state.isStarted);
@@ -30,11 +30,13 @@ export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
 
   return (
     <CallsProvider deps={deps}>
-      <div className="h-[calc(100vh-64px)]">
-        <div className="flex h-full w-full flex-col">
-          {isStarted ? <ActiveRoom /> : <PreJoin />}
+      <TooltipProvider>
+        <div className="h-[calc(100vh-64px)]">
+          <div className="flex h-full w-full flex-col">
+            {isStarted ? <ActiveRoom /> : <PreJoin />}
+          </div>
         </div>
-      </div>
+      </TooltipProvider>
     </CallsProvider>
   );
 };

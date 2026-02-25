@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { useModeSync } from '../hooks';
-import { useRoom } from './RoomProvider';
+import { useRoom } from '../../../calls.providers/src/RoomProvider';
 import { useCallStore } from '../store/callStore';
 
 type ModeSyncProviderProps = {

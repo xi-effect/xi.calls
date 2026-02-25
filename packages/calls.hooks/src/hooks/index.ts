@@ -17,3 +17,4 @@ export { useScreenShareCleanup } from './useScreenShareCleanup';
 export { useVideoBlur } from './useVideoBlur';
 export { useEmptyItemContainerOfUser } from './useEmptyItemContainerOfUser';
 export { useParticipantJoinSync } from './useParticipantJoinSync';
+export { useCompactNavigation } from './useCompactNavigation';

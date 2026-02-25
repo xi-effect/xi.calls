@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { usePermissionsStore } from '../store/permissions';
+import { usePermissionsStore } from 'calls.store';
 
 export const useCannotUseDevice = (kind: MediaDeviceKind) => {
   const { isLoading, isMicrophoneDenied, isMicrophonePrompted, isCameraDenied, isCameraPrompted } =
