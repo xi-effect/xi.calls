@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "../common.ui/src/config", "src/hooks"],
+  "include": ["src/**/*", "../calls.ui/src/config", "src/hooks"],
   "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]
 }

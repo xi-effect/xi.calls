@@ -5,7 +5,7 @@ import { Controls } from './Controls';
 import { useCannotUseDevice, usePersistentUserChoices } from 'calls.hooks';
 import { openPermissionsDialog } from 'calls.store';
 import { Button } from '@xipkg/button';
-import { SecureVideo } from 'common.ui';
+import { SecureVideo } from 'calls.ui';
 import { useCalls } from 'calls.providers';
 
 const UserTileUI = ({

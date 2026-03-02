@@ -53,6 +53,9 @@ importers:
       calls.providers:
         specifier: '*'
         version: link:../../packages/calls.providers
+      calls.ui:
+        specifier: '*'
+        version: link:../../packages/calls.ui
       common.config:
         specifier: '*'
         version: link:../../packages/common.config
@@ -62,9 +65,6 @@ importers:
       common.types:
         specifier: '*'
         version: link:../../packages/common.types
-      common.ui:
-        specifier: '*'
-        version: link:../../packages/common.ui
       common.utils:
         specifier: '*'
         version: link:../../packages/common.utils
@@ -222,6 +222,9 @@ importers:
       calls.store:
         specifier: '*'
         version: link:../calls.store
+      calls.ui:
+        specifier: '*'
+        version: link:../calls.ui
       common.config:
         specifier: '*'
         version: link:../common.config
@@ -231,9 +234,6 @@ importers:
       common.types:
         specifier: '*'
         version: link:../common.types
-      common.ui:
-        specifier: '*'
-        version: link:../common.ui
       common.utils:
         specifier: '*'
         version: link:../common.utils
@@ -319,15 +319,15 @@ importers:
       calls.store:
         specifier: '*'
         version: link:../calls.store
+      calls.ui:
+        specifier: '*'
+        version: link:../calls.ui
       common.config:
         specifier: '*'
         version: link:../common.config
       common.types:
         specifier: '*'
         version: link:../common.types
-      common.ui:
-        specifier: '*'
-        version: link:../common.ui
       common.utils:
         specifier: '*'
         version: link:../common.utils
@@ -573,6 +573,118 @@ importers:
         specifier: ^8.22.0
         version: 8.56.1(eslint@9.39.3)(typescript@5.7.3)
 
+  packages/calls.ui:
+    dependencies:
+      '@xipkg/badge':
+        specifier: 2.0.12
+        version: 2.0.12(react@19.2.4)
+      '@xipkg/button':
+        specifier: 4.1.0
+        version: 4.1.0(@types/react@19.2.14)(react@19.2.4)
+      '@xipkg/checkbox':
+        specifier: 5.0.0
+        version: 5.0.0(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/dropdown':
+        specifier: 3.0.12
+        version: 3.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/icons':
+        specifier: 3.0.3
+        version: 3.0.3(react@19.2.4)
+      '@xipkg/input':
+        specifier: 2.2.9
+        version: 2.2.9(react@19.2.4)
+      '@xipkg/label':
+        specifier: 2.0.12
+        version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/link':
+        specifier: 2.0.12
+        version: 2.0.12(react@19.2.4)
+      '@xipkg/modal':
+        specifier: 4.3.1
+        version: 4.3.1(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/scrollarea':
+        specifier: 2.2.0
+        version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/sheet':
+        specifier: 2.0.12
+        version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      '@xipkg/switcher':
+        specifier: 3.0.13
+        version: 3.0.13(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+      calls.hooks:
+        specifier: '*'
+        version: link:../calls.hooks
+      calls.providers:
+        specifier: '*'
+        version: link:../calls.providers
+      calls.store:
+        specifier: '*'
+        version: link:../calls.store
+      common.config:
+        specifier: '*'
+        version: link:../common.config
+      common.env:
+        specifier: '*'
+        version: link:../common.env
+      common.utils:
+        specifier: '*'
+        version: link:../common.utils
+      framer-motion:
+        specifier: 12.34.3
+        version: 12.34.3(react-dom@19.2.4)(react@19.2.4)
+      react:
+        specifier: '19'
+        version: 19.2.4
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.19.0
+        version: 9.39.3
+      '@tanstack/react-query-devtools':
+        specifier: 5.73.3
+        version: 5.73.3(@tanstack/react-query@5.73.3)(react@19.2.4)
+      '@types/node':
+        specifier: ^20.3.1
+        version: 20.19.33
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.2
+        version: 19.2.3(@types/react@19.2.14)
+      '@xipkg/eslint':
+        specifier: 3.2.0
+        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
+      '@xipkg/tailwind':
+        specifier: 0.8.1
+        version: 0.8.1
+      '@xipkg/typescript':
+        specifier: latest
+        version: 0.2.0
+      common.eslint:
+        specifier: '*'
+        version: link:../common.eslint
+      common.typescript:
+        specifier: '*'
+        version: link:../common.typescript
+      eslint:
+        specifier: ^9.19.0
+        version: 9.39.3
+      eslint-plugin-react-hooks:
+        specifier: ^5.0.0
+        version: 5.2.0(eslint@9.39.3)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.18
+        version: 0.4.26(eslint@9.39.3)
+      globals:
+        specifier: ^15.14.0
+        version: 15.15.0
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.3
+      typescript-eslint:
+        specifier: ^8.22.0
+        version: 8.56.1(eslint@9.39.3)(typescript@5.7.3)
+
   packages/common.config:
     dependencies:
       '@tanstack/react-query':
@@ -778,118 +890,6 @@ importers:
         version: 8.56.1(eslint@9.39.3)(typescript@5.7.3)
 
   packages/common.typescript: {}
-
-  packages/common.ui:
-    dependencies:
-      '@xipkg/badge':
-        specifier: 2.0.12
-        version: 2.0.12(react@19.2.4)
-      '@xipkg/button':
-        specifier: 4.1.0
-        version: 4.1.0(@types/react@19.2.14)(react@19.2.4)
-      '@xipkg/checkbox':
-        specifier: 5.0.0
-        version: 5.0.0(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/dropdown':
-        specifier: 3.0.12
-        version: 3.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/icons':
-        specifier: 3.0.3
-        version: 3.0.3(react@19.2.4)
-      '@xipkg/input':
-        specifier: 2.2.9
-        version: 2.2.9(react@19.2.4)
-      '@xipkg/label':
-        specifier: 2.0.12
-        version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/link':
-        specifier: 2.0.12
-        version: 2.0.12(react@19.2.4)
-      '@xipkg/modal':
-        specifier: 4.3.1
-        version: 4.3.1(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/scrollarea':
-        specifier: 2.2.0
-        version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/sheet':
-        specifier: 2.0.12
-        version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      '@xipkg/switcher':
-        specifier: 3.0.13
-        version: 3.0.13(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
-      calls.hooks:
-        specifier: '*'
-        version: link:../calls.hooks
-      calls.providers:
-        specifier: '*'
-        version: link:../calls.providers
-      calls.store:
-        specifier: '*'
-        version: link:../calls.store
-      common.config:
-        specifier: '*'
-        version: link:../common.config
-      common.env:
-        specifier: '*'
-        version: link:../common.env
-      common.utils:
-        specifier: '*'
-        version: link:../common.utils
-      framer-motion:
-        specifier: 12.34.3
-        version: 12.34.3(react-dom@19.2.4)(react@19.2.4)
-      react:
-        specifier: '19'
-        version: 19.2.4
-    devDependencies:
-      '@eslint/js':
-        specifier: ^9.19.0
-        version: 9.39.3
-      '@tanstack/react-query-devtools':
-        specifier: 5.73.3
-        version: 5.73.3(@tanstack/react-query@5.73.3)(react@19.2.4)
-      '@types/node':
-        specifier: ^20.3.1
-        version: 20.19.33
-      '@types/react':
-        specifier: ^19.0.2
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.14)
-      '@xipkg/eslint':
-        specifier: 3.2.0
-        version: 3.2.0(eslint-plugin-jsx-a11y@6.10.2)(eslint@9.39.3)(turbo@2.8.11)(typescript@5.7.3)
-      '@xipkg/tailwind':
-        specifier: 0.8.1
-        version: 0.8.1
-      '@xipkg/typescript':
-        specifier: latest
-        version: 0.2.0
-      common.eslint:
-        specifier: '*'
-        version: link:../common.eslint
-      common.typescript:
-        specifier: '*'
-        version: link:../common.typescript
-      eslint:
-        specifier: ^9.19.0
-        version: 9.39.3
-      eslint-plugin-react-hooks:
-        specifier: ^5.0.0
-        version: 5.2.0(eslint@9.39.3)
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.18
-        version: 0.4.26(eslint@9.39.3)
-      globals:
-        specifier: ^15.14.0
-        version: 15.15.0
-      typescript:
-        specifier: ~5.7.2
-        version: 5.7.3
-      typescript-eslint:
-        specifier: ^8.22.0
-        version: 8.56.1(eslint@9.39.3)(typescript@5.7.3)
 
   packages/common.utils:
     dependencies:
@@ -5259,7 +5259,7 @@ packages:
       eslint-config-airbnb: 19.0.4(eslint-plugin-import@2.31.0)(eslint-plugin-jsx-a11y@6.10.2)(eslint-plugin-react-hooks@5.1.0)(eslint-plugin-react@7.37.2)(eslint@9.39.3)
       eslint-config-next: 15.1.2(eslint@9.39.3)(typescript@5.7.3)
       eslint-config-prettier: 9.1.0(eslint@9.39.3)
-      eslint-config-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.11)
+      eslint-config-turbo: 2.8.12(eslint@9.39.3)(turbo@2.8.11)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.56.1)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3)
       eslint-plugin-react: 7.37.2(eslint@9.39.3)
       eslint-plugin-react-hooks: 5.1.0(eslint@9.39.3)
@@ -6474,14 +6474,14 @@ packages:
       eslint: 9.39.3
     dev: true
 
-  /eslint-config-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.11):
-    resolution: {integrity: sha512-LMV1ZUNmzPxUEYf61N5SCtGxCx8+ZNnrHQhYshDdQCbqUUAdpCYq65foRzCTnHz9Ge57/ll9mWXllZHrsLyNAg==}
+  /eslint-config-turbo@2.8.12(eslint@9.39.3)(turbo@2.8.11):
+    resolution: {integrity: sha512-0MP/CzngIMalr0R8Q74VfGImVSFmDu7iL+v+1v16NdLG3xlHGE/mjtXDMYchEk6wWNlmaib3EjGifbQ2Jr5kxw==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
     dependencies:
       eslint: 9.39.3
-      eslint-plugin-turbo: 2.8.11(eslint@9.39.3)(turbo@2.8.11)
+      eslint-plugin-turbo: 2.8.12(eslint@9.39.3)(turbo@2.8.11)
       turbo: 2.8.11
     dev: true
 
@@ -6699,6 +6699,17 @@ packages:
 
   /eslint-plugin-turbo@2.8.11(eslint@9.39.3)(turbo@2.8.11):
     resolution: {integrity: sha512-DTrc61/Ppvq5xt7tAukmmcL3o8aAKFi5SPTLZF2w5UeFpFuEM7ZptFdoTsdNZfQpOWKJ+sF7quv7usO11IP/kQ==}
+    peerDependencies:
+      eslint: '>6.6.0'
+      turbo: '>2.0.0'
+    dependencies:
+      dotenv: 16.0.3
+      eslint: 9.39.3
+      turbo: 2.8.11
+    dev: true
+
+  /eslint-plugin-turbo@2.8.12(eslint@9.39.3)(turbo@2.8.11):
+    resolution: {integrity: sha512-Q0LcIS2bRivRDZbtHOrtNFUSclnvfL8Qn1yM8I7+1LRerPmdcLF++SYOOCsF9COCEvoP6O66+bnupDqpC/W59w==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'

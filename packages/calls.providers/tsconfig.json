@@ -1,5 +1,10 @@
 {
-  "include": ["src/**/*", "../common.ui/src/config", "src/hooks"],
+  "include": [
+    "src/**/*",
+    "../calls.ui/src/config",
+    "src/hooks",
+    "../calls.hooks/src/hooks/useModeSync.ts"
+  ],
   "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]
 }

@@ -1,7 +1,7 @@
 {
   "include": [
     "src/**/*",
-    "../common.ui/src/config",
+    "../calls.ui/src/config",
     "src/hooks",
     "../calls.providers/src/RoomProvider.tsx"
   ],

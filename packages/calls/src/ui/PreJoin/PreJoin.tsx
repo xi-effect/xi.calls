@@ -1,6 +1,6 @@
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Header, UserTile, MediaDevices } from './components';
-import { PermissionsDialog } from 'common.ui';
+import { PermissionsDialog } from 'calls.ui';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
   Track,

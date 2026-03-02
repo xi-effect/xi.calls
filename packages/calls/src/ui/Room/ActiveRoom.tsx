@@ -1,11 +1,11 @@
-import { BottomBar, UpBar, VideoGrid, CallsOnboarding } from 'common.ui';
+import { BottomBar, UpBar, VideoGrid, CallsOnboarding } from 'calls.ui';
 import { Chat } from 'calls.chat';
 import { useHandFocus } from 'calls.hooks';
 import { useLocalParticipant } from '@livekit/components-react';
 import { LocalVideoTrack } from 'livekit-client';
 import { useVideoBlur, useParticipantJoinSync } from 'calls.hooks';
 import { useCallStore } from 'calls.store';
-import 'common.ui/video-security.css';
+import 'calls.ui/video-security.css';
 
 export const ActiveRoom = () => {
   // Автоматический фокус на участниках с поднятыми руками

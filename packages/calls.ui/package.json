@@ -1,5 +1,5 @@
 {
-  "name": "common.ui",
+  "name": "calls.ui",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -54,6 +54,6 @@
   "peerDependencies": {
     "react": "19"
   },
-  "description": "form for signin",
+  "description": "calls ui package",
   "author": "xi.effect"
 }

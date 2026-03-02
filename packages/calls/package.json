@@ -33,7 +33,7 @@
     "@xipkg/tooltip": "2.1.0",
     "@xipkg/icons": "^2.7.0",
     "@xipkg/button": "3.2.0",
-    "common.ui": "*",
+    "calls.ui": "*",
     "common.utils": "*",
     "common.types": "*",
     "common.config": "*",

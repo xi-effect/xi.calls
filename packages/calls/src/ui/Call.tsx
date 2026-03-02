@@ -7,7 +7,7 @@ import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
 import { useCallStore } from 'calls.store';
 import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
-import 'common.ui/video-security.css';
+import 'calls.ui/video-security.css';
 
 export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   const isStarted = useCallStore((state) => state.isStarted);

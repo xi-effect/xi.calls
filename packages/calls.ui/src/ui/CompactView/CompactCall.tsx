@@ -13,7 +13,7 @@ import {
   ParticipantTile,
   RaiseHandButton,
   DevicesBar,
-} from 'common.ui';
+} from 'calls.ui';
 import { useCompactNavigation } from 'calls.hooks';
 import { Maximize } from '@xipkg/icons';
 import { Button } from '@xipkg/button';

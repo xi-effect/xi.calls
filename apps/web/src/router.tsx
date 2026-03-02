@@ -1,6 +1,6 @@
 import { createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
-import { ErrorPage } from 'common.ui';
+import { ErrorPage } from 'calls.ui';
 
 // Create a new router instance
 export const router = createRouter({
