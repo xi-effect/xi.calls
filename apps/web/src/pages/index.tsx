@@ -1,4 +1,40 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Call } from 'calls.main';
+import { LiveKitProvider, ModeSyncProvider, RoomProvider } from 'calls.providers';
+
+const devDeps = {
+  auth: {
+    useCurrentUser: () => ({
+      data: { userId: 1 },
+      isLoading: false,
+      isError: false,
+    }),
+  },
+
+  room: {
+    useGetClassroom: () => ({
+      data: null,
+      isLoading: false,
+      isError: false,
+    }),
+    useAddClassroomMaterials: () => ({
+      addClassroomMaterials: () => {},
+    }),
+    useGetClassroomMaterialsList: () => ({
+      data: [],
+      isLoading: false,
+      isError: false,
+    }),
+  },
+
+  callAuth: {
+    createTokenByTutor: async () => 'dev-token',
+    createTokenByStudent: async () => 'dev-token',
+    reactivateCall: async () => {},
+    isLoading: false,
+    error: undefined,
+  },
+};
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -14,13 +50,13 @@ export const Route = createFileRoute('/')({
 function HomePage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Starter</h1>
-        <p className="text-lg text-gray-600">
-          This is a starter template for React applications with TypeScript, Vite, and TanStack Router.
-        </p>
-      </div>
+      <RoomProvider>
+        <LiveKitProvider>
+          <ModeSyncProvider>
+            <Call deps={devDeps} />
+          </ModeSyncProvider>
+        </LiveKitProvider>
+      </RoomProvider>
     </div>
   );
 }
-

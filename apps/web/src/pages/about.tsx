@@ -14,13 +14,9 @@ export const Route = createFileRoute('/about')({
 function AboutPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center max-w-2xl">
-        <h1 className="text-4xl font-bold mb-4">About</h1>
-        <p className="text-lg text-gray-600">
-          This is a starter template built with modern web technologies.
-        </p>
+      <div className="max-w-2xl text-center">
+        <h1 className="mb-4 text-4xl font-bold">About</h1>
       </div>
     </div>
   );
 }
-

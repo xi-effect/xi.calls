@@ -1,0 +1,14 @@
+{
+  "include": [
+    "src/**/*",
+    "../calls/src/ui/Call.tsx",
+    "../calls/src/hooks",
+    "../calls/src/providers",
+    "../calls/src/store",
+    "../common.config/src/grid/grid.ts",
+    "../calls.providers/src/RoomProvider.tsx",
+    "../calls.providers/src/ModeSyncProvider.tsx"
+  ],
+  "extends": ["common.typescript/tsconfig.app.json"],
+  "exclude": ["dist", "build", "node_modules"]
+}

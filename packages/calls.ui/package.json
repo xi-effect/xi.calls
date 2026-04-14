@@ -1,0 +1,59 @@
+{
+  "name": "calls.ui",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./video-security.css": "./src/styles/video-security.css",
+    "./driver.css": "./src/styles/driver.css"
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "framer-motion": "12.34.3",
+    "@xipkg/button": "4.1.0",
+    "@xipkg/badge": "2.0.12",
+    "@xipkg/sheet": "2.0.12",
+    "@xipkg/link": "2.0.12",
+    "@xipkg/dropdown": "3.0.12",
+    "@xipkg/icons": "3.0.3",
+    "@xipkg/modal": "4.3.1",
+    "@xipkg/label": "2.0.12",
+    "@xipkg/checkbox": "5.0.0",
+    "@xipkg/input": "2.2.9",
+    "@xipkg/switcher": "3.0.13",
+    "@xipkg/scrollarea": "2.2.0",
+    "calls.store": "*",
+    "calls.hooks": "*",
+    "calls.providers": "*",
+    "common.config": "*",
+    "common.utils": "*",
+    "common.env": "*"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@tanstack/react-query-devtools": "5.73.3",
+    "@types/node": "^20.3.1",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@xipkg/eslint": "3.2.0",
+    "@xipkg/typescript": "latest",
+    "@xipkg/tailwind": "0.8.1",
+    "common.eslint": "*",
+    "common.typescript": "*",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.22.0"
+  },
+  "peerDependencies": {
+    "react": "19"
+  },
+  "description": "calls ui package",
+  "author": "xi.effect"
+}

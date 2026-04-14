@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRootRouteWithContext, HeadContent, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import { AuthContextT } from 'common.auth';
+// import { AuthContextT } from 'common.auth';
 
 interface MyRouterContext {
-  auth: AuthContextT;
+  auth: any;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
