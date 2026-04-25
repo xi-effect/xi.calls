@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type PermissionState = undefined | 'granted' | 'prompt' | 'denied' | 'unavailable';
+type PermissionStateT = undefined | 'granted' | 'prompt' | 'denied' | 'unavailable';
 
-type BaseState = {
-  cameraPermission: PermissionState;
-  microphonePermission: PermissionState;
+type BaseStateT = {
+  cameraPermission: PermissionStateT;
+  microphonePermission: PermissionStateT;
   isLoading: boolean;
   isPermissionDialogOpen: boolean;
 };
 
-type DerivedState = {
+type DerivedStateT = {
   isCameraGranted: boolean;
   isMicrophoneGranted: boolean;
   isCameraDenied: boolean;
@@ -19,7 +19,7 @@ type DerivedState = {
   isMicrophonePrompted: boolean;
 };
 
-type State = BaseState & DerivedState;
+type State = BaseStateT & DerivedStateT;
 
 export const usePermissionsStore = create<State>()(
   persist(

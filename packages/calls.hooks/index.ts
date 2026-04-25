@@ -1,7 +1,6 @@
 export {
   useAdaptiveGrid,
   useCannotUseDevice,
-  useChat,
   useEmptyItemContainerOfUser,
   useHandFocus,
   useInitUserDevices,
@@ -20,5 +19,8 @@ export {
   useVideoBlur,
   useVideoSecurity,
   useWatchPermissions,
-  useCompactNavigation,
+  useSortedTracks,
+  useNoiseCancellation,
+  useParticipantSounds,
+  type UseNoiseCancellationResult,
 } from './src';

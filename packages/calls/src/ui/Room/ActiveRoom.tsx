@@ -1,13 +1,15 @@
-import { BottomBar, UpBar, VideoGrid, CallsOnboarding } from 'calls.ui';
-import { Chat } from 'calls.chat';
-import { useHandFocus } from 'calls.hooks';
 import { useLocalParticipant } from '@livekit/components-react';
 import { LocalVideoTrack } from 'livekit-client';
-import { useVideoBlur, useParticipantJoinSync } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { Chat } from 'calls.chat';
+import { UpBar, VideoGrid, CallsOnboarding } from 'calls.ui';
+import { useCallStore, useFeaturesStore } from 'calls.store';
+import { useVideoBlur, useParticipantJoinSync, useHandFocus } from 'calls.hooks';
+import { BottomBar } from '../Bottom/BottomBar';
 import 'calls.ui/video-security.css';
 
 export const ActiveRoom = () => {
+  const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);
+
   // Автоматический фокус на участниках с поднятыми руками
   useHandFocus();
   // Синхронизация состояния при подключении новых участников
@@ -30,7 +32,7 @@ export const ActiveRoom = () => {
           <div className="flex h-auto w-full justify-center text-center text-gray-100">
             <VideoGrid />
           </div>
-          <Chat />
+          {isChatEnabled && <Chat />}
         </div>
         <BottomBar />
       </div>

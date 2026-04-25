@@ -8,3 +8,5 @@ export { GRID_CONFIG, getGridLayoutsForScreen, getOptimalGridLayout } from './sr
 export { serverUrl, serverUrlDev, isDevMode, devToken } from './src';
 
 export type { GridBreakpoint } from './src/grid';
+
+export { noiseCancellationFeatureEnabled, allowKrispNoiseCancellation } from './src/callConfig';

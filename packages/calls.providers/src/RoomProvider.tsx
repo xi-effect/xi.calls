@@ -1,11 +1,11 @@
 import { createContext, useContext, ReactNode, useMemo } from 'react';
 import { Room, RoomOptions, ConnectionQuality, Track } from 'livekit-client';
 
-type RoomContextType = {
+type RoomContextTypeT = {
   room: Room;
 };
 
-const RoomContext = createContext<RoomContextType | null>(null);
+const RoomContext = createContext<RoomContextTypeT | null>(null);
 
 export const useRoom = () => {
   const context = useContext(RoomContext);

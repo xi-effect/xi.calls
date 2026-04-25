@@ -1,18 +1,18 @@
 import { Hand } from '@xipkg/icons';
-import { useCallStore } from 'calls.store';
+import { useParticipantInfo } from '@livekit/components-react';
+import { Participant } from 'livekit-client';
 
-type RaisedHandIndicatorProps = {
-  participantId: string;
+type RaisedHandIndicatorPropsT = {
+  participant: Participant;
   compact?: boolean; // Для компактного отображения в метаданных
 };
 
 export const RaisedHandIndicator = ({
-  participantId,
+  participant,
   compact = false,
-}: RaisedHandIndicatorProps) => {
-  const { isHandRaisedByParticipant } = useCallStore();
-
-  const isHandRaised = isHandRaisedByParticipant(participantId);
+}: RaisedHandIndicatorPropsT) => {
+  const { metadata } = useParticipantInfo({ participant });
+  const isHandRaised = JSON.parse(metadata || '{}').is_hand_raised;
 
   if (!isHandRaised) return null;
 

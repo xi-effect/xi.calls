@@ -1,11 +1,11 @@
 import { Button } from '@xipkg/button';
 import { Chat } from '@xipkg/icons';
-import { useChat } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { useChat } from '../hooks';
+import { useChatStore } from '../store/';
 
 export const ChatButton = () => {
   const { toggleChat } = useChat();
-  const { isChatOpen, unreadMessagesCount } = useCallStore();
+  const { isChatOpen, unreadMessagesCount } = useChatStore();
 
   return (
     <Button

@@ -1,5 +1,5 @@
 export { UpBar } from './UpBar';
-export { BottomBar, DisconnectButton, ScreenShareButton, RaiseHandButton } from './Bottom';
+export { WhiteBoardButton, DisconnectButton, ScreenShareButton } from './Bottom';
 export {
   FocusToggle,
   TrackToggle,
@@ -9,6 +9,5 @@ export {
   PermissionsDialog,
 } from './shared';
 export { VideoGrid } from './VideoGrid';
-export { ParticipantName, ParticipantTile, RaisedHandIndicator } from './Participant';
+export { ParticipantName, ParticipantTile, TrackMutedIndicator } from './Participant';
 export { CallsOnboarding } from './Onboarding';
-export { CompactView, CompactCall, CompactNavigationControls } from './CompactView';

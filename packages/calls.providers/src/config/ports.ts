@@ -38,3 +38,14 @@ export type CallAuthPortT = {
   isLoading: boolean;
   error?: any;
 };
+
+export type UpdateParticipantMetadataPortT = {
+  updateParticipantMetadata: (data: {
+    classroom_id: string;
+    is_hand_raised: boolean;
+    role?: string;
+  }) => Promise<void>;
+
+  isPending: boolean;
+  error?: unknown;
+};

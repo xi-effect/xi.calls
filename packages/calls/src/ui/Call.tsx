@@ -4,7 +4,7 @@ import { TooltipProvider } from '@xipkg/tooltip';
 import { isDevMode, devToken } from 'common.config';
 import { CallsProviderDepsT, CallsProvider } from 'calls.providers';
 import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { useCallStore, useFeaturesStore } from 'calls.store';
 import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
 import 'calls.ui/video-security.css';
@@ -18,6 +18,10 @@ export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   const pathname = useLocation().pathname;
   const mode = useCallStore((state) => state.mode);
   const updateStore = useCallStore((state) => state.updateStore);
+
+  useFeaturesStore.getState().setFeatures({
+    chat: false,
+  });
 
   useEffect(() => {
     // Проверяем, что мы находимся на странице /call/<callId> (точное совпадение)

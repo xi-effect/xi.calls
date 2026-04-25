@@ -1,8 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Call } from 'calls.main';
-import { LiveKitProvider, ModeSyncProvider, RoomProvider } from 'calls.providers';
+import {
+  CallsProviderDepsT,
+  LiveKitProvider,
+  ModeSyncProvider,
+  RoomProvider,
+} from 'calls.providers';
 
-const devDeps = {
+const devDeps: CallsProviderDepsT = {
   auth: {
     useCurrentUser: () => ({
       data: { userId: 1 },
@@ -33,6 +38,20 @@ const devDeps = {
     reactivateCall: async () => {},
     isLoading: false,
     error: undefined,
+  },
+  updateParticipantMetadata: {
+    updateParticipantMetadata(role) {
+      return {
+        updateParticipantMetadata: {
+          mutate: async (data) => {
+            console.log('Updating participant metadata', { role, ...data });
+          },
+          isPending: false,
+        },
+        isLoading: false,
+        error: undefined,
+      };
+    },
   },
 };
 

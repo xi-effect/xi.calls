@@ -5,7 +5,6 @@ import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { isTrackReference, isTrackReferencePinned } from '@livekit/components-core';
 import {
   AudioTrack,
-  ConnectionQualityIndicator,
   LockLockedIcon,
   ParticipantContextIfNeeded,
   ParticipantTileProps,
@@ -22,10 +21,16 @@ import {
   useParticipantInfo,
 } from '@livekit/components-react';
 import { MicrophoneOff, RedLine } from '@xipkg/icons';
-import { VideoTrack, FocusToggle } from '../shared';
+import { VideoTrack } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
+import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from './RaisedHandIndicator';
+import { ScreenShareZoom } from './ScreenShareZoom';
+import { useCallStore } from 'calls.store';
+import { isLocal } from 'common.utils';
+import { cn } from '@xipkg/utils';
+import { useMedia } from 'common.utils';
 
 type TrackRefContextIfNeededPropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
@@ -71,8 +76,14 @@ type FocusToggleDisablePropsT = {
   isFocusToggleDisable?: boolean;
 };
 
+type FocusViewPropsT = {
+  /** Плитка в фокусе (в FocusLayout). Для демонстрации экрана включает зум. */
+  isFocusView?: boolean;
+};
+
 type ParticipantTilePropsT = ParticipantTileProps &
-  FocusToggleDisablePropsT & {
+  FocusToggleDisablePropsT &
+  FocusViewPropsT & {
     participant?: Participant;
     source?: Track.Source;
     publication?: unknown;
@@ -87,6 +98,7 @@ export const ParticipantTile = ({
   publication,
   disableSpeakingIndicator,
   isFocusToggleDisable,
+  isFocusView,
   ...htmlProps
 }: ParticipantTilePropsT) => {
   const maybeTrackRef = useMaybeTrackRefContext();
@@ -155,60 +167,129 @@ export const ParticipantTile = ({
     [trackReference, layoutContext],
   );
 
+  const carouselType = useCallStore((state) => state.carouselType);
+  const updateStore = useCallStore((state) => state.updateStore);
+
+  const handleTileDoubleClick = React.useCallback(() => {
+    if (trackReference.source !== Track.Source.ScreenShare || !layoutContext?.pin.dispatch) return;
+    if (!isTrackReference(trackReference)) return;
+
+    const isPinned =
+      layoutContext.pin.state && isTrackReferencePinned(trackReference, layoutContext.pin.state);
+
+    if (carouselType === 'grid') {
+      updateStore('carouselType', 'horizontal');
+      layoutContext.pin.dispatch({ msg: 'set_pin', trackReference });
+    } else if (isPinned) {
+      updateStore('carouselType', 'grid');
+      layoutContext.pin.dispatch({ msg: 'clear_pin' });
+    }
+  }, [trackReference, carouselType, layoutContext, updateStore]);
+
+  const getVideoClassName = () => {
+    if (trackReference.source === Track.Source.ScreenShare) {
+      return 'object-contain';
+    }
+    return 'object-cover';
+  };
+
+  const isMobile = useMedia('(max-width: 640px)');
+
   return (
     <div
-      style={{
-        position: 'relative',
-      }}
+      className="lk-participant-tile relative"
+      data-lk-source={trackReference.source}
       {...elementProps}
+      onDoubleClick={
+        trackReference.source === Track.Source.ScreenShare &&
+        (carouselType === 'grid' ||
+          (layoutContext?.pin.state &&
+            isTrackReferencePinned(trackReference, layoutContext.pin.state)))
+          ? handleTileDoubleClick
+          : elementProps?.onDoubleClick
+      }
     >
       <TrackRefContextIfNeeded trackRef={trackReference}>
         <ParticipantContextIfNeeded participant={trackReference.participant}>
-          <div className="m-auto flex h-full w-full justify-center overflow-hidden rounded-2xl">
+          <div className="m-auto flex aspect-video h-full w-full justify-center overflow-hidden rounded-xl in-[.lk-grid-layout]:relative in-[.lk-grid-layout]:overflow-hidden in-[.lk-grid-layout]:rounded-2xl [.lk-grid-layout_&]:m-0 [.lk-grid-layout_&]:flex-none [.lk-grid-layout_&]:bg-black">
             {children ?? (
-              <div className="relative flex h-full w-full justify-center">
-                {/* Аватар всегда рендерится как фон */}
-                <div
-                  style={{
-                    borderRadius: '8px',
-                    height: '100%',
-                    backgroundColor: 'var(--color-gray-40)',
-                  }}
-                  className="lk-participant-placeholder flex aspect-video h-full w-full items-center justify-center"
-                >
-                  <Avatar size="xxl">
-                    <AvatarImage
-                      src={`https://api.sovlium.ru/files/users/${identity}/avatar.webp`}
-                      alt="user avatar"
+              <div className="relative flex h-full w-full justify-center in-[.lk-grid-layout]:relative in-[.lk-grid-layout]:h-full in-[.lk-grid-layout]:w-full">
+                {/* Аватар только когда камера выключена; для демонстрации экрана — только нейтральный фон */}
+                {(() => {
+                  const isScreenShare = trackReference.source === Track.Source.ScreenShare;
+                  const hasVideo =
+                    isTrackReference(trackReference) &&
+                    (trackReference.publication?.kind === 'video' ||
+                      trackReference.source === Track.Source.Camera ||
+                      trackReference.source === Track.Source.ScreenShare) &&
+                    trackReference.publication?.isSubscribed &&
+                    trackReference.publication?.isEnabled &&
+                    !trackReference.publication?.track?.isMuted;
+                  const showAvatar =
+                    !isScreenShare && trackReference.source === Track.Source.Camera && !hasVideo;
+                  return showAvatar ? (
+                    <div
+                      style={{
+                        borderRadius: '8px',
+                        height: '100%',
+                        backgroundColor: 'var(--color-gray-40)',
+                      }}
+                      className="lk-participant-placeholder flex aspect-video h-full w-full items-center justify-center"
+                    >
+                      <Avatar size="xxl">
+                        <AvatarImage
+                          src={`https://api.sovlium.ru/files/users/${identity}/avatar.webp`}
+                          alt="user avatar"
+                        />
+                        <AvatarFallback size="xxl" loading />
+                      </Avatar>
+                    </div>
+                  ) : (
+                    <div
+                      className="lk-participant-placeholder bg-gray-40 aspect-video h-full w-full rounded-lg"
+                      aria-hidden
                     />
-                    <AvatarFallback size="xxl" loading />
-                  </Avatar>
-                </div>
-                {/* Видео накладывается поверх аватара когда доступно */}
+                  );
+                })()}
+                {/* Видео накладывается поверх когда доступно (камера или демонстрация) */}
                 {isTrackReference(trackReference) &&
                   (trackReference.publication?.kind === 'video' ||
                     trackReference.source === Track.Source.Camera ||
                     trackReference.source === Track.Source.ScreenShare) &&
                   trackReference.publication?.isSubscribed &&
                   trackReference.publication?.isEnabled &&
-                  !trackReference.publication?.track?.isMuted && (
-                    <div className="bg-gray-40 relative inset-0 aspect-video w-full rounded-2xl">
-                      <VideoTrack
-                        className="h-full w-full rounded-2xl object-cover"
-                        style={{
-                          ...(trackReference.source === Track.Source.Camera && {
-                            transform: 'rotateY(180deg)',
-                          }),
-                          boxSizing: 'border-box',
-                          background: 'var(--xi-bg-gray-40)',
-                          backgroundColor: 'var(--xi-bg-gray-40)',
-                        }}
-                        trackRef={trackReference}
-                        onSubscriptionStatusChanged={handleSubscribe}
-                        manageSubscription={autoManageSubscription}
-                      />
-                    </div>
-                  )}
+                  !trackReference.publication?.track?.isMuted &&
+                  (() => {
+                    const videoBlock = (
+                      <div className="absolute inset-0 aspect-video h-full w-full bg-gray-100/80">
+                        <VideoTrack
+                          className={cn(
+                            `absolute inset-0 h-full w-full object-cover object-center ${getVideoClassName()}`,
+                          )}
+                          style={{
+                            // Зеркалим только локальное превью (как в зеркале); остальные и демонстрация — без зеркала
+                            ...(trackReference.source === Track.Source.Camera &&
+                              isLocal(trackReference.participant) && {
+                                transform: 'rotateY(180deg)',
+                              }),
+                            boxSizing: 'border-box',
+                            background: 'var(--xi-bg-gray-100)',
+                            backgroundColor: 'var(--xi-bg-gray-100)',
+                          }}
+                          trackRef={trackReference}
+                          onSubscriptionStatusChanged={handleSubscribe}
+                          manageSubscription={autoManageSubscription}
+                        />
+                      </div>
+                    );
+                    return !isMobile &&
+                      isFocusView &&
+                      trackReference.source === Track.Source.ScreenShare ? (
+                      <ScreenShareZoom trackRef={trackReference}>{videoBlock}</ScreenShareZoom>
+                    ) : (
+                      videoBlock
+                    );
+                  })()}
                 {/* Аудио трек для случаев без видео */}
                 {isTrackReference(trackReference) &&
                   (!trackReference.publication?.isSubscribed ||
@@ -219,10 +300,10 @@ export const ParticipantTile = ({
                       onSubscriptionStatusChanged={handleSubscribe}
                     />
                   )}
-                <div className="lk-participant-metadata p-1">
+                <div className="lk-participant-metadata absolute right-2 bottom-2 left-2 z-10 flex items-center justify-between gap-2">
                   <div>
                     {trackReference.source === Track.Source.Camera ? (
-                      <div className="bg-gray-0/80 flex h-6 w-full gap-1.5 rounded-lg px-1.5 py-1">
+                      <div className="bg-gray-0/80 flex h-6 gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         {isEncrypted && <LockLockedIcon />}
                         <TrackMutedIndicator
                           trackRef={{
@@ -235,16 +316,14 @@ export const ParticipantTile = ({
                         <ParticipantName participant={trackReference.participant} />
                       </div>
                     ) : (
-                      <div className="bg-gray-0/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1">
+                      <div className="bg-gray-0/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
                         <ParticipantName participant={trackReference.participant}>
                           Демонстрация&nbsp;
                         </ParticipantName>
-                        {/* Индикатор поднятой руки в метаданных */}
                       </div>
                     )}
                   </div>
-                  <ConnectionQualityIndicator />
                 </div>
               </div>
             )}
@@ -253,7 +332,7 @@ export const ParticipantTile = ({
           {/* Индикатор поднятой руки в верхнем правом углу - скрываем для ScreenShare */}
           {trackReference.source !== Track.Source.ScreenShare && (
             <div className="absolute top-2 left-2 z-10">
-              <RaisedHandIndicator participantId={identity || 'unknown'} />
+              <RaisedHandIndicator participant={trackReference.participant} />
             </div>
           )}
 

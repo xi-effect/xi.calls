@@ -1,22 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LiveKitRoomProps } from '@livekit/components-react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type ChatMessage = {
-  id: string;
-  text: string;
-  senderId: string;
-  senderName: string;
-  timestamp: number;
-};
-
-type RaisedHand = {
+type RaisedHandT = {
   participantId: string;
   participantName: string;
   timestamp: number;
 };
 
-export type Corner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type CornerT = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 type useCallStoreT = {
   // разрешение от браузера на использование камеры
@@ -30,7 +23,7 @@ type useCallStoreT = {
   audioOutputDeviceId: ConstrainDOMString | undefined;
   videoDeviceId: ConstrainDOMString | undefined;
   // подключена ли конференция
-  connect: boolean | undefined;
+  connect: LiveKitRoomProps['connect'];
   // началась ли ВКС для пользователя
   isStarted: boolean | undefined;
   // состояние подключения
@@ -38,28 +31,28 @@ type useCallStoreT = {
 
   mode: 'compact' | 'full';
   carouselType: 'grid' | 'horizontal' | 'vertical';
-  activeCorner: Corner;
+  preferredFocusLayout: 'horizontal' | 'vertical';
+  activeCorner: CornerT;
+
+  /** Режим вида компакт-ВКС на десктопе: одна плитка или развёрнутый список (учёт при DnD) */
+  compactViewMode: 'basic' | 'expanded';
 
   // Текущая активная доска (для синхронизации с новыми участниками)
   activeBoardId: string | undefined;
   activeClassroom: string | undefined;
 
+  /** Локальный переключатель: пользователь сам ушёл в полную ВКС («Только меня»), комната на сервере остаётся на доске */
+  localFullView: boolean;
+
   // токен для конференции
   token: string | undefined;
 
-  // Чат
-  isChatOpen: boolean;
-  chatMessages: ChatMessage[];
-  unreadMessagesCount: number;
-
   // Поднятые руки
-  raisedHands: RaisedHand[];
+  raisedHands: RaisedHandT[];
   isHandRaised: boolean;
 
   updateStore: (type: keyof useCallStoreT, value: any) => void;
-  addChatMessage: (message: ChatMessage) => void;
-  clearUnreadMessages: () => void;
-  addRaisedHand: (hand: RaisedHand) => void;
+  addRaisedHand: (hand: RaisedHandT) => void;
   removeRaisedHand: (participantId: string) => void;
   toggleHandRaised: () => void;
   clearAllRaisedHands: () => void;
@@ -81,19 +74,18 @@ export const useCallStore = create<useCallStoreT>()(
       isConnecting: false,
       mode: 'full',
       carouselType: 'grid',
+      preferredFocusLayout: 'horizontal',
       activeCorner: 'top-left',
+      compactViewMode: 'basic',
 
       // Текущая активная доска
       activeBoardId: undefined,
       activeClassroom: undefined,
 
+      localFullView: false,
+
       // токен для конференции
       token: undefined,
-
-      // Чат
-      isChatOpen: false,
-      chatMessages: [],
-      unreadMessagesCount: 0,
 
       // Поднятые руки
       raisedHands: [],
@@ -101,26 +93,9 @@ export const useCallStore = create<useCallStoreT>()(
 
       updateStore: (type: keyof useCallStoreT, value: any) => set({ [type]: value }),
 
-      addChatMessage: (message: ChatMessage) => {
-        const { isChatOpen, unreadMessagesCount, chatMessages } = get();
-
-        // Проверяем, нет ли уже сообщения с таким ID (дедупликация)
-        const messageExists = chatMessages.some((msg) => msg.id === message.id);
-        if (messageExists) {
-          return;
-        }
-
-        set((state: useCallStoreT) => ({
-          chatMessages: [...state.chatMessages, message],
-          unreadMessagesCount: isChatOpen ? unreadMessagesCount : unreadMessagesCount + 1,
-        }));
-      },
-
-      clearUnreadMessages: () => set({ unreadMessagesCount: 0 }),
-
       // Поднятые руки
-      addRaisedHand: (hand: RaisedHand) =>
-        set((state: useCallStoreT) => {
+      addRaisedHand: (hand: RaisedHandT) =>
+        set((state) => {
           // Проверяем, есть ли уже рука от этого участника
           const existingHand = state.raisedHands.find(
             (h) => h.participantId === hand.participantId,
@@ -137,11 +112,10 @@ export const useCallStore = create<useCallStoreT>()(
           return { raisedHands: [...state.raisedHands, hand] };
         }),
       removeRaisedHand: (participantId: string) =>
-        set((state: useCallStoreT) => ({
+        set((state) => ({
           raisedHands: state.raisedHands.filter((hand) => hand.participantId !== participantId),
         })),
-      toggleHandRaised: () =>
-        set((state: useCallStoreT) => ({ isHandRaised: !state.isHandRaised })),
+      toggleHandRaised: () => set((state) => ({ isHandRaised: !state.isHandRaised })),
       clearAllRaisedHands: () => set({ raisedHands: [], isHandRaised: false }),
       isHandRaisedByParticipant: (participantId: string) => {
         const state = get();
@@ -149,8 +123,23 @@ export const useCallStore = create<useCallStoreT>()(
       },
     }),
     {
-      name: 'call-store', // Название ключа в localStorage
-      partialize: (state: useCallStoreT) => ({
+      name: 'call-store',
+      version: 3,
+      migrate: (persisted, version) => {
+        const state = persisted as Record<string, unknown>;
+        if (version < 2) {
+          const ct = state.carouselType;
+          if (ct === 'focus') {
+            state.carouselType = 'horizontal';
+          }
+        }
+        if (version < 3) {
+          const ct = state.carouselType;
+          state.preferredFocusLayout = ct === 'horizontal' || ct === 'vertical' ? ct : 'horizontal';
+        }
+        return state as useCallStoreT;
+      },
+      partialize: (state) => ({
         isCameraPermission: state.isCameraPermission,
         isMicroPermission: state.isMicroPermission,
         audioEnabled: state.audioEnabled,
@@ -158,8 +147,9 @@ export const useCallStore = create<useCallStoreT>()(
         audioDeviceId: state.audioDeviceId,
         videoDeviceId: state.videoDeviceId,
         carouselType: state.carouselType,
+        preferredFocusLayout: state.preferredFocusLayout,
         activeCorner: state.activeCorner,
-      }), // Сохраняем только нужные ключи
+      }),
     },
   ),
 );
