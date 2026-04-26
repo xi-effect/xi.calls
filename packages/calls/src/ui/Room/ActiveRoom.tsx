@@ -3,7 +3,8 @@ import { LocalVideoTrack } from 'livekit-client';
 import { Chat } from 'calls.chat';
 import { UpBar, VideoGrid, CallsOnboarding } from 'calls.ui';
 import { useCallStore, useFeaturesStore } from 'calls.store';
-import { useVideoBlur, useParticipantJoinSync, useHandFocus } from 'calls.hooks';
+import { useVideoBlur, useParticipantJoinSync } from 'calls.hooks';
+import { useHandFocus } from 'calls.risehand';
 import { BottomBar } from '../Bottom/BottomBar';
 import 'calls.ui/video-security.css';
 

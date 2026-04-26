@@ -7,6 +7,7 @@ export {
   VideoTrack,
   SecureVideo,
   PermissionsDialog,
+  RaisedHandIndicator,
 } from './shared';
 export { VideoGrid } from './VideoGrid';
 export { ParticipantName, ParticipantTile, TrackMutedIndicator } from './Participant';

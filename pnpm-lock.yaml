@@ -219,6 +219,9 @@ importers:
       calls.providers:
         specifier: '*'
         version: link:../calls.providers
+      calls.risehand:
+        specifier: '*'
+        version: link:../calls.riseHand
       calls.store:
         specifier: '*'
         version: link:../calls.store
@@ -787,6 +790,9 @@ importers:
       calls.providers:
         specifier: '*'
         version: link:../calls.providers
+      calls.risehand:
+        specifier: '*'
+        version: link:../calls.riseHand
       calls.store:
         specifier: '*'
         version: link:../calls.store

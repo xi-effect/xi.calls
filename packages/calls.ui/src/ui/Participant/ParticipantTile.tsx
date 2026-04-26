@@ -25,7 +25,7 @@ import { VideoTrack } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
 import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
-import { RaisedHandIndicator } from './RaisedHandIndicator';
+import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
 import { useCallStore } from 'calls.store';
 import { isLocal } from 'common.utils';

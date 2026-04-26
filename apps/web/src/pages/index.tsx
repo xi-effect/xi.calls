@@ -10,7 +10,7 @@ import {
 const devDeps: CallsProviderDepsT = {
   auth: {
     useCurrentUser: () => ({
-      data: { userId: 1 },
+      data: { userId: 1, default_layout: 'tutor' },
       isLoading: false,
       isError: false,
     }),
@@ -40,18 +40,15 @@ const devDeps: CallsProviderDepsT = {
     error: undefined,
   },
   updateParticipantMetadata: {
-    updateParticipantMetadata(role) {
-      return {
-        updateParticipantMetadata: {
-          mutate: async (data) => {
-            console.log('Updating participant metadata', { role, ...data });
-          },
-          isPending: false,
-        },
-        isLoading: false,
-        error: undefined,
-      };
+    updateParticipantMetadata: async (data: {
+      classroom_id: string;
+      is_hand_raised: boolean;
+      role?: string;
+    }) => {
+      const role = data.role;
+      console.log('Updating participant metadata', { role, ...data });
     },
+    isPending: false,
   },
 };
 

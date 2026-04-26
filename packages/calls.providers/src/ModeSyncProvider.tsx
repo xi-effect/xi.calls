@@ -13,6 +13,8 @@ export const ModeSyncProvider = ({ children }: ModeSyncProviderPropsT) => {
 
   // Инициализируем хук для синхронизации режима
   // Это автоматически подпишет нас на сообщения о смене режима
+  //TODO
+  //включить этот хук
   // useModeSync();
 
   useEffect(() => {

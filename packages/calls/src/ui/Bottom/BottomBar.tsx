@@ -7,21 +7,16 @@ import {
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback } from 'react';
-import {
-  DisconnectButton,
-  ScreenShareButton,
-  WhiteBoardButton,
-  RaiseHandButton,
-  DevicesBar,
-} from 'calls.ui';
+import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from 'calls.ui';
 import { ChatButton, useChatStore } from 'calls.chat';
-import { useCallStore } from 'calls.store';
+import { useCallStore, useFeaturesStore } from 'calls.store';
 import { cn } from '@xipkg/utils';
 import { useNavigate } from '@tanstack/react-router';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useModeSync } from 'calls.hooks';
+import { RaiseHandButton } from 'calls.risehand';
 import { useRoom, useCalls } from 'calls.providers';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
@@ -73,6 +68,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const navigate = useNavigate();
   const { syncModeToOthers } = useModeSync();
 
+  const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);
+
   // Показываем кнопку "обратно к доске" только если:
   // 1. Пользователь в full mode
   // 2. Есть активная доска (activeBoardId и activeClassroom)
@@ -103,8 +100,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
 
     // Переходим на доску с обязательным параметром call для сохранения ВКС
     navigate({
-      to: '/classrooms/$classroomId/boards/$boardId',
-      params: { classroomId: activeClassroom, boardId: activeBoardId },
+      to: '/boards/$boardId',
+      params: { boardId: activeBoardId },
       search: { call: activeClassroom },
       replace: false, // Не заменяем историю, чтобы можно было вернуться
     });
@@ -137,7 +134,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
           <div className="bg-gray-0 border-gray-10 flex h-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <ScreenShareButton />
             {isTutor && <WhiteBoardButton />}
-            <ChatButton />
+            {isChatEnabled && <ChatButton />}
             <RaiseHandButton />
           </div>
         </div>
