@@ -119,7 +119,7 @@ export const UpBar = () => {
             }}
             type="button"
             variant="ghost"
-            className="flex size-[40px] items-center justify-center rounded-[12px] p-0"
+            className="flex size-10 items-center justify-center rounded-xl p-0"
           >
             <ArrowLeft className="fill-gray-100" />
           </Button>
@@ -141,7 +141,7 @@ export const UpBar = () => {
             type="button"
             variant="ghost"
             disabled={!canUseFocusLayout && carouselType === 'grid'}
-            className="ml-auto flex h-10 w-[95px] flex-row items-center justify-center gap-2 rounded-[12px] disabled:opacity-50"
+            className="ml-auto flex h-10 w-[95px] flex-row items-center justify-center gap-2 rounded-xl disabled:opacity-50"
           >
             {getViewIcon()}
             <span className="text-gray-100">Вид</span>
@@ -161,7 +161,7 @@ export const UpBar = () => {
               onClick={onCopyLink}
               type="button"
               variant="ghost"
-              className="ml-2 hidden h-10 w-10 flex-row items-center justify-center rounded-[12px] p-0 md:flex"
+              className="ml-2 hidden h-10 w-10 flex-row items-center justify-center rounded-xl p-0 md:flex"
             >
               <LinkIcon className="fill-gray-100" />
             </Button>
@@ -178,7 +178,7 @@ export const UpBar = () => {
               onClick={toggleFullScreen}
               type="button"
               variant="ghost"
-              className="ml-2 hidden h-10 w-10 flex-row items-center justify-center rounded-[12px] p-0 md:flex"
+              className="ml-2 hidden h-10 w-10 flex-row items-center justify-center rounded-xl p-0 md:flex"
             >
               {isFullScreen ? (
                 <Minimize className="fill-gray-100" />
@@ -203,7 +203,7 @@ export const UpBar = () => {
           id={ONBOARDING_IDS.SETTINGS_BUTTON}
           type="button"
           variant="ghost"
-          className="flex h-10 w-10 flex-row items-center justify-center rounded-[12px] p-0"
+          className="flex h-10 w-10 flex-row items-center justify-center rounded-xl p-0"
         >
           <SettingsIcon className="fill-gray-100" />
         </Button>

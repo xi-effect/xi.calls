@@ -4,34 +4,55 @@ import { Textarea } from '@xipkg/textarea';
 import { Send, Close } from '@xipkg/icons';
 import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
-import { useChat } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { Modal, ModalContent } from '@xipkg/modal';
+import { useChat } from '../hooks';
 import { useCalls } from 'calls.providers';
-import { cn } from '@xipkg/utils';
+import { useChatStore } from '../store';
+import { cn, useMediaQuery } from '@xipkg/utils';
+import { parseLinks } from '../utils/chat';
 
-export const Chat = () => {
+type ChatProps = {
+  /** В компакт-режиме: классы позиционирования (как у CompactCall: top-16 bottom-4 left-4 и т.д.) */
+  compactPositionClassName?: string;
+};
+
+export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendChatMessage, closeChat } = useChat();
-  const { chatMessages, isChatOpen } = useCallStore();
-  const { auth } = useCalls();
-  const { data: currentUser } = auth.useCurrentUser();
+  const { chatMessages, isChatOpen } = useChatStore();
+  const { data: currentUser } = useCalls().auth.useCurrentUser();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
   };
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    requestAnimationFrame(scrollToBottom);
-  }, [chatMessages]);
+    if (isChatOpen) {
+      requestAnimationFrame(() => {
+        scrollToBottom('auto');
+      });
+    }
+  }, [isChatOpen]);
+
+  // Автоматическая прокрутка при получении новых сообщений
+  useEffect(() => {
+    if (isChatOpen && chatMessages.length > 0) {
+      requestAnimationFrame(() => {
+        scrollToBottom('smooth');
+      });
+    }
+  }, [chatMessages.length, isChatOpen]);
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
       sendChatMessage(messageText);
       setMessageText('');
-      scrollToBottom();
+      requestAnimationFrame(() => {
+        scrollToBottom('smooth');
+      });
     }
 
     if (textareaRef.current) {
@@ -40,26 +61,30 @@ export const Chat = () => {
   };
 
   const handleKeyDownSendMessage = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (!e.shiftKey || e.metaKey || e.ctrlKey)) {
+    // Enter без Shift - отправка сообщения
+    // Shift+Enter - перенос строки (разрешаем стандартное поведение)
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
+    // Если Shift+Enter, не предотвращаем стандартное поведение - будет перенос строки
   };
 
+  const isMobile = useMediaQuery('(max-width: 639px)');
   if (!isChatOpen) return null;
 
-  return (
-    <div className="bg-gray-0 border-gray-0 sm:border-gray-20 fixed flex h-full w-full max-w-none min-w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-[328px]">
+  const chatContent = (
+    <>
       {/* Заголовок */}
       <div className="border-gray-20 flex items-center justify-between pr-3">
         <h3 className="text-lg font-medium text-gray-100">Чат</h3>
-        <Button size="icon" variant="ghost" onClick={closeChat}>
+        <Button size="icon" variant="none" onClick={closeChat}>
           <Close className="h-6 w-6" aria-label="Закрыть чат" />
         </Button>
       </div>
 
       {/* Сообщения */}
-      <ScrollArea className="flex-1 py-2 pr-3">
+      <ScrollArea className="min-h-0 flex-1 py-2 pr-3">
         <div className="space-y-4">
           {chatMessages.length === 0 ? (
             <div className="text-gray-60 text-center">
@@ -94,11 +119,11 @@ export const Chat = () => {
                     </div>
                     <div
                       className={cn(
-                        'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word select-text',
+                        'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap select-text',
                         isOwnMessage ? 'bg-brand-20' : 'bg-gray-5',
                       )}
                     >
-                      {message.text}
+                      {parseLinks(message.text)}
                     </div>
                   </div>
                 </div>
@@ -110,28 +135,63 @@ export const Chat = () => {
       </ScrollArea>
 
       {/* Поле ввода */}
-      <div className="border-gray-20 flex w-full items-center gap-2 overflow-auto">
-        <div className="items-between flex flex-1 flex-row">
+      <div className="flex items-end gap-2 pr-3">
+        <div className="border-gray-20 flex max-h-40 w-full flex-1 items-center rounded-xl border pl-4">
           <Textarea
             ref={textareaRef}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="Напишите сообщение..."
-            className="max-w-none flex-1 border-none p-0"
-            containerClassName="flex items-center"
+            className="my-3 max-h-32 min-w-full rounded-none border-none p-0 pr-2"
             onKeyDown={handleKeyDownSendMessage}
           />
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={handleSendMessage}
-            disabled={!messageText.trim()}
-            className="hover:bg-gray-10 mr-3 h-8 w-8 self-end"
-          >
-            <Send className="h-6 w-6" />
-          </Button>
+          <div className="pr-1">
+            <Button
+              size="icon"
+              variant="primary"
+              onClick={handleSendMessage}
+              disabled={!messageText.trim()}
+              className="rounded-xl p-2"
+            >
+              <Send
+                className={cn(
+                  'fill-gray-0 h-6 w-6 group-hover:fill-gray-100',
+                  !messageText.trim() && 'fill-gray-100',
+                )}
+              />
+            </Button>
+          </div>
         </div>
       </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Modal open={isChatOpen} onOpenChange={(open) => !open && closeChat()}>
+        <ModalContent className="border-gray-20 bg-gray-0 flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{chatContent}</div>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (compactPositionClassName) {
+    return (
+      <div
+        className={cn(
+          'border-gray-20 bg-gray-0 fixed z-100 flex min-h-0 w-82 flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
+          compactPositionClassName,
+        )}
+      >
+        {chatContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-0 border-gray-0 sm:border-gray-20 fixed flex h-full min-h-0 w-full max-w-none min-w-82 flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-82">
+      {chatContent}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Track } from 'livekit-client';
 import { useTracks } from '@livekit/components-react';
-import { useScreenShareCleanup } from './useScreenShareCleanup';
+import { useScreenShareCleanup } from 'calls.hooks';
 
 export const useCompactNavigation = () => {
   const [currentParticipantIndex, setCurrentParticipantIndex] = useState(0);

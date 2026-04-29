@@ -31,7 +31,7 @@ export const useResizeObserver = <T extends HTMLElement>(
       didUnsubscribe = true;
       resizeObserver?.unsubscribe(targetEl as HTMLElement, cb);
     };
-  }, [target.current, resizeObserver, storedCallback]);
+  }, [resizeObserver, storedCallback, target]);
 
   return resizeObserver?.observer;
 };
@@ -103,7 +103,7 @@ export const useSize = (target: React.RefObject<HTMLDivElement>) => {
       const { width, height } = target.current.getBoundingClientRect();
       setSize({ width, height });
     }
-  }, [target.current]);
+  }, [target]);
 
   const resizeCallback = React.useCallback(
     (entry: ResizeObserverEntry) => setSize(entry.contentRect),

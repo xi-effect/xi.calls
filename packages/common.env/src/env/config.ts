@@ -23,6 +23,16 @@ const env = {
     'http://localhost:3000',
   ),
 
+  VITE_NOISE_CANCELLATION_FEATURE_ENABLED: asBoolean(
+    import.meta.env.VITE_NOISE_CANCELLATION_FEATURE_ENABLED,
+    false,
+  ),
+
+  VITE_ALLOW_KRISP_NOISE_CANCELLATION: asBoolean(
+    import.meta.env.VITE_ALLOW_KRISP_NOISE_CANCELLATION,
+    true,
+  ),
+
   // WebSocket URL (optional, defaults to backend URL)
   VITE_SERVER_URL_SOCKETIO: asString(
     import.meta.env.VITE_SERVER_URL_SOCKETIO,

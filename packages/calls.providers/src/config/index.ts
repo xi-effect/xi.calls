@@ -1,1 +1,6 @@
-export type { CallAuthPortT, AuthPortT, ClassroomPortT } from './ports';
+export type {
+  CallAuthPortT,
+  AuthPortT,
+  ClassroomPortT,
+  UpdateParticipantMetadataPortT,
+} from './ports';

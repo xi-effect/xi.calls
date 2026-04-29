@@ -1,212 +1,203 @@
-import React, { useMemo } from 'react';
-import '@livekit/components-styles';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { TrackReferenceOrPlaceholder, isEqualTrackRef } from '@livekit/components-core';
 import { Track } from 'livekit-client';
-import {
-  TrackLoop,
-  useVisualStableUpdate,
-  FocusLayoutProps,
-  GridLayoutProps,
-  useGridLayout,
-  usePagination,
-  useSwipe,
-} from '@livekit/components-react';
-import { useSize, useAdaptiveGrid, useEmptyItemContainerOfUser } from 'calls.hooks';
+import { TrackLoop, GridLayoutProps } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
-import { SliderVideoGrid } from './SliderVideoGrid';
+import { FocusLayout } from './FocusLayout';
 import { HorizontalFocusLayout } from './HorizontalFocusLayout';
 import { VerticalFocusLayout } from './VerticalFocusLayout';
+import { PagedCarousel } from './PagedCarousel';
 import { GridPaginationControls } from './GridPaginationControls';
+import { useSize } from 'calls.hooks';
 import { useCallStore } from 'calls.store';
-import { GRID_CONFIG, getGridLayoutsForScreen } from 'common.config';
 
-export interface PaginationIndicatorProps {
-  totalPageCount: number;
-  currentPage: number;
-}
+const ASPECT = 16 / 9;
+const GRID_GAP = 8;
+const MIN_TILE_H = 200;
+
 export type OrientationLayoutT = {
   orientation: 'vertical' | 'horizontal' | 'grid';
 };
 
-export const EmptyItemContainerOfUser = ({ ...restProps }) => (
-  <div
-    {...restProps}
-    className="bg-gray-40 flex aspect-video max-h-full w-full max-w-full items-center justify-center rounded-2xl text-center"
-  >
-    <p className="text-gray-0 font-sans text-3xl">Здесь пока никого нет</p>
-  </div>
-);
-
-export const FocusLayout = ({
-  trackRef,
-  orientation,
-  ...htmlProps
-}: FocusLayoutProps & OrientationLayoutT) => {
-  const trackReference = trackRef;
-
-  return (
-    <div
-      className={`${orientation === 'vertical' ? 'w-[calc(100%-277px)]' : 'm-auto w-fit min-w-[calc(100vh-20%)]'} flex flex-col`}
-    >
-      <ParticipantTile
-        isFocusToggleDisable
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
-        {...trackReference}
-        {...htmlProps}
-      />
-    </div>
-  );
+type MeetLayout = {
+  cols: number;
+  tileW: number;
+  tileH: number;
 };
 
-const { TILE } = GRID_CONFIG;
+export function calcMeetLayout(
+  containerW: number,
+  containerH: number,
+  count: number,
+  gap: number,
+): MeetLayout {
+  if (count <= 0 || containerW <= 0 || containerH <= 0) {
+    return { cols: 1, tileW: 0, tileH: 0 };
+  }
 
-export type CarouselLayoutProps = React.HTMLAttributes<HTMLMediaElement> & {
-  tracks: TrackReferenceOrPlaceholder[];
-  children: React.ReactNode;
-  orientation: 'vertical' | 'horizontal' | 'grid';
-};
+  let best: MeetLayout = { cols: 1, tileW: 0, tileH: 0 };
+  let bestArea = 0;
 
-export const CarouselLayout = ({
-  tracks,
-  orientation,
-  userTracks,
-  ...props
-}: CarouselLayoutProps & { userTracks: TrackReferenceOrPlaceholder[] }) => {
-  const asideEl = React.useRef<HTMLDivElement>(null);
-  const { width, height } = useSize(asideEl as React.RefObject<HTMLDivElement>);
-  const carouselOrientation = orientation || (height >= width ? 'vertical' : 'horizontal');
-  const tilesThatFit =
-    carouselOrientation === 'vertical'
-      ? Math.floor(+height / TILE.HEIGHT)
-      : Math.floor(+width / TILE.WIDTH);
+  for (let cols = 1; cols <= count; cols++) {
+    const rows = Math.ceil(count / cols);
 
-  const maxVisibleTiles = Math.floor(tilesThatFit);
-  const sortedTiles = useVisualStableUpdate(tracks, maxVisibleTiles);
-  const isOneItem = useEmptyItemContainerOfUser(userTracks.length, userTracks);
-  React.useLayoutEffect(() => {
-    if (asideEl.current) {
-      asideEl.current.dataset.lkOrientation = carouselOrientation;
-      asideEl.current.style.setProperty('--lk-max-visible-tiles', maxVisibleTiles.toString());
+    const maxWByCols = (containerW - gap * (cols - 1)) / cols;
+    const maxHByRows = (containerH - gap * (rows - 1)) / rows;
+
+    if (maxWByCols <= 0 || maxHByRows <= 0) continue;
+
+    const tileW = Math.min(maxWByCols, maxHByRows * ASPECT);
+    const tileH = tileW / ASPECT;
+
+    const area = tileW * tileH;
+    if (area > bestArea) {
+      bestArea = area;
+      best = { cols, tileW, tileH };
     }
-  }, [maxVisibleTiles, carouselOrientation]);
+  }
 
-  return (
-    <div
-      ref={asideEl}
-      className={`${carouselOrientation === 'horizontal' ? 'm-auto w-full' : 'mx-5 max-w-[277px]'}`}
-    >
-      {isOneItem && (
-        <div className="h-36 w-[250px]">
-          <EmptyItemContainerOfUser />
-        </div>
-      )}
-      <SliderVideoGrid
-        orientation={orientation}
-        maxVisibleTiles={maxVisibleTiles}
-        tracks={sortedTiles}
-      >
-        {props.children}
-      </SliderVideoGrid>
-    </div>
-  );
-};
+  return {
+    cols: Math.max(1, best.cols),
+    tileW: Math.max(0, Math.floor(best.tileW)),
+    tileH: Math.max(0, Math.floor(best.tileH)),
+  };
+}
 
-export const PaginationIndicator = ({ totalPageCount, currentPage }: PaginationIndicatorProps) => {
-  const bubbles = new Array(totalPageCount).fill('').map((_, index) => {
-    if (index + 1 === currentPage) {
-      return <span data-lk-active key={index} />;
-    }
-    return <span key={index} />;
-  });
+export function calcMaxTilesPerPage(
+  containerW: number,
+  containerH: number,
+  gap: number,
+  minTileH: number,
+): number {
+  if (containerW <= 0 || containerH <= 0) return 1;
+  const minTileW = minTileH * ASPECT;
+  const maxCols = Math.max(1, Math.floor((containerW + gap) / (minTileW + gap)));
+  const maxRows = Math.max(1, Math.floor((containerH + gap) / (minTileH + gap)));
+  return maxCols * maxRows;
+}
 
-  return <div className="lk-pagination-indicator">{bubbles}</div>;
-};
+function useMeetLayout(ref: React.RefObject<HTMLElement>, count: number, gap: number) {
+  const [layout, setLayout] = useState<MeetLayout>({ cols: 1, tileW: 0, tileH: 0 });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const next = calcMeetLayout(rect.width, rect.height, count, gap);
+      setLayout(next);
+
+      // Устанавливаем CSS переменные
+      el.style.setProperty('--meet-cols', String(next.cols));
+      el.style.setProperty('--meet-tile-w', `${next.tileW}px`);
+      el.style.setProperty('--meet-gap', `${gap}px`);
+    };
+
+    update();
+
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, [ref, count, gap]);
+
+  return layout;
+}
+
+const MOBILE_BREAKPOINT = 640;
 
 export const GridLayout = ({ tracks, ...props }: GridLayoutProps) => {
-  const isOneItem = useEmptyItemContainerOfUser(tracks.length, tracks);
-  const gridEl = React.createRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerSize = useSize(containerRef as React.RefObject<HTMLDivElement>);
+  const count = tracks.length;
+  const isMobile = containerSize.width > 0 && containerSize.width < MOBILE_BREAKPOINT;
 
-  // Используем адаптивную сетку с кастомными конфигурациями
-  const { isMobile, isTablet, isDesktop, tileSize } = useAdaptiveGrid(
-    gridEl as React.RefObject<HTMLDivElement>,
-    tracks.length,
-  );
+  const [page, setPage] = useState(0);
 
-  // Получаем кастомные конфигурации для текущего размера экрана
-  const customGridLayouts = getGridLayoutsForScreen(
-    typeof window !== 'undefined' ? window.innerWidth : 1024,
-  );
+  const maxTilesPerPage = useMemo(() => {
+    if (isMobile || !containerSize.width || !containerSize.height) return count;
+    return calcMaxTilesPerPage(containerSize.width, containerSize.height, GRID_GAP, MIN_TILE_H);
+  }, [isMobile, containerSize.width, containerSize.height, count]);
 
-  const { layout: livekitLayout } = useGridLayout(
-    gridEl as React.RefObject<HTMLDivElement>,
-    tracks.length + (isOneItem ? 1 : 0),
-    {
-      gridLayouts: customGridLayouts,
-    },
-  );
+  const totalPages = Math.max(1, Math.ceil(count / maxTilesPerPage));
 
-  const pagination = usePagination(livekitLayout.maxTiles + (isOneItem ? 1 : 0), tracks);
+  useEffect(() => {
+    if (page >= totalPages) setPage(Math.max(0, totalPages - 1));
+  }, [page, totalPages]);
 
-  useSwipe(gridEl as React.RefObject<HTMLElement>, {
-    onLeftSwipe: pagination.nextPage,
-    onRightSwipe: pagination.prevPage,
-  });
+  const clampedPage = Math.min(page, totalPages - 1);
 
-  // Установка CSS переменных для динамической сетки с адаптивностью
-  React.useEffect(() => {
-    if (gridEl.current && livekitLayout) {
-      gridEl.current.style.setProperty('--lk-col-count', livekitLayout.columns.toString());
-      gridEl.current.style.setProperty('--lk-row-count', livekitLayout.rows.toString());
+  const pageTracks = useMemo(() => {
+    if (isMobile || maxTilesPerPage >= count) return tracks;
+    const start = clampedPage * maxTilesPerPage;
+    return tracks.slice(start, start + maxTilesPerPage);
+  }, [tracks, clampedPage, maxTilesPerPage, count, isMobile]);
 
-      // Устанавливаем кастомные переменные для адаптивности
-      gridEl.current.style.setProperty('--lk-tile-size', `${tileSize.width}px`);
-      gridEl.current.style.setProperty('--lk-aspect-ratio', `${isDesktop ? '16 / 9' : 'auto'}`);
+  useMeetLayout(containerRef as React.RefObject<HTMLElement>, pageTracks.length, GRID_GAP);
 
-      // Переменные для разных устройств
-      gridEl.current.style.setProperty(
-        '--lk-device-type',
-        isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop',
-      );
-    }
-  }, [livekitLayout, gridEl, tileSize, isMobile, isTablet, isDesktop]);
+  const mobileTiles = useMemo(() => {
+    if (!isMobile) return [];
+    return tracks.map((track) => (
+      <ParticipantTile
+        key={`${track.participant.identity}-${track.source}`}
+        isFocusToggleDisable
+        style={{ width: '100%', height: '100%' }}
+        className="h-full w-full"
+        {...track}
+      />
+    ));
+  }, [isMobile, tracks]);
+
+  if (isMobile) {
+    return (
+      <div
+        ref={containerRef}
+        className="h-full w-full"
+        style={{ maxHeight: 'var(--available-height)' }}
+      >
+        <PagedCarousel
+          items={mobileTiles}
+          orientation="vertical"
+          aspectRatio={16 / 9}
+          minItemSize={120}
+          maxItemSize={200}
+          renderItem={(node) => (
+            <div className="relative h-full w-full">
+              <div className="absolute inset-0">{node}</div>
+            </div>
+          )}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="m-auto flex w-full" style={{ height: 'var(--available-height)' }}>
+    <div
+      ref={containerRef}
+      className="relative h-full w-full"
+      style={{ maxHeight: 'var(--available-height)' }}
+    >
       <div
-        ref={gridEl}
-        style={
-          {
-            gap: '1rem',
-            maxWidth: '100%',
-            margin: '0 auto',
-            '--lk-tile-width': `${tileSize.width}px`,
-            '--lk-tile-height': `${tileSize.height}px`,
-            height: 'auto',
-            alignItems: 'center',
-          } as React.CSSProperties
-        }
-        data-lk-pagination={pagination.totalPageCount + (isOneItem ? 1 : 0) > 1}
-        data-lk-device-type={isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'}
-        className="lk-grid-layout adaptive-grid"
+        className="grid h-full w-full min-w-0 place-content-center overflow-hidden"
+        style={{
+          gridTemplateColumns: 'repeat(var(--meet-cols), var(--meet-tile-w))',
+          gap: 'var(--meet-gap)',
+        }}
       >
-        <TrackLoop tracks={pagination.tracks}>{props.children}</TrackLoop>
-        {isOneItem && <EmptyItemContainerOfUser />}
-
-        {/* Новые элементы управления пагинацией для grid режима */}
-        {tracks.length > livekitLayout.maxTiles && (
-          <GridPaginationControls
-            canPrev={pagination.currentPage > 1}
-            canNext={pagination.currentPage < pagination.totalPageCount}
-            onPrev={pagination.prevPage}
-            onNext={pagination.nextPage}
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPageCount}
-          />
-        )}
+        <TrackLoop tracks={pageTracks}>{props.children}</TrackLoop>
       </div>
+      {totalPages > 1 && (
+        <GridPaginationControls
+          canPrev={clampedPage > 0}
+          canNext={clampedPage < totalPages - 1}
+          onPrev={() => setPage((p) => Math.max(0, p - 1))}
+          onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          onGoToPage={(p) => setPage(p - 1)}
+          currentPage={clampedPage + 1}
+          totalPages={totalPages}
+        />
+      )}
     </div>
   );
 };
@@ -217,19 +208,17 @@ type CarouselContainerProps = {
 };
 
 export const CarouselContainer = ({ focusTrack, carouselTracks }: CarouselContainerProps) => {
-  // Получаем ориентацию из store
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerSize = useSize(containerRef as React.RefObject<HTMLDivElement>);
+  const isMobile = containerSize.width > 0 && containerSize.width < MOBILE_BREAKPOINT;
   const carouselType = useCallStore((state) => state.carouselType);
-  const orientation = carouselType === 'vertical' ? 'vertical' : 'horizontal';
 
-  // Создаем фокусный элемент
   const focusElement = useMemo(() => {
-    // Если нет закрепленного трека, используем первый доступный трек участника
     const trackToFocus =
       focusTrack ||
       carouselTracks.find((track) => track.publication?.source === Track.Source.Camera);
 
     if (!trackToFocus) {
-      // Если нет треков для фокуса, показываем заглушку
       return (
         <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl">
           <span className="text-lg text-gray-100">Нет участников для отображения</span>
@@ -240,19 +229,18 @@ export const CarouselContainer = ({ focusTrack, carouselTracks }: CarouselContai
     return (
       <ParticipantTile
         isFocusToggleDisable
+        isFocusView
         style={{
           width: '100%',
           height: '100%',
         }}
-        className="h-full w-full [&_video]:object-cover lg:[&_video]:object-cover"
+        className="h-full w-full"
         {...trackToFocus}
       />
     );
   }, [focusTrack, carouselTracks]);
 
-  // Создаем превью элементы для карусели
   const thumbElements = useMemo(() => {
-    // Исключаем трек, который используется как фокусный
     const trackToFocus =
       focusTrack ||
       carouselTracks.find((track) => track.publication?.source === Track.Source.Camera);
@@ -270,11 +258,19 @@ export const CarouselContainer = ({ focusTrack, carouselTracks }: CarouselContai
     ));
   }, [carouselTracks, focusTrack]);
 
-  // Выбираем правильный layout в зависимости от ориентации
+  const renderLayout = () => {
+    if (isMobile) {
+      return <FocusLayout focus={focusElement} thumbs={thumbElements} />;
+    }
+    if (carouselType === 'vertical') {
+      return <VerticalFocusLayout focus={focusElement} thumbs={thumbElements} />;
+    }
+    return <HorizontalFocusLayout focus={focusElement} thumbs={thumbElements} />;
+  };
 
-  if (orientation === 'vertical') {
-    return <VerticalFocusLayout focus={focusElement} thumbs={thumbElements} />;
-  }
-
-  return <HorizontalFocusLayout focus={focusElement} thumbs={thumbElements} />;
+  return (
+    <div ref={containerRef} className="h-full w-full">
+      {renderLayout()}
+    </div>
+  );
 };

@@ -26,11 +26,13 @@
     "@xipkg/input": "2.2.9",
     "@xipkg/switcher": "3.0.13",
     "@xipkg/scrollarea": "2.2.0",
+    "@xipkg/slider": "2.2.0",
     "calls.store": "*",
     "calls.hooks": "*",
     "calls.providers": "*",
     "common.config": "*",
     "common.utils": "*",
+    "common.types": "*",
     "common.env": "*"
   },
   "devDependencies": {
