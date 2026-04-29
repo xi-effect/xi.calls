@@ -68,7 +68,11 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const navigate = useNavigate();
   const { syncModeToOthers } = useModeSync();
 
-  const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);
+  const {
+    chat: isChatEnabled,
+    raiseHand: isRiseHandEnabled,
+    whiteboard: isWhiteboardEnabled,
+  } = useFeaturesStore((s) => s.features);
 
   // Показываем кнопку "обратно к доске" только если:
   // 1. Пользователь в full mode
@@ -133,13 +137,13 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
           </div>
           <div className="bg-gray-0 border-gray-10 flex h-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <ScreenShareButton />
-            {isTutor && <WhiteBoardButton />}
+            {isWhiteboardEnabled && isTutor && <WhiteBoardButton />}
             {isChatEnabled && <ChatButton />}
-            <RaiseHandButton />
+            {isRiseHandEnabled && <RaiseHandButton />}
           </div>
         </div>
         <div className="relative flex flex-row items-center justify-center gap-4">
-          {showBackToBoardButton && (
+          {isWhiteboardEnabled && showBackToBoardButton && (
             <Tooltip delayDuration={1000}>
               <TooltipTrigger asChild>
                 <Button

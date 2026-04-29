@@ -9,15 +9,10 @@ import { Account, Users } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
-import { useCallStore } from 'calls.store';
+import { useCallStore, useFeaturesStore } from 'calls.store';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
-import {
-  ParticipantTile,
-  DevicesBar,
-  DisconnectButton,
-  RaiseHandButton,
-  ScreenShareButton,
-} from 'calls.ui';
+import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from 'calls.ui';
+import { RaiseHandButton } from 'calls.risehand';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { PIP_RESERVED_HEIGHT_PX, PIP_TILE_HEIGHT_16_9_PX, TILE_GAP_PX } from '../constants';
@@ -77,6 +72,8 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
     goToNext,
     goToPrev,
   } = useCompactNavigation();
+
+  const { raiseHand: isRiseHandEnabled } = useFeaturesStore((s) => s.features);
 
   // Размер окна PiP: подписка на resize — при изменении высоты подстраиваем количество плиток
   useEffect(() => {
@@ -180,7 +177,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
       <div className="flex h-12 shrink-0 items-center gap-0.5">
         <div className={barCn}>
           <DevicesBar
-            className="h-[28px] w-[28px]"
+            className="h-7 w-7"
             microTrack={microphoneTrack?.track as LocalAudioTrack}
             microEnabled={isMicrophoneEnabled}
             microTrackToggle={{
@@ -205,7 +202,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
                 size="icon"
                 variant="none"
                 onClick={() => setViewMode(compactViewMode === 'basic' ? 'expanded' : 'basic')}
-                className="hover:bg-gray-5 h-[28px] w-[28px] rounded-xl p-0 text-gray-100"
+                className="hover:bg-gray-5 h-7 w-7 rounded-xl p-0 text-gray-100"
                 aria-label={compactViewMode === 'basic' ? 'Развёрнутый вид' : 'Один участник'}
               >
                 {compactViewMode === 'basic' ? (
@@ -224,12 +221,12 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
         </div>
 
         <div className={cn(barCn, 'ml-auto')}>
-          <ScreenShareButton className="h-[28px] w-[28px]" />
-          <RaiseHandButton className="h-[28px] w-[28px]" />
+          <ScreenShareButton className="h-7 w-7" />
+          {isRiseHandEnabled && <RaiseHandButton className="h-7 w-7" />}
         </div>
 
         <div className={barCn}>
-          <DisconnectButton className="h-[28px] w-[28px] rounded-xl" />
+          <DisconnectButton className="h-7 w-7 rounded-xl" />
         </div>
       </div>
     </div>

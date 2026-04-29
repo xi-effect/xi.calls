@@ -15,7 +15,7 @@ import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
 import { Chat, useChatStore } from 'calls.chat';
 import { PermissionsDialog } from 'calls.ui';
-import { useCallStore, useFocusModeStore } from 'calls.store';
+import { useCallStore, useFeaturesStore, useFocusModeStore } from 'calls.store';
 import type { CornerT } from 'calls.store';
 import { useMedia } from 'common.utils';
 import { useRoom } from 'calls.providers';
@@ -94,6 +94,8 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 
+  const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);
+
   useEffect(() => {
     if (!isMobile || hideOverlay || !headerRef.current) return;
     const el = headerRef.current;
@@ -167,7 +169,9 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
           {!hideOverlay && (
             <>
               <DroppableAreas />
-              <Chat compactPositionClassName={getChatPositionClasses(activeCorner)} />
+              {isChatEnabled && (
+                <Chat compactPositionClassName={getChatPositionClasses(activeCorner)} />
+              )}
               <div
                 className={`absolute z-100 ${getCornerPosition(activeCorner)} transition-all duration-500 ease-out`}
               >

@@ -1,1 +1,1 @@
-export { RaiseHandButton, RaisedHandIndicator, useRaisedHands, useHandFocus } from './src';
+export { RaiseHandButton, useRaisedHands, useHandFocus } from './src';

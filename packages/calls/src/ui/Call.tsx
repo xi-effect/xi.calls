@@ -3,7 +3,7 @@ import { useLocation } from '@tanstack/react-router';
 import { TooltipProvider } from '@xipkg/tooltip';
 import { isDevMode, devToken } from 'common.config';
 import { CallsProviderDepsT, CallsProvider } from 'calls.providers';
-import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
+import { useInitUserDevices, useModeSync, useVideoSecurity } from 'calls.hooks';
 import { useCallStore, useFeaturesStore } from 'calls.store';
 import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
@@ -15,12 +15,19 @@ export const Call = ({ deps }: { deps: CallsProviderDepsT }) => {
   useInitUserDevices();
   useVideoSecurity();
 
+  // Инициализируем хук для синхронизации режима
+  // Это автоматически подпишет нас на сообщения о смене режима
+  useModeSync();
+
   const pathname = useLocation().pathname;
   const mode = useCallStore((state) => state.mode);
   const updateStore = useCallStore((state) => state.updateStore);
 
+  //включение отключении фич(чат, поднятие руки...)
   useFeaturesStore.getState().setFeatures({
     chat: false,
+    raiseHand: false,
+    whiteboard: false,
   });
 
   useEffect(() => {

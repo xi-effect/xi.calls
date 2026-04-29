@@ -10,8 +10,10 @@ import {
 } from '@xipkg/dropdown';
 import { Account, Maximize, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
-import { DevicesBar, DisconnectButton, ScreenShareButton, RaiseHandButton } from 'calls.ui';
+import { DevicesBar, DisconnectButton, ScreenShareButton } from 'calls.ui';
 import { ChatButton } from 'calls.chat';
+import { RaiseHandButton } from 'calls.risehand';
+import { useFeaturesStore } from 'calls.store';
 
 type CompactCallDevicesPropsT = {
   microTrack: LocalAudioTrack | undefined;
@@ -58,6 +60,12 @@ export function CompactCallBottomBar({
     withOutShadows ? '' : 'shadow-lg',
   );
 
+  const {
+    chat: isChatEnabled,
+    raiseHand: isRiseHandEnabled,
+    whiteboard: isWhiteboardEnabled,
+  } = useFeaturesStore((s) => s.features);
+
   return (
     <div className="flex h-10 flex-row">
       <div className={barCn}>
@@ -99,7 +107,7 @@ export function CompactCallBottomBar({
         </div>
       )}
 
-      {showBackToBoardButton && (
+      {isWhiteboardEnabled && showBackToBoardButton && (
         <div className={cn(barCn, 'ml-1')}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -120,8 +128,8 @@ export function CompactCallBottomBar({
 
       <div className={cn(barCn, 'ml-auto')}>
         <ScreenShareButton className="h-8 w-8" />
-        <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />
-        <RaiseHandButton className="h-8 w-8" />
+        {isChatEnabled && <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />}
+        {isRiseHandEnabled && <RaiseHandButton className="h-8 w-8" />}
       </div>
 
       <div className={cn(barCn, 'ml-1')}>
