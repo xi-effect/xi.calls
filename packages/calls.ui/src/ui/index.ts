@@ -8,6 +8,7 @@ export {
   SecureVideo,
   PermissionsDialog,
   RaisedHandIndicator,
+  NoiseCancellationSettings,
 } from './shared';
 export { VideoGrid } from './VideoGrid';
 export { ParticipantName, ParticipantTile, TrackMutedIndicator } from './Participant';

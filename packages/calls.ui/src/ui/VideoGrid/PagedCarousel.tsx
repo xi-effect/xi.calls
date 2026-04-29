@@ -62,7 +62,15 @@ export function PagedCarousel<T>({
       const itemsPerPage = Math.floor(availableWidth / (itemWidth + gap));
       return Math.max(1, itemsPerPage);
     }
-  }, [containerSize, orientation, aspectRatio, gap, minItemSize, maxItemSize]);
+  }, [
+    containerSize.width,
+    containerSize.height,
+    isVertical,
+    minItemSize,
+    maxItemSize,
+    gap,
+    aspectRatio,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const clampedPage = Math.min(page, totalPages - 1);

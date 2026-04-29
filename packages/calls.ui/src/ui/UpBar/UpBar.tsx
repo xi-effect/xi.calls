@@ -16,7 +16,6 @@ import { TooltipContent, Tooltip, TooltipTrigger } from '@xipkg/tooltip';
 import { useCallStore } from 'calls.store';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { env } from 'common.env';
 import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { Settings } from './Settings';
@@ -86,9 +85,7 @@ export const UpBar = () => {
   };
 
   const onCopyLink = () => {
-    navigator.clipboard.writeText(
-      `${env.VITE_APP_DOMAIN}/classrooms/${classroom?.id}?tab=overview&goto=call`,
-    );
+    navigator.clipboard.writeText(`/`);
     toast.success('Ссылка скопирована. Отравьте её ученикам');
   };
 
