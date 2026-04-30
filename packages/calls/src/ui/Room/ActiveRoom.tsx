@@ -29,8 +29,8 @@ export const ActiveRoom = () => {
       <div className="flex h-full flex-col justify-stretch">
         <CallsOnboarding />
         <UpBar />
-        <div className="flex h-full items-center justify-center gap-4 overflow-hidden px-4">
-          <div className="flex h-auto w-full justify-center text-center text-gray-100">
+        <div className="flex h-full items-center justify-center gap-4 overflow-hidden p-4">
+          <div className="flex h-full w-full justify-center text-center text-gray-100">
             <VideoGrid />
           </div>
           {isChatEnabled && <Chat />}

@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@xipkg/sheet';
-import { Close, Conference, Microphone, SoundTwo, Music } from '@xipkg/icons';
+import { Close, Conference, Microphone, SoundTwo } from '@xipkg/icons';
 import { Label } from '@xipkg/label';
 import { Switch } from '@xipkg/switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@xipkg/select';
@@ -21,7 +21,6 @@ import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Track, LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 
-import { useLocation, useNavigate } from '@tanstack/react-router';
 import { useUserChoicesStore, usePermissionsStore, openPermissionsDialog } from 'calls.store';
 import { useRoom } from 'calls.providers';
 import { useNoiseCancellation } from 'calls.hooks';
@@ -71,7 +70,7 @@ const DeviceSelector = ({
           <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
         </div>
       </SelectTrigger>
-      <SelectContent className="w-[352px]">
+      <SelectContent className="w-88">
         {devices?.map((device) => (
           <SelectItem key={device.deviceId} className="h-auto" value={device.deviceId}>
             {device.label || `Устройство ${device.deviceId.slice(0, 8)}`}
@@ -99,8 +98,8 @@ export const Settings = ({ children }: SettingsPropsT) => {
   const audioOutputDeviceId = useUserChoicesStore((state) => state.audioOutputDeviceId);
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);
 
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  // const navigate = useNavigate();
+  // const { pathname } = useLocation();
 
   const saveAudioOutputDeviceId = useCallback((deviceId: string) => {
     useUserChoicesStore.setState({ audioOutputDeviceId: deviceId });
@@ -297,7 +296,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
           )}
 
           {/* Кнопка для перехода к настройкам звуков */}
-          <div className="border-gray-10 border-t pt-6">
+          {/* <div className="border-gray-10 border-t pt-6">
             <Button
               type="button"
               variant="ghost"
@@ -313,7 +312,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
               <Music className="h-4 w-4" />
               Настройки эффектов
             </Button>
-          </div>
+          </div> */}
         </div>
       </SheetContent>
     </Sheet>
