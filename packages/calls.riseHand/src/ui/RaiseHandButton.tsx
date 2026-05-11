@@ -1,8 +1,8 @@
 import { Button } from '@xipkg/button';
 import { Hand } from '@xipkg/icons';
-import { useRaisedHands } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
 import { cn } from '@xipkg/utils';
+import { useRaisedHands } from '../hooks';
+import { useCallStore } from 'calls.store';
 
 export const RaiseHandButton = ({ className }: { className?: string }) => {
   const { toggleHand } = useRaisedHands();

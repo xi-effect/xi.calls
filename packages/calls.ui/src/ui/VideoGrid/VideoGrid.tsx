@@ -1,10 +1,8 @@
 import React from 'react';
-import '@livekit/components-styles';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { isEqualTrackRef, isTrackReference, isWeb, log } from '@livekit/components-core';
 import { RoomEvent, Track } from 'livekit-client';
 import {
-  ConnectionStateToast,
   LayoutContextProvider,
   RoomAudioRenderer,
   VideoConferenceProps,
@@ -13,15 +11,45 @@ import {
   useTracks,
 } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
-import { CarouselContainer, GridLayout } from './VideoGridLayout';
+import { calcMaxTilesPerPage, CarouselContainer, GridLayout } from './VideoGridLayout';
 import { useCallStore } from 'calls.store';
-import { useScreenShareCleanup } from 'calls.hooks';
+import { useSortedTracks, useSize } from 'calls.hooks';
 import '../../styles/grid.css';
+
+const GRID_GAP = 8;
+
+const MIN_TILE_H = 200;
+
+function useFirstPageSize(
+  containerSize: { width: number; height: number },
+  layoutMode: 'grid' | 'horizontal' | 'vertical',
+  trackCount: number,
+): number {
+  return React.useMemo(() => {
+    if (!containerSize.width || !containerSize.height || trackCount === 0) return 0;
+
+    if (layoutMode === 'grid') {
+      return Math.min(
+        calcMaxTilesPerPage(containerSize.width, containerSize.height, GRID_GAP, MIN_TILE_H),
+        trackCount,
+      );
+    }
+
+    if (layoutMode === 'vertical') {
+      const thumbHeight = Math.max(120, Math.min(200, containerSize.height / 4));
+      return Math.max(1, Math.floor(containerSize.height / (thumbHeight + GRID_GAP)));
+    }
+
+    const thumbHeight = 144;
+    const itemWidth = Math.max(100, Math.min(180, thumbHeight * (16 / 9)));
+    return Math.max(1, Math.floor(containerSize.width / (itemWidth + GRID_GAP)));
+  }, [containerSize.width, containerSize.height, layoutMode, trackCount]);
+}
 
 export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   const lastAutoFocusedScreenShareTrack = React.useRef<TrackReferenceOrPlaceholder | null>(null);
+  const hadScreenShareRef = React.useRef(false);
 
-  // Получаем тип карусели из store
   const carouselType = useCallStore((state) => state.carouselType);
 
   const tracks = useTracks(
@@ -31,30 +59,32 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
     ],
     {
       updateOnlyOn: [RoomEvent.ActiveSpeakersChanged],
-      onlySubscribed: false, // Получаем все треки, включая неподписанные для корректного подсчета участников
+      onlySubscribed: false,
     },
   );
-
-  const layoutContext = useCreateLayoutContext();
 
   const screenShareTracks = tracks
     .filter(isTrackReference)
     .filter((track) => track.publication.source === Track.Source.ScreenShare);
 
-  const focusTrack = usePinnedTracks(layoutContext)?.[0];
-  const carouselTracks = tracks.filter((track) => !isEqualTrackRef(track, focusTrack));
-
-  // Проверяем условия для FocusLayout
   const hasScreenShare = screenShareTracks.some((track) => track.publication.isSubscribed);
-  const participantCount = tracks.filter(
-    (track) => track.publication?.source === Track.Source.Camera,
-  ).length;
-
-  // Определяем, можно ли использовать FocusLayout
+  const participantCount = tracks.filter((track) => track.source === Track.Source.Camera).length;
   const canUseFocusLayout = hasScreenShare || participantCount > 2;
+  const effectiveCarouselType: 'grid' | 'horizontal' | 'vertical' = canUseFocusLayout
+    ? carouselType
+    : 'grid';
 
-  // Если условия не соблюдены, принудительно переключаемся на grid
-  const effectiveCarouselType = canUseFocusLayout ? carouselType : 'grid';
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const contentSize = useSize(contentRef as React.RefObject<HTMLDivElement>);
+
+  const firstPageSize = useFirstPageSize(contentSize, effectiveCarouselType, tracks.length);
+
+  const sortedTracks = useSortedTracks(tracks, firstPageSize);
+
+  const layoutContext = useCreateLayoutContext();
+
+  const focusTrack = usePinnedTracks(layoutContext)?.[0];
+  const carouselTracks = sortedTracks.filter((track) => !isEqualTrackRef(track, focusTrack));
 
   React.useEffect(() => {
     if (
@@ -88,30 +118,33 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
     }
   }, [screenShareTracks, focusTrack, layoutContext.pin, tracks]);
 
-  // Автоматическое переключение на grid при нарушении условий
   React.useEffect(() => {
-    if (!canUseFocusLayout && (carouselType === 'horizontal' || carouselType === 'vertical')) {
-      // Переключаемся на grid в store
+    if (!canUseFocusLayout && carouselType !== 'grid') {
+      useCallStore
+        .getState()
+        .updateStore('preferredFocusLayout', carouselType as 'horizontal' | 'vertical');
       useCallStore.getState().updateStore('carouselType', 'grid');
     }
   }, [canUseFocusLayout, carouselType]);
 
-  // Автоматическое удаление треков демонстрации экрана при их завершении
-  useScreenShareCleanup(tracks);
+  React.useEffect(() => {
+    const screenShareJustStarted = hasScreenShare && !hadScreenShareRef.current;
+    hadScreenShareRef.current = hasScreenShare;
+
+    if (!screenShareJustStarted || carouselType !== 'grid') return;
+
+    const { preferredFocusLayout } = useCallStore.getState();
+    useCallStore.getState().updateStore('carouselType', preferredFocusLayout);
+  }, [hasScreenShare, carouselType]);
 
   return (
-    <div className="lk-video-conference flex w-full justify-center" {...props}>
+    <div className="align-stretch relative flex h-full w-full justify-center" {...props}>
       {isWeb() && (
         <LayoutContextProvider value={layoutContext}>
-          <div
-            className="lk-video-conference-inner"
-            style={{
-              width: carouselType === 'grid' && canUseFocusLayout ? 'auto' : '100%',
-            }}
-          >
+          <div ref={contentRef} className="flex h-full w-full items-center justify-center">
             {effectiveCarouselType === 'grid' ? (
-              <div className="h-full">
-                <GridLayout tracks={tracks}>
+              <div className="h-full w-full min-w-0">
+                <GridLayout tracks={sortedTracks}>
                   <ParticipantTile
                     isFocusToggleDisable
                     style={{
@@ -125,7 +158,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
                 </GridLayout>
               </div>
             ) : (
-              <div className="lk-focus-layout-wrapper">
+              <div className="h-(--available-height) max-h-(--available-height) w-full overflow-hidden">
                 <CarouselContainer focusTrack={focusTrack} carouselTracks={carouselTracks} />
               </div>
             )}
@@ -133,7 +166,6 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
         </LayoutContextProvider>
       )}
       <RoomAudioRenderer />
-      <ConnectionStateToast />
     </div>
   );
 };

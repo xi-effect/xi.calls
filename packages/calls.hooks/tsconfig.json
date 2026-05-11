@@ -1,5 +1,10 @@
 {
-  "include": ["src/**/*", "../calls.ui/src/config", "src/hooks"],
+  "include": [
+    "src/**/*",
+    "../calls.ui/src/config",
+    "src/hooks",
+    "../calls.compactview/src/hooks/useDocumentPiP.ts"
+  ],
   "extends": ["common.typescript/tsconfig.app.json"],
   "exclude": ["dist", "build", "node_modules"]
 }

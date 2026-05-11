@@ -6,20 +6,17 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { DevicesBar } from '../shared/DevicesBar/DevicesBar';
 import { useCallback } from 'react';
-import { DisconnectButton } from './DisconnectButton';
-import { ScreenShareButton } from './ScreenShareButton';
-import { WhiteBoardButton } from './WhiteBoardButton';
-import { RaiseHandButton } from './RaiseHandButton';
-import { ChatButton } from './ChatButton';
-import { useCallStore } from 'calls.store';
+import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from 'calls.ui';
+import { ChatButton, useChatStore } from 'calls.chat';
+import { useCallStore, useFeaturesStore } from 'calls.store';
 import { cn } from '@xipkg/utils';
 import { useNavigate } from '@tanstack/react-router';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useModeSync } from 'calls.hooks';
+import { RaiseHandButton } from 'calls.risehand';
 import { useRoom, useCalls } from 'calls.providers';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
@@ -58,7 +55,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
     cameraToggle.toggle();
   }, [cameraToggle]);
 
-  const { isChatOpen, mode, activeBoardId, activeClassroom, token } = useCallStore();
+  const { isChatOpen } = useChatStore();
+  const { mode, activeBoardId, activeClassroom, token } = useCallStore();
   const updateStore = useCallStore((state) => state.updateStore);
   const { room } = useRoom();
 
@@ -69,6 +67,12 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
 
   const navigate = useNavigate();
   const { syncModeToOthers } = useModeSync();
+
+  const {
+    chat: isChatEnabled,
+    raiseHand: isRiseHandEnabled,
+    whiteboard: isWhiteboardEnabled,
+  } = useFeaturesStore((s) => s.features);
 
   // Показываем кнопку "обратно к доске" только если:
   // 1. Пользователь в full mode
@@ -100,8 +104,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
 
     // Переходим на доску с обязательным параметром call для сохранения ВКС
     navigate({
-      to: '/classrooms/$classroomId/boards/$boardId',
-      params: { classroomId: activeClassroom, boardId: activeBoardId },
+      to: '/boards/$boardId',
+      params: { boardId: activeBoardId },
       search: { call: activeClassroom },
       replace: false, // Не заменяем историю, чтобы можно было вернуться
     });
@@ -112,7 +116,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
       <div className="flex w-full flex-row justify-between p-4">
         <div />
         <div className="flex flex-row gap-4">
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
+          <div className="bg-gray-0 border-gray-10 flex h-12 w-23 items-center justify-center gap-1 rounded-2xl border">
             <DevicesBar
               microTrack={microphoneTrack?.track as LocalAudioTrack}
               microEnabled={isMicrophoneEnabled}
@@ -131,22 +135,22 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               className="relative"
             />
           </div>
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-gray-0 border-gray-10 flex h-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <ScreenShareButton />
-            {isTutor && <WhiteBoardButton />}
-            <ChatButton />
-            <RaiseHandButton />
+            {isWhiteboardEnabled && isTutor && <WhiteBoardButton />}
+            {isChatEnabled && <ChatButton />}
+            {isRiseHandEnabled && <RaiseHandButton />}
           </div>
         </div>
         <div className="relative flex flex-row items-center justify-center gap-4">
-          {showBackToBoardButton && (
+          {isWhiteboardEnabled && showBackToBoardButton && (
             <Tooltip delayDuration={1000}>
               <TooltipTrigger asChild>
                 <Button
                   size="m"
                   variant="default"
                   onClick={handleBackToBoard}
-                  className="bg-brand-100 hover:bg-brand-80 absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl"
+                  className="bg-brand-100 hover:bg-brand-80 absolute top-1 -left-33 m-0 h-10 w-32 rounded-xl"
                 >
                   <WhiteBoard className="fill-gray-0" />
                   <span className="ml-2">К доске</span>
@@ -157,7 +161,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               </TooltipContent>
             </Tooltip>
           )}
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-gray-0 border-gray-10 flex h-12 w-12 items-center justify-center gap-1 rounded-2xl border p-1">
             <DisconnectButton />
           </div>
         </div>

@@ -1,0 +1,1 @@
+export { RaisedHandIndicator } from './RaisedHandIndicator';

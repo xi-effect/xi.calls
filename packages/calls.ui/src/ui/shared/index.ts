@@ -3,3 +3,5 @@ export { TrackToggle } from './TrackToggle';
 export { DevicesBar } from './DevicesBar';
 export { VideoTrack, SecureVideo } from './VideoTrack';
 export { PermissionsDialog } from './PermissionsDialog';
+export { RaisedHandIndicator } from './RaisedHandIndicator';
+export { NoiseCancellationSettings } from './NoiseCancellationSettings';

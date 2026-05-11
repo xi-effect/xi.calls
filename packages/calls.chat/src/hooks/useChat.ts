@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
-import { useCallStore } from 'calls.store';
+import { useLiveKitDataChannel, useLiveKitDataChannelListener } from 'calls.hooks';
 import { useRoom } from 'calls.providers';
+import { useChatStore } from '../store';
 
 const CHAT_MESSAGE_TYPE = 'chat_message';
 
@@ -15,7 +15,7 @@ type ChatMessagePayload = {
 
 export const useChat = () => {
   const { sendMessage } = useLiveKitDataChannel();
-  const { addChatMessage, clearUnreadMessages, updateStore } = useCallStore();
+  const { addChatMessage, clearUnreadMessages, updateStore } = useChatStore();
   const { room } = useRoom();
 
   // Получаем информацию о текущем участнике из LiveKit
@@ -102,7 +102,7 @@ export const useChat = () => {
   );
 
   const toggleChat = useCallback(() => {
-    updateStore('isChatOpen', !useCallStore.getState().isChatOpen);
+    updateStore('isChatOpen', !useChatStore.getState().isChatOpen);
     clearUnreadMessages();
   }, [updateStore, clearUnreadMessages]);
 

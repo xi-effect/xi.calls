@@ -1,1 +1,1 @@
-export { Chat } from './src/';
+export { Chat, ChatButton, useChat, useChatStore } from './src/';

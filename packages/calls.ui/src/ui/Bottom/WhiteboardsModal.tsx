@@ -121,7 +121,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="w-[680px]">
+      <ModalContent className="w-170">
         <ModalCloseButton>
           <Close className="fill-gray-80 sm:fill-gray-0" />
         </ModalCloseButton>
@@ -145,7 +145,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               <p className="text-red-500">Ошибка загрузки досок</p>
             </div>
           ) : (
-            <ScrollArea className="h-full max-h-[400px] w-full">
+            <ScrollArea className="h-full max-h-100 w-full">
               <div className="space-y-4 pr-4">
                 {filteredWhiteboards.map((board) => (
                   <div
@@ -181,7 +181,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                   </div>
                 ))}
                 <div
-                  className="bg-brand-0 group flex h-[80px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
+                  className="bg-brand-0 group flex h-20 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
                   onClick={handleCreateNewBoard}
                 >
                   <h3 className="text-s-base text-brand-100 group-hover:text-brand-80">

@@ -1,11 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Call } from 'calls.main';
-import { LiveKitProvider, ModeSyncProvider, RoomProvider } from 'calls.providers';
+import {
+  CallsProviderDepsT,
+  LiveKitProvider,
+  ModeSyncProvider,
+  RoomProvider,
+} from 'calls.providers';
 
-const devDeps = {
+const devDeps: CallsProviderDepsT = {
   auth: {
     useCurrentUser: () => ({
-      data: { userId: 1 },
+      data: { userId: 1, default_layout: 'tutor' },
       isLoading: false,
       isError: false,
     }),
@@ -33,6 +38,17 @@ const devDeps = {
     reactivateCall: async () => {},
     isLoading: false,
     error: undefined,
+  },
+  updateParticipantMetadata: {
+    updateParticipantMetadata: async (data: {
+      classroom_id: string;
+      is_hand_raised: boolean;
+      role?: string;
+    }) => {
+      const role = data.role;
+      console.log('Updating participant metadata', { role, ...data });
+    },
+    isPending: false,
   },
 };
 

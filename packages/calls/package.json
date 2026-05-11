@@ -40,7 +40,8 @@
     "calls.providers": "*",
     "calls.store": "*",
     "calls.hooks": "*",
-    "calls.chat": "*"
+    "calls.chat": "*",
+    "calls.risehand": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

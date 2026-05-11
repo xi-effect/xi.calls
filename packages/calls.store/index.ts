@@ -4,6 +4,9 @@ export {
   useUserChoicesStore,
   closePermissionsDialog,
   openPermissionsDialog,
+  useSoundEffectsStore,
+  useFeaturesStore,
+  useFocusModeStore,
 } from './src';
 
-export type { VideoResolution, Corner } from './src';
+export type { VideoResolution, CornerT } from './src';

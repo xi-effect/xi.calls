@@ -5,5 +5,6 @@ export {
   useRoom,
   LiveKitProvider,
   ModeSyncProvider,
+  useFocusModeStore,
 } from './src';
 export type { CallsProviderDepsT } from './src/';

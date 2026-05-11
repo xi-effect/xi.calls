@@ -6,17 +6,19 @@ import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert
 import { InfoCircle } from '@xipkg/icons';
 import { MediaDeviceMenu } from './MediaDeviceMenu';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { usePersistentUserChoices } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { UseNoiseCancellationResult, usePersistentUserChoices } from 'calls.hooks';
+import { useCallStore, usePermissionsStore } from 'calls.store';
 import { useRoom } from 'calls.providers';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
+import { NoiseCancellationSettings } from 'calls.ui';
 
 interface MediaDevicesProps {
   audioTrack?: LocalAudioTrack;
   videoTrack?: LocalVideoTrack;
+  noiseCancellation?: UseNoiseCancellationResult;
 }
 
-export const MediaDevices = ({ audioTrack, videoTrack }: MediaDevicesProps) => {
+export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: MediaDevicesProps) => {
   const {
     userChoices: { audioDeviceId, audioOutputDeviceId, videoDeviceId, blurEnabled },
     saveAudioInputDeviceId,
@@ -29,8 +31,15 @@ export const MediaDevices = ({ audioTrack, videoTrack }: MediaDevicesProps) => {
 
   const { updateStore, token, isConnecting } = useCallStore();
   const { room } = useRoom();
+  const cameraPermission = usePermissionsStore((s) => s.cameraPermission);
+  const microphonePermission = usePermissionsStore((s) => s.microphonePermission);
 
   const isBlurSupported = supportsBackgroundProcessors();
+
+  // Ключи по разрешениям: при смене denied → granted меню перемонтируется и заново запрашивает список устройств
+  const videoMenuKey = `videoinput-${cameraPermission}`;
+  const audioInputMenuKey = `audioinput-${microphonePermission}`;
+  const audioOutputMenuKey = `audiooutput-${microphonePermission}`;
 
   const handleJoin = async () => {
     if (!token) {
@@ -147,28 +156,34 @@ export const MediaDevices = ({ audioTrack, videoTrack }: MediaDevicesProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-gray-30 flex flex-col justify-between rounded-2xl border p-5">
+      <div className="border-gray-30 flex flex-col justify-between rounded-[16px] border p-5">
         <div>
           <div className="mb-8">
             <h2 className="mb-1 font-sans">Камера</h2>
             <MediaDeviceMenu
+              key={videoMenuKey}
               initialSelection={videoDeviceId}
               kind="videoinput"
               onActiveDeviceChange={handleVideoDeviceChange}
+              disabled={cameraPermission !== 'granted'}
             />
           </div>
           <div className="my-4">
             <h2 className="mb-1 font-sans">Звук</h2>
             <div className="flex flex-col gap-2">
               <MediaDeviceMenu
+                key={audioInputMenuKey}
                 initialSelection={audioDeviceId}
                 kind="audioinput"
                 onActiveDeviceChange={handleAudioDeviceChange}
+                disabled={microphonePermission !== 'granted'}
               />
               <MediaDeviceMenu
+                key={audioOutputMenuKey}
                 initialSelection={audioOutputDeviceId}
                 kind="audiooutput"
                 onActiveDeviceChange={(_, id) => saveAudioOutputDeviceId(id)}
+                disabled={microphonePermission !== 'granted'}
               />
             </div>
           </div>
@@ -178,6 +193,11 @@ export const MediaDevices = ({ audioTrack, videoTrack }: MediaDevicesProps) => {
                 <Label className="font-medium text-gray-100">Размытие фона</Label>
                 <Switch checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
+            </div>
+          )}
+          {noiseCancellation && (
+            <div className="my-4">
+              <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
             </div>
           )}
         </div>

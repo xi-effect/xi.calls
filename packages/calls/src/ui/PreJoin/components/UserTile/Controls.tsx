@@ -83,7 +83,7 @@ export const Controls = ({ audioTrack, videoTrack }: ControlsProps) => {
   );
 
   return (
-    <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
+    <div className="bg-gray-0 border-gray-10 flex h-12 w-23 items-center justify-center gap-1 rounded-2xl border">
       <DevicesBar
         microTrack={audioTrack}
         microEnabled={audioEnabled}
