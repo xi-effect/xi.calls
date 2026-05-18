@@ -49,3 +49,15 @@ export type UpdateParticipantMetadataPortT = {
   isPending: boolean;
   error?: unknown;
 };
+
+/** Синхронизация режима ВКС/доски через метаданные комнаты (LiveKit + бэкенд) */
+export type ConferenceMetadataPortT = {
+  updateConferenceMetadata(data: {
+    classroom_id: string;
+    active_material_id: number;
+  }): Promise<void>;
+};
+
+export type CallsAppConfigPortT = {
+  getClassroomJoinLink(classroomId: string | number): string;
+};

@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@xipkg/sheet';
-import { Close, Conference, Microphone, SoundTwo } from '@xipkg/icons';
+import { Close, Conference, Microphone, SoundTwo, Music } from '@xipkg/icons';
 import { Label } from '@xipkg/label';
 import { Switch } from '@xipkg/switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@xipkg/select';
@@ -22,7 +22,7 @@ import { Track, LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 
 import { useUserChoicesStore, usePermissionsStore, openPermissionsDialog } from 'calls.store';
-import { useRoom } from 'calls.providers';
+import { useRoom, useCallsNavigation } from 'calls.providers';
 import { useNoiseCancellation } from 'calls.hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
 import { noiseCancellationFeatureEnabled } from 'common.config';
@@ -98,8 +98,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
   const audioOutputDeviceId = useUserChoicesStore((state) => state.audioOutputDeviceId);
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);
 
-  // const navigate = useNavigate();
-  // const { pathname } = useLocation();
+  const navigation = useCallsNavigation();
 
   const saveAudioOutputDeviceId = useCallback((deviceId: string) => {
     useUserChoicesStore.setState({ audioOutputDeviceId: deviceId });
@@ -296,23 +295,20 @@ export const Settings = ({ children }: SettingsPropsT) => {
           )}
 
           {/* Кнопка для перехода к настройкам звуков */}
-          {/* <div className="border-gray-10 border-t pt-6">
+          <div className="border-gray-10 border-t pt-6">
             <Button
               type="button"
               variant="ghost"
               size="s"
               className="w-full gap-2"
               onClick={() => {
-                navigate({
-                  to: pathname,
-                  search: { profile: 'effects' },
-                });
+                navigation.replaceSearch({ ...navigation.search, profile: 'effects' });
               }}
             >
               <Music className="h-4 w-4" />
               Настройки эффектов
             </Button>
-          </div> */}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

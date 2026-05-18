@@ -1,17 +1,15 @@
 import { useEffect, useCallback, useMemo, useRef } from 'react';
 import { Participant, RoomEvent } from 'livekit-client';
-import { useParams, useSearch } from '@tanstack/react-router';
 import { useCallStore, useSoundEffectsStore } from 'calls.store';
-import { useCalls, useRoom } from 'calls.providers';
+import { useCalls, useRoom, useCallsNavigation } from 'calls.providers';
 import { playSound } from 'common.utils';
 
 export const useRaisedHands = () => {
-  const { callId: paramsCallId } = useParams({ strict: false });
-  const { call: searchCallId } = useSearch({ strict: false });
+  const navigation = useCallsNavigation();
   const prevHands = useRef<Record<string, boolean>>({});
   const handRaiseSoundVolume = useSoundEffectsStore((s) => s.handRaiseVolume);
 
-  const callId = paramsCallId ?? searchCallId;
+  const callId = navigation.getCallId();
   const { room } = useRoom();
   const { data: user } = useCalls().auth.useCurrentUser();
 

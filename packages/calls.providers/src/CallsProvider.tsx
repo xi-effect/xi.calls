@@ -1,11 +1,20 @@
 import { createContext, FC, useContext } from 'react';
-import { AuthPortT, CallAuthPortT, ClassroomPortT, UpdateParticipantMetadataPortT } from './config';
+import {
+  AuthPortT,
+  CallAuthPortT,
+  ClassroomPortT,
+  UpdateParticipantMetadataPortT,
+  ConferenceMetadataPortT,
+  CallsAppConfigPortT,
+} from './config';
 
 export type CallsProviderDepsT = {
   auth: AuthPortT;
   room: ClassroomPortT;
   callAuth: CallAuthPortT;
   updateParticipantMetadata: UpdateParticipantMetadataPortT;
+  conferenceMetadata: ConferenceMetadataPortT;
+  appConfig: CallsAppConfigPortT;
 };
 
 const CallsContext = createContext<CallsProviderDepsT | null>(null);

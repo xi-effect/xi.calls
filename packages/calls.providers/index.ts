@@ -4,7 +4,16 @@ export {
   RoomProvider,
   useRoom,
   LiveKitProvider,
-  ModeSyncProvider,
-  useFocusModeStore,
+  CallsNavigationProvider,
+  useCallsNavigation,
+  CallsSessionProvider,
+  useCallsSession,
 } from './src';
-export type { CallsProviderDepsT } from './src/';
+export type {
+  CallsProviderDepsT,
+  CallsNavigationT,
+  UseCallsNavigationHookT,
+  CallsSessionPortT,
+  ConferenceMetadataPortT,
+  CallsAppConfigPortT,
+} from './src';

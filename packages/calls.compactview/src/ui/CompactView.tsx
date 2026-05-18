@@ -9,7 +9,7 @@ import {
   DragOverlay,
   useDndMonitor,
 } from '@dnd-kit/core';
-import { useNavigate, useRouter, useSearch, useLocation } from '@tanstack/react-router';
+import { useCallsNavigation } from 'calls.providers';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
@@ -19,7 +19,7 @@ import { useCallStore, useFeaturesStore, useFocusModeStore } from 'calls.store';
 import type { CornerT } from 'calls.store';
 import { useMedia } from 'common.utils';
 import { useRoom } from 'calls.providers';
-import { usePiP } from '../providers';
+import { PiPProvider, usePiP } from '../providers';
 import { useParticipantSounds, useParticipantJoinSync } from 'calls.hooks';
 
 type CompactViewPropsT = {
@@ -87,7 +87,7 @@ type CompactPropsT = CompactViewPropsT & {
 };
 
 export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) => {
-  const router = useRouter();
+  const navigation = useCallsNavigation();
   const { activeCorner, updateStore } = useCallStore();
   const focusMode = useFocusModeStore((s) => s.focusMode);
   const isMobile = useMedia('(max-width: 720px)');
@@ -123,7 +123,7 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
     }
   };
 
-  const isBoardPage = router.state.location.pathname.includes('/board');
+  const isBoardPage = navigation.pathnameIncludes('/board');
   const bottomOffset = isBoardPage ? 'bottom-[72px]' : 'bottom-4';
 
   const getCornerPosition = (corner: CornerT) => {
@@ -196,7 +196,7 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   );
 };
 
-export const CompactView = ({ children }: CompactViewPropsT) => {
+const CompactViewInner = ({ children }: CompactViewPropsT) => {
   const { mode, token } = useCallStore();
   const { room } = useRoom();
   const pip = usePiP();
@@ -206,29 +206,15 @@ export const CompactView = ({ children }: CompactViewPropsT) => {
   useParticipantJoinSync();
   useParticipantSounds();
 
-  const search = useSearch({ strict: false }) as { call?: string };
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigation = useCallsNavigation();
   const { updateStore: updateChatStore } = useChatStore();
 
-  // Очищаем URL параметр call, только если комната действительно отключена
-  // Не очищаем при навигации, если есть activeClassroom в store (комната может быть в процессе подключения)
   useEffect(() => {
     const { activeClassroom } = useCallStore.getState();
-    const isOnBoardPage = location.pathname.includes('/board');
+    const isOnBoardPage = navigation.pathnameIncludes('/board');
 
-    // Очищаем только если:
-    // 1. Комната и токен отсутствуют
-    // 2. НЕ находимся на странице доски (чтобы не очищать при навигации на доску)
-    // 3. НЕТ activeClassroom в store (комната действительно отключена, а не в процессе подключения)
-    if ((!room || !token) && search.call && !isOnBoardPage && !activeClassroom) {
-      const searchWithoutCall = { ...search };
-      delete searchWithoutCall.call;
-      navigate({
-        to: location.pathname,
-        search: searchWithoutCall,
-        replace: true,
-      });
+    if ((!room || !token) && navigation.search.call && !isOnBoardPage && !activeClassroom) {
+      navigation.clearCallSearchParam();
 
       // Очищаем все состояния интерфейса при отключении
       const { clearAllRaisedHands, updateStore: updateCallStore } = useCallStore.getState();
@@ -246,7 +232,7 @@ export const CompactView = ({ children }: CompactViewPropsT) => {
 
       updateCallStore('mode', 'full');
     }
-  }, [room, token, search.call, search, navigate, location.pathname, updateChatStore]);
+  }, [room, token, navigation, updateChatStore]);
 
   const contentWrapper = (
     <div className="flex h-full min-h-0 flex-col">
@@ -280,3 +266,9 @@ export const CompactView = ({ children }: CompactViewPropsT) => {
     </>
   );
 };
+
+export const CompactView = ({ children }: CompactViewPropsT) => (
+  <PiPProvider>
+    <CompactViewInner>{children}</CompactViewInner>
+  </PiPProvider>
+);

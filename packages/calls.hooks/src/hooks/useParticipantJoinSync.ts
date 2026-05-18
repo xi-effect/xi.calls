@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { RoomEvent, RemoteParticipant } from 'livekit-client';
-import { useRoom, useCalls } from 'calls.providers';
+import { useRoom, useCalls, useCallsNavigation } from 'calls.providers';
 import { useCallStore } from 'calls.store';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
 
@@ -25,7 +24,7 @@ type StateResponsePayload = {
  */
 export const useParticipantJoinSync = () => {
   const { room } = useRoom();
-  const navigate = useNavigate();
+  const navigation = useCallsNavigation();
   const { sendMessageToParticipant } = useLiveKitDataChannel();
   const { auth } = useCalls();
   const { data: user } = auth.useCurrentUser();
@@ -115,25 +114,13 @@ export const useParticipantJoinSync = () => {
             const classroomId = payload.classroom || activeClassroom;
 
             if (payload.classroom) {
-              navigate({
-                to: '/classrooms/$classroomId/boards/$boardId',
-                params: { classroomId: payload.classroom, boardId: payload.boardId },
-                search: { call: payload.classroom },
-                replace: false,
-              });
+              navigation.navigateToClassroomBoard(payload.classroom, payload.boardId);
             } else if (payload.boardId && classroomId) {
-              navigate({
-                to: '/board/$boardId',
-                params: { boardId: payload.boardId },
+              navigation.navigateToBoard(payload.boardId, {
                 search: { call: classroomId },
-                replace: false,
               });
             } else if (payload.boardId) {
-              navigate({
-                to: '/board/$boardId',
-                params: { boardId: payload.boardId },
-                replace: false,
-              });
+              navigation.navigateToBoard(payload.boardId);
             }
           }
         }
@@ -141,7 +128,7 @@ export const useParticipantJoinSync = () => {
         console.error('❌ Student: Error handling state response:', error);
       }
     },
-    [isTutor, updateStore, navigate, activeClassroom],
+    [isTutor, updateStore, navigation, activeClassroom],
   );
 
   // Объединенный обработчик для всех сообщений состояния

@@ -1,111 +1,117 @@
-import { useCallback } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useCallback, useEffect, useRef } from 'react';
+import { RoomEvent } from 'livekit-client';
+import type { Room } from 'livekit-client';
 import { useCallStore } from 'calls.store';
-import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
+import { useCalls, useRoom, useCallsNavigation } from 'calls.providers';
 
-const MODE_SYNC_MESSAGE_TYPE = 'mode_sync';
+/** Один раз за сессию комнаты применяем начальные метаданные (чтобы при монтировании второго CompactCall в DragOverlay не редиректило) */
+const initialMetadataAppliedForRoomRef = { current: null as Room | null };
 
-type ModeSyncPayload = {
-  mode: 'compact' | 'full';
-  boardId?: string;
-  classroom?: string;
+/** Метаданные комнаты с бэкенда (обновляются через PUT .../metadata/) */
+type RoomMetadataPayloadT = {
+  active_material_id?: number;
+  active_classroom_id?: string;
+};
+
+const parseRoomMetadata = (metadata: string | undefined): RoomMetadataPayloadT | null => {
+  if (!metadata || metadata.trim() === '') return null;
+  try {
+    const parsed = JSON.parse(metadata) as RoomMetadataPayloadT;
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
 };
 
 export const useModeSync = () => {
-  const navigate = useNavigate();
+  const navigation = useCallsNavigation();
+  const { room } = useRoom();
+  const { conferenceMetadata } = useCalls();
   const updateStore = useCallStore((state) => state.updateStore);
-  const { sendMessage } = useLiveKitDataChannel();
 
-  const handleModeSyncMessage = useCallback(
-    (message: { type: string; payload: unknown }) => {
-      try {
-        if (message.type === MODE_SYNC_MESSAGE_TYPE) {
-          const payload = message.payload as ModeSyncPayload;
+  const classroomIdFromRoute =
+    navigation.params.callId ?? navigation.params.classroomId ?? navigation.getCallId();
 
-          // Валидируем payload
-          if (!payload || typeof payload !== 'object') {
-            console.error('❌ Invalid mode sync payload:', payload);
-            return;
-          }
+  const applyRoomMetadata = useCallback(
+    (metadata: string | undefined) => {
+      const payload = parseRoomMetadata(metadata);
+      if (!payload) return;
 
-          if (!payload.mode || !['compact', 'full'].includes(payload.mode)) {
-            console.error('❌ Invalid mode value:', payload.mode);
-            return;
-          }
+      const activeMaterialId =
+        payload.active_material_id !== undefined ? payload.active_material_id : null;
+      const metadataClassroomId = payload.active_classroom_id;
 
-          // Получаем текущее состояние доски
-          const currentActiveBoardId = useCallStore.getState().activeBoardId;
+      const currentActiveClassroom = useCallStore.getState().activeClassroom;
+      const targetClassroom = metadataClassroomId ?? currentActiveClassroom ?? classroomIdFromRoute;
 
-          // Если пользователь находится на доске (есть activeBoardId),
-          // проверяем, есть ли boardId в сообщении
-          // Если boardId отсутствует в сообщении о full mode - это означает,
-          // что репетитор хочет переключить всех на full (завершить работу с доской)
-          if (payload.mode === 'full' && currentActiveBoardId && payload.boardId) {
-            // Пользователь на доске, но в сообщении есть boardId - игнорируем
-            // (это сообщение от другого участника, который переключился сам)
-            return;
-          }
-
-          // Обновляем режим в store
-          updateStore('mode', payload.mode);
-
-          // Сохраняем информацию о доске в store
-          if (payload.mode === 'compact' && payload.boardId) {
-            updateStore('activeBoardId', payload.boardId);
-            updateStore('activeClassroom', payload.classroom);
-          } else if (payload.mode === 'full' && !payload.boardId) {
-            // Если получаем full mode без boardId - это означает завершение работы с доской для всех
-            // Сохраняем activeClassroom перед очисткой для навигации
-            const currentActiveClassroom = useCallStore.getState().activeClassroom;
-            const classroomId = payload.classroom || currentActiveClassroom;
-
-            // Очищаем информацию о доске
-            updateStore('activeBoardId', undefined);
-            updateStore('activeClassroom', undefined);
-
-            // Переходим на страницу конференции, если есть classroomId
-            if (classroomId) {
-              navigate({
-                to: '/call/$callId',
-                params: { callId: classroomId },
-              });
-            }
-          }
-          // Если получаем full mode с boardId (не должно происходить) или compact mode без boardId,
-          // не изменяем activeBoardId и activeClassroom
-
-          // Если есть boardId, переходим на доску
-          if (payload.boardId && typeof payload.boardId === 'string') {
-            if (payload.classroom) {
-              navigate({
-                to: '/classrooms/$classroomId/boards/$boardId',
-                params: { classroomId: payload.classroom, boardId: payload.boardId },
-                search: { call: payload.classroom },
-              });
-            } else {
-              navigate({
-                to: '/board/$boardId',
-                params: { boardId: payload.boardId },
-                search: { call: payload.classroom },
-              });
-            }
-          }
+      if (activeMaterialId === 0 || activeMaterialId === null) {
+        if (
+          navigation.isOnClassroomOverviewWithActiveCall() ||
+          navigation.isOnOtherPageWithCompactCall()
+        ) {
+          return;
         }
-      } catch (error) {
-        console.error('❌ Error handling mode sync message:', error);
-        // Не выбрасываем ошибку, чтобы не нарушить соединение
+
+        updateStore('localFullView', false);
+        updateStore('mode', 'full');
+        updateStore('activeBoardId', undefined);
+        updateStore('activeClassroom', undefined);
+
+        if (targetClassroom) {
+          navigation.navigateToCall(targetClassroom);
+        }
+      } else {
+        const boardId = String(activeMaterialId);
+        updateStore('activeBoardId', boardId);
+        updateStore(
+          'activeClassroom',
+          targetClassroom ?? metadataClassroomId ?? currentActiveClassroom,
+        );
+
+        const localFullView = useCallStore.getState().localFullView;
+        if (localFullView) return;
+
+        const isAlreadyOnTargetBoard =
+          targetClassroom &&
+          navigation.params.classroomId === targetClassroom &&
+          navigation.params.boardId === boardId;
+
+        updateStore('mode', 'compact');
+        if (targetClassroom && !isAlreadyOnTargetBoard) {
+          navigation.navigateToClassroomBoard(targetClassroom, boardId);
+        } else if (!targetClassroom && navigation.params.boardId !== boardId) {
+          navigation.navigateToBoard(boardId);
+        }
       }
     },
-    [updateStore, navigate],
+    [updateStore, navigation, classroomIdFromRoute],
   );
 
-  // Слушаем сообщения о синхронизации режима
-  useLiveKitDataChannelListener(handleModeSyncMessage);
+  const applyRoomMetadataRef = useRef(applyRoomMetadata);
+  applyRoomMetadataRef.current = applyRoomMetadata;
+
+  useEffect(() => {
+    if (!room) return;
+
+    const handleRoomMetadataChanged = (metadata: string | undefined) => {
+      applyRoomMetadataRef.current(metadata);
+    };
+
+    room.on(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
+
+    if (room.metadata && initialMetadataAppliedForRoomRef.current !== room) {
+      initialMetadataAppliedForRoomRef.current = room;
+      applyRoomMetadataRef.current(room.metadata);
+    }
+
+    return () => {
+      room.off(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
+    };
+  }, [room]);
 
   const syncModeToOthers = useCallback(
     (mode: 'compact' | 'full', boardId?: string, classroom?: string) => {
       try {
-        // Валидируем входные параметры
         if (!mode || !['compact', 'full'].includes(mode)) {
           console.error('❌ Invalid mode for sync:', mode);
           return;
@@ -116,27 +122,28 @@ export const useModeSync = () => {
           return;
         }
 
-        const payload: ModeSyncPayload = {
-          mode,
-          boardId,
-          classroom,
-        };
+        const classroomId = classroom ?? useCallStore.getState().activeClassroom;
+        if (!classroomId) {
+          console.error('❌ classroom_id required to update conference metadata');
+          return;
+        }
 
-        // Сохраняем информацию о доске в store при отправке сообщения
+        const active_material_id = mode === 'full' ? 0 : Number(boardId);
+
         if (mode === 'compact' && boardId) {
           updateStore('activeBoardId', boardId);
           updateStore('activeClassroom', classroom);
         }
-        // Не очищаем activeBoardId и activeClassroom при переключении на full mode,
-        // чтобы пользователь мог вернуться на доску
 
-        sendMessage(MODE_SYNC_MESSAGE_TYPE, payload);
+        void conferenceMetadata.updateConferenceMetadata({
+          classroom_id: classroomId,
+          active_material_id,
+        });
       } catch (error) {
-        console.error('❌ Error sending mode sync message:', error);
-        // Не выбрасываем ошибку, чтобы не нарушить соединение
+        console.error('❌ Error syncing mode via API:', error);
       }
     },
-    [sendMessage, updateStore],
+    [conferenceMetadata, updateStore],
   );
 
   return {

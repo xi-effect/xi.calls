@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from 'calls.hooks';
 import { useRoom } from 'calls.providers';
+import { useSoundEffectsStore } from 'calls.store';
+import { playSound } from 'common.utils';
 import { useChatStore } from '../store';
 
 const CHAT_MESSAGE_TYPE = 'chat_message';
@@ -16,6 +18,7 @@ type ChatMessagePayload = {
 export const useChat = () => {
   const { sendMessage } = useLiveKitDataChannel();
   const { addChatMessage, clearUnreadMessages, updateStore } = useChatStore();
+  const chatSoundVolume = useSoundEffectsStore((s) => s.chatMessageVolume);
   const { room } = useRoom();
 
   // Получаем информацию о текущем участнике из LiveKit
@@ -69,9 +72,10 @@ export const useChat = () => {
 
         console.log('💬 Received chat message:', payload);
         addChatMessage(payload);
+        playSound('chatMessage', chatSoundVolume);
       }
     },
-    [addChatMessage, getCurrentParticipantInfo],
+    [addChatMessage, getCurrentParticipantInfo, chatSoundVolume],
   );
 
   // Слушаем сообщения чата

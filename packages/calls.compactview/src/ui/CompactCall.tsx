@@ -7,11 +7,10 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useNavigate, useParams, useRouter, useSearch } from '@tanstack/react-router';
 import { useCallStore } from 'calls.store';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useModeSync } from 'calls.hooks';
-import { useRoom, useCalls } from 'calls.providers';
+import { useRoom, useCalls, useCallsNavigation } from 'calls.providers';
 import { useMedia } from 'common.utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
@@ -57,7 +56,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
   const handleMicrophoneToggle = useCallback(() => microphoneToggle.toggle(), [microphoneToggle]);
   const handleCameraToggle = useCallback(() => cameraToggle.toggle(), [cameraToggle]);
 
-  const navigation = useCompactNavigation();
+  const compactNavigation = useCompactNavigation();
   const {
     currentParticipant,
     participants,
@@ -67,7 +66,8 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     canGoPrev,
     goToNext,
     goToPrev,
-  } = navigation;
+  } = compactNavigation;
+  const callsNavigation = useCallsNavigation();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const compactViewMode = useCallStore((state) => state.compactViewMode);
@@ -85,14 +85,6 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     | import('livekit-client').LocalAudioTrack
     | undefined;
 
-  const params = useParams({ strict: false }) as {
-    callId?: string;
-    classroomId?: string;
-    boardId?: string;
-  };
-  const search = useSearch({ strict: false }) as { call?: string };
-  const { call } = search;
-  const navigate = useNavigate();
   const { syncModeToOthers } = useModeSync();
   const activeBoardId = useCallStore((state) => state.activeBoardId);
   const activeClassroom = useCallStore((state) => state.activeClassroom);
@@ -102,9 +94,10 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
   const { data: user } = useCalls().auth.useCurrentUser();
 
   const isTutor = user?.default_layout === 'tutor';
-  const router = useRouter();
-  const isBoardPage = router.state.location.pathname.includes('/board');
-  const isOnBoardPage = params.classroomId === activeClassroom && params.boardId === activeBoardId;
+  const isBoardPage = callsNavigation.pathnameIncludes('/board');
+  const isOnBoardPage =
+    callsNavigation.params.classroomId === activeClassroom &&
+    callsNavigation.params.boardId === activeBoardId;
   const showBackToBoardButton =
     mode === 'compact' && !!activeBoardId && !!activeClassroom && !isOnBoardPage;
 
@@ -142,21 +135,18 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
 
   const handleBackToBoard = useCallback(() => {
     if (!activeBoardId || !activeClassroom) return;
-    navigate({
-      to: '/classrooms/$classroomId/boards/$boardId',
-      params: { classroomId: activeClassroom, boardId: activeBoardId },
-      search: { call: activeClassroom },
-    });
-  }, [activeBoardId, activeClassroom, navigate]);
+    callsNavigation.navigateToClassroomBoard(activeClassroom, activeBoardId);
+  }, [activeBoardId, activeClassroom, callsNavigation]);
 
   const handleMaximize = useCallback(
     (syncToAll: boolean = false) => {
       if (!room || !token || room.state !== 'connected') return;
+      const callParam = callsNavigation.search.call;
       const targetCallId =
-        (typeof call === 'string' ? call.replace(/^"|"$/g, '').trim() : '') ||
+        (typeof callParam === 'string' ? callParam.replace(/^"|"$/g, '').trim() : '') ||
         activeClassroom ||
-        params.classroomId ||
-        params.callId ||
+        callsNavigation.params.classroomId ||
+        callsNavigation.getCallId() ||
         '';
       if (syncToAll && isTutor && activeBoardId && targetCallId) {
         updateStore('localFullView', false);
@@ -168,25 +158,19 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
         updateStore('localFullView', true);
         updateStore('mode', 'full');
       }
-      navigate({
-        to: '/call/$callId',
-        params: { callId: targetCallId },
-        ...(targetCallId ? { search: { call: targetCallId } } : {}),
-        replace: true,
-      });
+      if (targetCallId) {
+        callsNavigation.navigateToCall(targetCallId, { replace: true });
+      }
     },
     [
       room,
       token,
-      call,
+      callsNavigation,
       activeClassroom,
-      params.classroomId,
-      params.callId,
       isTutor,
       activeBoardId,
       updateStore,
       syncModeToOthers,
-      navigate,
     ],
   );
 

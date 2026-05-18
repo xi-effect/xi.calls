@@ -1,10 +1,11 @@
 import { LiveKitRoom } from '@livekit/components-react';
 import { serverUrl, serverUrlDev, isDevMode, devToken } from 'common.config';
 import { useCallStore } from 'calls.store';
-import { useParams, useLocation, useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 import { Track } from 'livekit-client';
 import { useRoom } from './RoomProvider';
+import { useCallsNavigation } from './navigation/CallsNavigationProvider';
+import { useCallsSession } from './session/CallsSessionProvider';
 
 type LiveKitProviderPropsT = {
   children: React.ReactNode;
@@ -12,8 +13,10 @@ type LiveKitProviderPropsT = {
 
 export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const { room } = useRoom();
+  const navigation = useCallsNavigation();
+  const { clearConferenceUiState } = useCallsSession();
   const { audioEnabled, videoEnabled, connect, token, updateStore } = useCallStore();
-  const { callId } = useParams({ strict: false });
+  const callId = navigation.getCallId();
 
   const { isStarted } = useCallStore();
   const wasConnectedRef = useRef(false);
@@ -23,23 +26,17 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     wasConnectedRef.current = true;
     updateStore('connect', true);
 
-    // При подключении проверяем, соответствует ли activeClassroom текущему callId
-    // Если нет - очищаем информацию о доске (возможно, подключились к другой ВКС)
     const { activeClassroom } = useCallStore.getState();
 
     if (activeClassroom && callId && activeClassroom !== callId) {
-      // Подключились к другой ВКС - очищаем информацию о доске
       updateStore('activeBoardId', undefined);
       updateStore('activeClassroom', undefined);
     }
   };
 
   const handleDisconnect = () => {
-    // Не очищаем состояние, если это временное отключение из-за сворачивания окна
-    // Проверяем, была ли страница скрыта в момент отключения
     if (document.hidden && wasConnectedRef.current) {
       console.log('Page hidden - will attempt to reconnect when visible');
-      // Не очищаем состояние, чтобы можно было переподключиться
       return;
     }
 
@@ -48,56 +45,31 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     updateStore('isStarted', false);
     updateStore('mode', 'full');
 
-    // Очищаем все состояния интерфейса при отключении
-    const { clearAllRaisedHands, updateStore: updateCallStore } = useCallStore.getState();
-
-    // Очищаем поднятые руки
+    const { clearAllRaisedHands } = useCallStore.getState();
     clearAllRaisedHands();
+    clearConferenceUiState();
 
-    // Очищаем чат
-    updateCallStore('isChatOpen', false);
-    updateCallStore('chatMessages', []);
-    updateCallStore('unreadMessagesCount', 0);
+    updateStore('activeBoardId', undefined);
+    updateStore('activeClassroom', undefined);
 
-    // Очищаем информацию о доске при отключении
-    updateCallStore('activeBoardId', undefined);
-    updateCallStore('activeClassroom', undefined);
-
-    // Удаляем параметр call из URL при отключении
-    if (search.call) {
-      const searchWithoutCall = { ...search };
-      delete searchWithoutCall.call;
-      navigate({
-        to: location.pathname,
-        search: searchWithoutCall,
-        replace: true,
-      });
+    if (navigation.search.call) {
+      navigation.clearCallSearchParam();
     }
 
     console.log('Disconnected from LiveKit room - all interface states cleared');
   };
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const search = useSearch({ strict: false }) as { call?: string };
-
   useEffect(() => {
-    if (!token && callId && location.pathname.includes('/call/')) {
-      navigate({
-        to: '/classrooms/$classroomId',
-        params: { classroomId: callId },
-        search: { call: callId },
-      });
+    if (!token && callId && navigation.pathnameIncludes('/call/')) {
+      navigation.navigateToClassroom(callId);
     }
-  }, [location, token, callId, navigate]);
+  }, [navigation.pathname, token, callId, navigation]);
 
-  // Обработка событий видимости страницы для переподключения
   useEffect(() => {
     if (!isStarted || !connect) {
       return;
     }
 
-    // Функция для восстановления подписок на видеотреки
     const restoreVideoSubscriptions = () => {
       if (room.state !== 'connected') {
         return;
@@ -106,100 +78,47 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       console.log('Restoring video subscriptions for all participants...');
       let restoredCount = 0;
 
-      // Проходим по всем удаленным участникам
       room.remoteParticipants.forEach((participant) => {
-        // Проходим по всем видеотрекам участника
         participant.videoTrackPublications.forEach((publication) => {
-          // Подписываемся только на треки камеры и демонстрации экрана
           if (
             (publication.source === Track.Source.Camera ||
               publication.source === Track.Source.ScreenShare) &&
             !publication.isSubscribed &&
             publication.isEnabled
           ) {
-            try {
-              // Используем setSubscribed - метод существует в runtime
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const pub = publication as any;
-              if (typeof pub.setSubscribed === 'function') {
-                pub.setSubscribed(true);
-                restoredCount++;
-                console.log(
-                  `Restored subscription for ${participant.identity} - ${publication.source}`,
-                );
-              } else {
-                console.warn(
-                  `setSubscribed method not available for ${participant.identity} - ${publication.source}`,
-                );
-              }
-            } catch (error) {
-              console.error(`Failed to restore subscription for ${participant.identity}:`, error);
-            }
+            publication.setSubscribed(true);
+            restoredCount++;
           }
         });
       });
 
       if (restoredCount > 0) {
-        console.log(`Successfully restored ${restoredCount} video subscription(s)`);
+        console.log(`Restored ${restoredCount} video subscriptions`);
       }
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Страница скрыта - очищаем таймаут переподключения
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-          reconnectTimeoutRef.current = null;
-        }
-        console.log('Page hidden - connection may be paused');
-      } else {
-        // Страница снова видна - проверяем соединение и переподключаемся при необходимости
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
-
-        reconnectTimeoutRef.current = window.setTimeout(() => {
-          const currentIsStarted = useCallStore.getState().isStarted;
-
-          // Если мы были подключены, но соединение разорвалось, переподключаемся
-          if (currentIsStarted && room.state !== 'connected' && wasConnectedRef.current) {
-            console.log('Page visible - attempting to reconnect...');
-            updateStore('connect', true);
-          }
-
-          // Восстанавливаем подписки на видеотреки при возврате фокуса
-          if (room.state === 'connected') {
-            restoreVideoSubscriptions();
-          }
-        }, 1000); // Задержка для стабилизации после возврата на страницу
+      if (!document.hidden && room.state === 'connected') {
+        restoreVideoSubscriptions();
       }
     };
 
-    // Обработка событий переподключения комнаты
     const handleReconnecting = () => {
-      console.log('LiveKit: Room is reconnecting...');
+      console.log('LiveKit: Reconnecting...');
     };
 
     const handleReconnected = () => {
-      console.log('LiveKit: Room reconnected successfully');
-      wasConnectedRef.current = true;
-      updateStore('connect', true);
+      console.log('LiveKit: Reconnected successfully');
+      restoreVideoSubscriptions();
     };
 
-    // Обработка ошибок соединения
     const handleConnectionStateChanged = (state: string) => {
-      console.log('LiveKit: Connection state changed:', state);
+      console.log('LiveKit: Connection state changed to:', state);
     };
 
-    // Мониторинг качества соединения
-    let lastQuality: string | null = null;
     const handleConnectionQualityChanged = (quality: string) => {
-      if (quality !== lastQuality) {
-        lastQuality = quality;
-        if (quality === 'poor' || quality === 'unknown') {
-          console.warn('LiveKit: Connection quality is poor');
-          // Здесь можно добавить уведомление пользователю
-        }
+      if (quality === 'poor') {
+        console.warn('LiveKit: Connection quality is poor');
       }
     };
 

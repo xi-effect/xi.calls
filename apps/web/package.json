@@ -30,8 +30,14 @@
     "sonner": "^2.0.7",
     "tailwindcss": "^4.0.9",
     "@sentry/browser": "10.23.0",
+    "@livekit/components-styles": "1.1.6",
+    "@xipkg/tooltip": "2.1.0",
+    "calls.chat": "*",
+    "calls.compactview": "*",
+    "calls.hooks": "*",
     "calls.main": "*",
-    "calls.providers": "*"
+    "calls.providers": "*",
+    "calls.store": "*"
   },
   "devDependencies": {
     "vite-plugin-pwa": "1.0.2",

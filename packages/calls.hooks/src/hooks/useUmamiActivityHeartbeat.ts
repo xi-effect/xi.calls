@@ -1,6 +1,6 @@
-import { useLocation } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 import { useCallStore } from 'calls.store';
+import { useCallsNavigation } from 'calls.providers';
 
 const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000; // 5 минут
 
@@ -18,7 +18,7 @@ function isBoardPath(pathname: string): boolean {
  * в активной ВКС или на странице доски.
  */
 export function useUmamiActivityHeartbeat() {
-  const pathname = useLocation().pathname;
+  const { pathname } = useCallsNavigation();
   const isStarted = useCallStore((s) => s.isStarted);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

@@ -32,6 +32,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@livekit/components-styles':
+        specifier: 1.1.6
+        version: 1.1.6
       '@sentry/browser':
         specifier: 10.23.0
         version: 10.23.0
@@ -47,12 +50,27 @@ importers:
       '@xipkg/button':
         specifier: 3.2.0
         version: 3.2.0(@types/react@19.2.14)(react@19.2.5)
+      '@xipkg/tooltip':
+        specifier: 2.1.0
+        version: 2.1.0(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.5)(react@19.2.5)
+      calls.chat:
+        specifier: '*'
+        version: link:../../packages/calls.chat
+      calls.compactview:
+        specifier: '*'
+        version: link:../../packages/calls.compactview
+      calls.hooks:
+        specifier: '*'
+        version: link:../../packages/calls.hooks
       calls.main:
         specifier: '*'
         version: link:../../packages/calls
       calls.providers:
         specifier: '*'
         version: link:../../packages/calls.providers
+      calls.store:
+        specifier: '*'
+        version: link:../../packages/calls.store
       calls.ui:
         specifier: '*'
         version: link:../../packages/calls.ui
@@ -387,7 +405,7 @@ importers:
         specifier: ^8.22.0
         version: 8.59.0(eslint@9.39.4)(typescript@5.7.3)
 
-  packages/calls.compactView:
+  packages/calls.compactview:
     dependencies:
       '@xipkg/button':
         specifier: 3.2.0
@@ -483,6 +501,9 @@ importers:
 
   packages/calls.hooks:
     dependencies:
+      calls.providers:
+        specifier: '*'
+        version: link:../calls.providers
       calls.store:
         specifier: '*'
         version: link:../calls.store
@@ -495,6 +516,9 @@ importers:
       common.utils:
         specifier: '*'
         version: link:../common.utils
+      livekit-client:
+        specifier: 2.15.6
+        version: 2.15.6(@types/dom-mediacapture-record@1.0.22)
       react:
         specifier: '19'
         version: 19.2.5
@@ -523,9 +547,6 @@ importers:
       '@xipkg/typescript':
         specifier: latest
         version: 0.2.0
-      calls.providers:
-        specifier: '*'
-        version: link:../calls.providers
       common.eslint:
         specifier: '*'
         version: link:../common.eslint
@@ -790,9 +811,6 @@ importers:
       calls.providers:
         specifier: '*'
         version: link:../calls.providers
-      calls.risehand:
-        specifier: '*'
-        version: link:../calls.riseHand
       calls.store:
         specifier: '*'
         version: link:../calls.store
@@ -5317,7 +5335,7 @@ packages:
       eslint-config-airbnb: 19.0.4(eslint-plugin-import@2.31.0)(eslint-plugin-jsx-a11y@6.10.2)(eslint-plugin-react-hooks@5.1.0)(eslint-plugin-react@7.37.2)(eslint@9.39.4)
       eslint-config-next: 15.1.2(eslint@9.39.4)(typescript@5.7.3)
       eslint-config-prettier: 9.1.0(eslint@9.39.4)
-      eslint-config-turbo: 2.9.6(eslint@9.39.4)(turbo@2.9.6)
+      eslint-config-turbo: 2.9.14(eslint@9.39.4)(turbo@2.9.6)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.59.0)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4)
       eslint-plugin-react: 7.37.2(eslint@9.39.4)
       eslint-plugin-react-hooks: 5.1.0(eslint@9.39.4)
@@ -6512,14 +6530,14 @@ packages:
       eslint: 9.39.4
     dev: true
 
-  /eslint-config-turbo@2.9.6(eslint@9.39.4)(turbo@2.9.6):
-    resolution: {integrity: sha512-yCZ2YcUKU2KtAO7fjqBQLI7bIc/cIH4lF/yk4ntSRDfsQiRpAtWaGTxqqMPVLZj5JpFfSZGceuM6YFHufJD5iA==}
+  /eslint-config-turbo@2.9.14(eslint@9.39.4)(turbo@2.9.6):
+    resolution: {integrity: sha512-8bAXNDwtmHV7CuSDX+FB9+TslZEP8qJoNWY9FQTEhyO42bRimcExxwOh1+K2H2JV2VFXJrkt1KxyJmy2xm8Ukw==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
     dependencies:
       eslint: 9.39.4
-      eslint-plugin-turbo: 2.9.6(eslint@9.39.4)(turbo@2.9.6)
+      eslint-plugin-turbo: 2.9.14(eslint@9.39.4)(turbo@2.9.6)
       turbo: 2.9.6
     dev: true
 
@@ -6732,6 +6750,17 @@ packages:
       semver: 6.3.1
       string.prototype.matchall: 4.0.12
       string.prototype.repeat: 1.0.0
+    dev: true
+
+  /eslint-plugin-turbo@2.9.14(eslint@9.39.4)(turbo@2.9.6):
+    resolution: {integrity: sha512-ROTlsO1JBJLATxtDNd7t22vviSb0hD8fKnjOO0WRgtxJW3VBRNO3BLAC129GPZSvEvtMH/f71Y2TzrqGPjLpEw==}
+    peerDependencies:
+      eslint: '>6.6.0'
+      turbo: '>2.0.0'
+    dependencies:
+      dotenv: 16.0.3
+      eslint: 9.39.4
+      turbo: 2.9.6
     dev: true
 
   /eslint-plugin-turbo@2.9.6(eslint@9.39.4)(turbo@2.9.6):

@@ -20,5 +20,7 @@ export {
   useSortedTracks,
   useNoiseCancellation,
   useParticipantSounds,
+  useUmamiActivityHeartbeat,
+  ModeSyncProvider,
   type UseNoiseCancellationResult,
 } from './src';

@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "zustand": "5.0.3",
+    "livekit-client": "2.15.6",
     "calls.store": "*",
+    "calls.providers": "*",
     "common.types": "*",
     "common.utils": "*",
     "common.config": "*"

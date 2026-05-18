@@ -44,6 +44,7 @@ const env = {
 
   // Error monitoring (optional)
   VITE_SENTRY_DSN: asString(import.meta.env.VITE_SENTRY_DSN, ''),
+  VITE_GLITCHTIP_DSN: asString(import.meta.env.VITE_GLITCHTIP_DSN, ''),
 
   //LiveKit
   VITE_SERVER_URL_LIVEKIT: asString(import.meta.env.VITE_SERVER_URL_LIVEKIT),

@@ -6,6 +6,8 @@ import { useCannotUseDevice, usePersistentUserChoices } from 'calls.hooks';
 import { openPermissionsDialog } from 'calls.store';
 import { Button } from '@xipkg/button';
 import { SecureVideo } from 'calls.ui';
+import { Settings } from '@xipkg/icons';
+import { isSafari } from 'common.utils';
 import { useCalls } from 'calls.providers';
 
 const UserTileUI = ({
@@ -29,7 +31,12 @@ const UserTileUI = ({
   isMicrophoneDeniedOrPrompted: boolean;
   isVideoInitiated: boolean;
 }) => {
+  const isPermissionsBlocked = isCameraDeniedOrPrompted || isMicrophoneDeniedOrPrompted;
+
   const hintMessage = useMemo(() => {
+    if (isPermissionsBlocked) {
+      return null;
+    }
     if (isCameraDeniedOrPrompted) {
       return isMicrophoneDeniedOrPrompted
         ? 'Камера и микрофон не разрешены'
@@ -51,34 +58,44 @@ const UserTileUI = ({
     isCameraDeniedOrPrompted,
     isMicrophoneDeniedOrPrompted,
     isVideoInitiated,
+    isPermissionsBlocked,
   ]);
+
+  const permissionsInstructions = useMemo(() => {
+    if (isSafari()) {
+      const origin =
+        typeof window !== 'undefined'
+          ? (window.location?.origin?.replace('https://', '') ?? '')
+          : '';
+      return [
+        `Нажмите на иконку ${origin} в адресной строке`,
+        'Снимите запрет на использование камеры и микрофона',
+      ];
+    }
+    return [
+      'Нажмите на значок настроек в адресной строке браузера',
+      'Снимите запрет на использование камеры и микрофона',
+    ];
+  }, []);
 
   const permissionsButtonLabel = useMemo(() => {
     if (!isMicrophoneDeniedOrPrompted && !isCameraDeniedOrPrompted) {
       return null;
     }
     if (isCameraDeniedOrPrompted && isMicrophoneDeniedOrPrompted) {
-      return 'Разрешить камеру и микрофон';
+      return 'Как разрешить камеру и микрофон';
     }
-    if (isCameraDeniedOrPrompted && !isMicrophoneDeniedOrPrompted) {
-      return 'Разрешить камеру';
+    if (isMicrophoneDeniedOrPrompted) {
+      return 'Как разрешить микрофон';
+    }
+    if (isCameraDeniedOrPrompted) {
+      return 'Как разрешить камеру';
     }
     return null;
   }, [isMicrophoneDeniedOrPrompted, isCameraDeniedOrPrompted]);
 
   const renderVideo = useMemo(() => {
-    console.log('UserTile: renderVideo check', {
-      hasTrack: !!videoTrack,
-      isMuted: videoTrack?.isMuted,
-      isCameraDeniedOrPrompted,
-      videoEnabled,
-      isVideoInitiated,
-    });
-
-    // Рендерим видео элемент всегда, если есть трек и камера не заблокирована
-    // Скрываем его через стили, если нужно
     if (!videoTrack || isCameraDeniedOrPrompted) {
-      // console.log('UserTile: not rendering video - no track or camera denied');
       return null;
     }
 
@@ -106,7 +123,7 @@ const UserTileUI = ({
     if (videoTrack && !videoTrack.isMuted && !isCameraDeniedOrPrompted) return null;
 
     return (
-      <div className="bg-gray-40 flex items-center justify-center rounded-2xl">
+      <div className="bg-gray-40 flex items-center justify-center rounded-[16px]">
         <Avatar size="xxl">
           <AvatarImage
             src={`https://api.sovlium.ru/files/users/${userId}/avatar.webp`}
@@ -119,20 +136,38 @@ const UserTileUI = ({
   }, [videoTrack, userId, isCameraDeniedOrPrompted]);
 
   return (
-    <div className="bg-gray-40 relative flex aspect-video h-full w-full items-center justify-center overflow-hidden rounded-2xl">
+    <div className="bg-gray-40 relative flex aspect-video h-full w-full items-center justify-center overflow-hidden rounded-[16px]">
       <div className="relative h-full w-full">
         {renderVideo}
         {renderAvatar}
 
-        {/* Сообщения о состоянии камеры */}
-        {hintMessage && (
+        {isPermissionsBlocked && (
           <div className="bg-opacity-60 absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black p-6 text-center">
-            <p className="text-lg font-normal text-white">{hintMessage}</p>
-            {isCameraDeniedOrPrompted && permissionsButtonLabel && (
-              <Button size="sm" variant="secondary" onClick={openPermissionsDialog}>
+            <p className="text-lg font-normal text-white">
+              Хотите, чтобы другие участники услышали вас?
+            </p>
+            <ol className="list-inside list-decimal space-y-2 text-left text-sm text-white">
+              {permissionsInstructions.map((instruction, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  {index === 0 && !isSafari() && <Settings className="mt-0.5 h-4 w-4 shrink-0" />}
+                  <span>{instruction}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="text-gray-30 text-sm">
+              Камеру или микрофон можно отключить в любой момент.
+            </p>
+            {permissionsButtonLabel && (
+              <Button size="m" variant="ghost" onClick={openPermissionsDialog}>
                 {permissionsButtonLabel}
               </Button>
             )}
+          </div>
+        )}
+
+        {!isPermissionsBlocked && hintMessage && (
+          <div className="bg-opacity-60 absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black p-6 text-center">
+            <p className="text-lg font-normal text-white">{hintMessage}</p>
           </div>
         )}
       </div>
@@ -152,56 +187,17 @@ interface UserTileProps {
 export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
   const { auth } = useCalls();
   const { data: user } = auth.useCurrentUser();
-  console.log(user);
-
-  const { userId } = user;
+  const { userId } = user ?? {};
 
   const {
-    userChoices: { videoEnabled, audioEnabled },
+    userChoices: { videoEnabled },
   } = usePersistentUserChoices();
 
   const videoEl = useRef<HTMLVideoElement>(null);
   const [isVideoInitiated, setIsVideoInitiated] = useState(false);
-  const [isAudioInitiated, setIsAudioInitiated] = useState(false);
 
-  // Проверяем состояние разрешений
   const isCameraDeniedOrPrompted = useCannotUseDevice('videoinput');
   const isMicrophoneDeniedOrPrompted = useCannotUseDevice('audioinput');
-
-  // Отладочная информация
-  useEffect(() => {
-    console.log('UserTile debug:', {
-      audioTrack: audioTrack
-        ? {
-            enabled: !audioTrack.isMuted,
-            deviceId: audioTrack.getDeviceId(),
-            muted: audioTrack.isMuted,
-          }
-        : null,
-      audioEnabled,
-      isAudioInitiated,
-      videoTrack: videoTrack
-        ? {
-            enabled: !videoTrack.isMuted,
-            deviceId: videoTrack.getDeviceId(),
-            muted: videoTrack.isMuted,
-          }
-        : null,
-      videoEnabled,
-      isVideoInitiated,
-      isCameraDeniedOrPrompted,
-      isMicrophoneDeniedOrPrompted,
-    });
-  }, [
-    audioTrack,
-    audioEnabled,
-    isAudioInitiated,
-    videoTrack,
-    videoEnabled,
-    isVideoInitiated,
-    isCameraDeniedOrPrompted,
-    isMicrophoneDeniedOrPrompted,
-  ]);
 
   const facingMode = useMemo(() => {
     if (videoTrack) {
@@ -211,42 +207,21 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
     return 'undefined';
   }, [videoTrack]);
 
-  // Сбрасываем isVideoInitiated только при изменении videoEnabled на false
   useEffect(() => {
     if (!videoEnabled) {
-      console.log('UserTile: video disabled, setting isVideoInitiated to false');
       setIsVideoInitiated(false);
     }
-    // Не устанавливаем true здесь, так как это делается в обработчиках событий трека
   }, [videoEnabled]);
 
-  // Сбрасываем isAudioInitiated только при изменении audioEnabled на false
-  useEffect(() => {
-    if (!audioEnabled) {
-      console.log('UserTile: audio disabled, setting isAudioInitiated to false');
-      setIsAudioInitiated(false);
-    }
-    // Не устанавливаем true здесь, так как это делается в обработчиках событий трека
-  }, [audioEnabled]);
-
-  // Отслеживаем изменение состояния muted трека
   useEffect(() => {
     if (videoTrack) {
       const handleTrackMuted = () => {
-        console.log('UserTile: track muted, setting isVideoInitiated to false');
         setIsVideoInitiated(false);
       };
 
       const handleTrackUnmuted = () => {
-        // Устанавливаем true только если videoEnabled тоже true
         if (videoEnabled) {
-          console.log(
-            'UserTile: track unmuted and video enabled, setting isVideoInitiated to true',
-          );
           setIsVideoInitiated(true);
-          // Трек уже прикреплен к элементу, просто обновляем opacity через стили
-        } else {
-          console.log('UserTile: track unmuted but video disabled, keeping isVideoInitiated false');
         }
       };
 
@@ -260,75 +235,27 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
     }
   }, [videoTrack, videoEnabled]);
 
-  // Отслеживаем изменение состояния muted аудио трека
-  useEffect(() => {
-    if (audioTrack) {
-      const handleAudioTrackMuted = () => {
-        console.log('UserTile: audio track muted, setting isAudioInitiated to false');
-        setIsAudioInitiated(false);
-      };
-
-      const handleAudioTrackUnmuted = () => {
-        // Устанавливаем true только если audioEnabled тоже true
-        if (audioEnabled) {
-          console.log(
-            'UserTile: audio track unmuted and audio enabled, setting isAudioInitiated to true',
-          );
-          setIsAudioInitiated(true);
-        } else {
-          console.log(
-            'UserTile: audio track unmuted but audio disabled, keeping isAudioInitiated false',
-          );
-        }
-      };
-
-      audioTrack.on('muted', handleAudioTrackMuted);
-      audioTrack.on('unmuted', handleAudioTrackUnmuted);
-
-      return () => {
-        audioTrack.off('muted', handleAudioTrackMuted);
-        audioTrack.off('unmuted', handleAudioTrackUnmuted);
-      };
-    }
-  }, [audioTrack, audioEnabled]);
-
-  // Прикрепляем видео трек к элементу с улучшенной обработкой
   useEffect(() => {
     const currentVideoEl = videoEl.current;
     const currentVideoTrack = videoTrack;
 
     const handleVideoLoaded = () => {
       if (currentVideoEl && videoEnabled) {
-        console.log('UserTile: video loaded and enabled, setting isVideoInitiated to true');
         setIsVideoInitiated(true);
         currentVideoEl.style.opacity = '1';
       } else if (currentVideoEl) {
-        console.log('UserTile: video loaded but disabled, keeping isVideoInitiated false');
         currentVideoEl.style.opacity = '0';
       }
     };
 
     const handleVideoError = () => {
-      console.error('Video track error');
       setIsVideoInitiated(false);
     };
 
     if (currentVideoEl && currentVideoTrack && videoEnabled) {
-      console.log('UserTile: attaching video track', {
-        videoEnabled,
-        isMuted: currentVideoTrack.isMuted,
-        hasElement: !!currentVideoEl,
-      });
       currentVideoTrack.attach(currentVideoEl);
       currentVideoEl.addEventListener('loadedmetadata', handleVideoLoaded);
       currentVideoEl.addEventListener('error', handleVideoError);
-    } else {
-      console.log('UserTile: not attaching video track', {
-        hasElement: !!currentVideoEl,
-        hasTrack: !!currentVideoTrack,
-        videoEnabled,
-        isMuted: currentVideoTrack?.isMuted,
-      });
     }
 
     return () => {
@@ -340,7 +267,6 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
         currentVideoEl.removeEventListener('error', handleVideoError);
         currentVideoEl.style.opacity = '0';
       }
-      // Не сбрасываем isVideoInitiated здесь, так как это может происходить при переподключении
     };
   }, [videoTrack, videoEnabled]);
 

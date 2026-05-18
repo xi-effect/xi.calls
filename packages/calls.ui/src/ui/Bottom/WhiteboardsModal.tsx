@@ -13,10 +13,10 @@ import { Badge } from '@xipkg/badge';
 import { Checkbox } from '@xipkg/checkbox';
 import { useState } from 'react';
 import { Close, Search } from '@xipkg/icons';
-import { useNavigate, useParams } from '@tanstack/react-router';
 import { useCallStore } from 'calls.store';
 import { useModeSync } from 'calls.hooks';
-import { useCalls } from 'calls.providers';
+import { useCalls, useCallsNavigation } from 'calls.providers';
+import { useMedia } from 'common.utils';
 
 // Типы материалов определены в common.types -> ClassroomMaterialsT
 
@@ -26,11 +26,15 @@ type WhiteboardsModalProps = {
 };
 
 export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) => {
-  const navigate = useNavigate();
-  const { callId } = useParams({ strict: false });
+  const isMobile = useMedia('(max-width: 720px)');
+  const navigation = useCallsNavigation();
+  const callId = navigation.getCallId();
+  const activeClassroom = useCallStore((state) => state.activeClassroom);
   const updateStore = useCallStore((state) => state.updateStore);
   const { syncModeToOthers } = useModeSync();
   const { auth, room } = useCalls();
+
+  const classroomId = callId ?? activeClassroom;
   const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,15 +44,14 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   // Хук для создания новой доски
   const { addClassroomMaterials } = room.useAddClassroomMaterials();
 
-  // Загружаем список досок кабинета (classroomId == callId)
   const {
     data: boards,
     isLoading,
     isError,
   } = room.useGetClassroomMaterialsList({
-    classroomId: callId || '',
+    classroomId: classroomId || '',
     content_type: 'board',
-    disabled: !callId || !isTutor,
+    disabled: !classroomId || !isTutor,
   });
 
   const filteredWhiteboards = (boards || [])
@@ -64,11 +67,11 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   };
 
   const handleCreateNewBoard = async () => {
-    if (!callId) return;
+    if (!classroomId) return;
 
     try {
-      const result = await addClassroomMaterials.mutateAsync({
-        classroomId: callId,
+      const result = await addClassroomMaterials({
+        classroomId,
         content_kind: 'board',
         student_access_mode: 'read_write', // Режим совместного редактирования
       });
@@ -81,7 +84,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
 
         // Если включен режим совместной работы, отправляем сообщение всем участникам
         if (isCollaborativeMode) {
-          syncModeToOthers('compact', newBoardId.toString(), callId);
+          syncModeToOthers('compact', newBoardId.toString(), classroomId);
         }
       }
     } catch (error) {
@@ -94,25 +97,18 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
       // Обновляем локальный режим и сохраняем информацию о доске
       updateStore('mode', 'compact');
       updateStore('activeBoardId', selectedBoardId.toString());
-      updateStore('activeClassroom', callId);
+      updateStore('activeClassroom', classroomId);
 
       // Если включен режим совместной работы, отправляем сообщение всем участникам
       if (isCollaborativeMode) {
-        syncModeToOthers('compact', selectedBoardId.toString(), callId);
+        syncModeToOthers('compact', selectedBoardId.toString(), classroomId);
       }
 
-      // Переходим на доску
-      if (callId) {
-        navigate({
-          to: '/classrooms/$classroomId/boards/$boardId',
-          params: { classroomId: callId, boardId: selectedBoardId.toString() },
-          search: { call: callId },
-        });
+      // Переходим на доску: всегда в контексте кабинета /classrooms/:id/boards/:boardId
+      if (classroomId) {
+        navigation.navigateToClassroomBoard(classroomId, selectedBoardId.toString());
       } else {
-        navigate({
-          to: '/board/$boardId',
-          params: { boardId: selectedBoardId.toString() },
-        });
+        navigation.navigateToBoard(selectedBoardId.toString());
       }
 
       onOpenChange(false);
@@ -121,21 +117,33 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="w-170">
+      <ModalContent
+        className={
+          isMobile
+            ? 'flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl'
+            : 'w-[680px]'
+        }
+        aria-describedby={undefined}
+      >
         <ModalCloseButton>
           <Close className="fill-gray-80 sm:fill-gray-0" />
         </ModalCloseButton>
-        <ModalHeader className="border-gray-20 border-b">
-          <ModalTitle>Доска для совместной работы</ModalTitle>
+        <ModalHeader className="border-gray-20 shrink-0 border-b">
+          <ModalTitle className="text-m-base sm:text-l-base">
+            Доска для совместной работы
+          </ModalTitle>
           <Input
             before={<Search className="fill-gray-60" />}
             placeholder="Поиск"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="min-h-10"
           />
         </ModalHeader>
 
-        <div className="py-4 pr-2 pl-6">
+        <div
+          className={isMobile ? 'min-h-0 flex-1 overflow-hidden px-4 py-4 pr-2' : 'py-4 pr-2 pl-6'}
+        >
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <p className="text-gray-60">Загрузка досок...</p>
@@ -145,7 +153,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               <p className="text-red-500">Ошибка загрузки досок</p>
             </div>
           ) : (
-            <ScrollArea className="h-full max-h-100 w-full">
+            <ScrollArea className={`h-full w-full ${isMobile ? 'max-h-[50dvh]' : 'max-h-[400px]'}`}>
               <div className="space-y-4 pr-4">
                 {filteredWhiteboards.map((board) => (
                   <div
@@ -155,7 +163,6 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                     }`}
                     onClick={() => handleBoardSelect(board.id)}
                   >
-                    {/* Бейдж статуса доступа, как в CardMaterials */}
                     {board.student_access_mode && (
                       <Badge
                         variant="default"
@@ -181,7 +188,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                   </div>
                 ))}
                 <div
-                  className="bg-brand-0 group flex h-20 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
+                  className="bg-brand-0 group flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
                   onClick={handleCreateNewBoard}
                 >
                   <h3 className="text-s-base text-brand-100 group-hover:text-brand-80">
@@ -193,27 +200,44 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
           )}
         </div>
 
-        <ModalFooter className="border-gray-20 flex flex-col gap-4 border-t">
-          <div className="flex items-center gap-2">
+        <ModalFooter className="border-gray-20 flex shrink-0 flex-col gap-4 border-t">
+          <div className="flex items-start gap-2">
             <Checkbox
               id="collaborative-mode"
               checked={isCollaborativeMode}
               onCheckedChange={(checked) => setIsCollaborativeMode(checked === true)}
+              className="mt-0.5"
             />
             <label
               htmlFor="collaborative-mode"
               className="text-s-base cursor-pointer text-gray-100"
             >
-              Открыть доску в режиме совместной работы
-              <br />
-              для всех участников звонка
+              {isMobile ? (
+                'Открыть доску в режиме совместной работы для всех участников звонка'
+              ) : (
+                <>
+                  Открыть доску в режиме совместной работы
+                  <br />
+                  для всех участников звонка
+                </>
+              )}
             </label>
           </div>
-          <div className="flex gap-2">
-            <Button size="m" onClick={handleConfirm} disabled={!selectedBoardId}>
+          <div className={`flex gap-2 ${isMobile ? 'flex-col' : ''}`}>
+            <Button
+              size="m"
+              onClick={handleConfirm}
+              disabled={!selectedBoardId}
+              className={isMobile ? 'min-h-11 w-full' : ''}
+            >
               Выбрать
             </Button>
-            <Button size="m" variant="secondary" onClick={() => onOpenChange(false)}>
+            <Button
+              size="m"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+              className={isMobile ? 'min-h-11 w-full' : ''}
+            >
               Отменить
             </Button>
           </div>

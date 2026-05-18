@@ -13,6 +13,8 @@
 @source "../../../packages/calls.ui/src";
 @source "../../../packages/calls/src";
 @source "../../../packages/calls.chat/src";
+@source "../../../packages/calls.compactview/src";
+@source "../../../packages/calls.hooks/src";
 @source "../../../packages/calls/node_modules/@xipkg";
 @source "../../../packages/calls.ui/node_modules/@xipkg";
 

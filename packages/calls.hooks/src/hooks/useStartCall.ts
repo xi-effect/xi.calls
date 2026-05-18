@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallStore } from 'calls.store';
-import { useNavigate } from '@tanstack/react-router';
-import { useCalls } from 'calls.providers';
+import { useCalls, useCallsNavigation } from 'calls.providers';
 import { StartCallDataT } from 'common.types';
 
 export const useStartCall = () => {
-  const navigate = useNavigate();
-
+  const navigation = useCallsNavigation();
   const { useCurrentUser } = useCalls().auth;
   const { createTokenByStudent, createTokenByTutor, reactivateCall, isLoading, error } =
     useCalls().callAuth;
@@ -23,10 +21,7 @@ export const useStartCall = () => {
     if (tokenResponse) {
       updateStore('token', tokenResponse);
 
-      navigate({
-        to: '/call/$callId',
-        params: { callId: data.classroom_id },
-      });
+      navigation.navigateToCall(data.classroom_id);
     }
 
     return null;

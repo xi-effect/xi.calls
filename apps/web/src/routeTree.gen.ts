@@ -11,6 +11,10 @@
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as AboutRouteImport } from './pages/about'
 import { Route as IndexRouteImport } from './pages/index'
+import { Route as CallCallIdRouteImport } from './pages/call/$callId'
+import { Route as BoardBoardIdRouteImport } from './pages/board/$boardId'
+import { Route as ClassroomsClassroomIdIndexRouteImport } from './pages/classrooms/$classroomId/index'
+import { Route as ClassroomsClassroomIdBoardsBoardIdRouteImport } from './pages/classrooms/$classroomId/boards/$boardId'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -22,31 +26,88 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CallCallIdRoute = CallCallIdRouteImport.update({
+  id: '/call/$callId',
+  path: '/call/$callId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoardBoardIdRoute = BoardBoardIdRouteImport.update({
+  id: '/board/$boardId',
+  path: '/board/$boardId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassroomsClassroomIdIndexRoute =
+  ClassroomsClassroomIdIndexRouteImport.update({
+    id: '/classrooms/$classroomId/',
+    path: '/classrooms/$classroomId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ClassroomsClassroomIdBoardsBoardIdRoute =
+  ClassroomsClassroomIdBoardsBoardIdRouteImport.update({
+    id: '/classrooms/$classroomId/boards/$boardId',
+    path: '/classrooms/$classroomId/boards/$boardId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/board/$boardId': typeof BoardBoardIdRoute
+  '/call/$callId': typeof CallCallIdRoute
+  '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
+  '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/board/$boardId': typeof BoardBoardIdRoute
+  '/call/$callId': typeof CallCallIdRoute
+  '/classrooms/$classroomId': typeof ClassroomsClassroomIdIndexRoute
+  '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/board/$boardId': typeof BoardBoardIdRoute
+  '/call/$callId': typeof CallCallIdRoute
+  '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
+  '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/board/$boardId'
+    | '/call/$callId'
+    | '/classrooms/$classroomId/'
+    | '/classrooms/$classroomId/boards/$boardId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | '/about'
+    | '/board/$boardId'
+    | '/call/$callId'
+    | '/classrooms/$classroomId'
+    | '/classrooms/$classroomId/boards/$boardId'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/board/$boardId'
+    | '/call/$callId'
+    | '/classrooms/$classroomId/'
+    | '/classrooms/$classroomId/boards/$boardId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  BoardBoardIdRoute: typeof BoardBoardIdRoute
+  CallCallIdRoute: typeof CallCallIdRoute
+  ClassroomsClassroomIdIndexRoute: typeof ClassroomsClassroomIdIndexRoute
+  ClassroomsClassroomIdBoardsBoardIdRoute: typeof ClassroomsClassroomIdBoardsBoardIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +126,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/call/$callId': {
+      id: '/call/$callId'
+      path: '/call/$callId'
+      fullPath: '/call/$callId'
+      preLoaderRoute: typeof CallCallIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/board/$boardId': {
+      id: '/board/$boardId'
+      path: '/board/$boardId'
+      fullPath: '/board/$boardId'
+      preLoaderRoute: typeof BoardBoardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/classrooms/$classroomId/': {
+      id: '/classrooms/$classroomId/'
+      path: '/classrooms/$classroomId'
+      fullPath: '/classrooms/$classroomId/'
+      preLoaderRoute: typeof ClassroomsClassroomIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/classrooms/$classroomId/boards/$boardId': {
+      id: '/classrooms/$classroomId/boards/$boardId'
+      path: '/classrooms/$classroomId/boards/$boardId'
+      fullPath: '/classrooms/$classroomId/boards/$boardId'
+      preLoaderRoute: typeof ClassroomsClassroomIdBoardsBoardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  BoardBoardIdRoute: BoardBoardIdRoute,
+  CallCallIdRoute: CallCallIdRoute,
+  ClassroomsClassroomIdIndexRoute: ClassroomsClassroomIdIndexRoute,
+  ClassroomsClassroomIdBoardsBoardIdRoute:
+    ClassroomsClassroomIdBoardsBoardIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
