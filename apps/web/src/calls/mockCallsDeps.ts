@@ -1,4 +1,4 @@
-import type { CallsProviderDepsT } from 'calls.providers';
+import type { CallsProviderDepsT } from '@xipkg/calls-providers';
 
 const DEMO_CLASSROOM_NAME = 'Демо-кабинет (без бэкенда)';
 

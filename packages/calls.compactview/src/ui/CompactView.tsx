@@ -9,18 +9,18 @@ import {
   DragOverlay,
   useDndMonitor,
 } from '@dnd-kit/core';
-import { useCallsNavigation } from 'calls.providers';
+import { useCallsNavigation } from '@xipkg/calls-providers';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
-import { Chat, useChatStore } from 'calls.chat';
-import { PermissionsDialog } from 'calls.ui';
-import { useCallStore, useFeaturesStore, useFocusModeStore } from 'calls.store';
-import type { CornerT } from 'calls.store';
-import { useMedia } from 'common.utils';
-import { useRoom } from 'calls.providers';
+import { Chat, useChatStore } from '@xipkg/calls-chat';
+import { PermissionsDialog } from '@xipkg/calls-ui';
+import { useCallStore, useFeaturesStore, useFocusModeStore } from '@xipkg/calls-store';
+import type { CornerT } from '@xipkg/calls-store';
+import { useMedia } from '@xipkg/calls-utils';
+import { useRoom } from '@xipkg/calls-providers';
 import { PiPProvider, usePiP } from '../providers';
-import { useParticipantSounds, useParticipantJoinSync } from 'calls.hooks';
+import { useParticipantSounds, useParticipantJoinSync } from '@xipkg/calls-hooks';
 
 type CompactViewPropsT = {
   children: React.ReactNode;

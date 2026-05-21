@@ -1,5 +1,5 @@
 {
-  "name": "calls.compactview",
+  "name": "@xipkg/calls-compactview",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -16,15 +16,15 @@
     "@xipkg/icons": "^2.7.0",
     "@xipkg/textarea": "1.1.0",
     "@xipkg/button": "3.2.0",
-    "calls.ui": "*",
-    "common.utils": "*",
-    "common.types": "*",
-    "common.config": "*",
-    "calls.providers": "*",
-    "calls.store": "*",
-    "calls.hooks": "*",
-    "calls.chat": "*",
-    "calls.risehand": "*"
+    "@xipkg/calls-ui": "*",
+    "@xipkg/calls-utils": "*",
+    "@xipkg/calls-types": "*",
+    "@xipkg/calls-config": "*",
+    "@xipkg/calls-providers": "*",
+    "@xipkg/calls-store": "*",
+    "@xipkg/calls-hooks": "*",
+    "@xipkg/calls-chat": "*",
+    "@xipkg/calls-risehand": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

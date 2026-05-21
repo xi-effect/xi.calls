@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { useLocalParticipant } from '@livekit/components-react';
 import { useDocumentPiP, useCompactNavigation } from '../hooks';
 import { PiPCompactCall } from '../ui';
-import { useCallStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
-import { useMedia } from 'common.utils';
+import { useCallStore } from '@xipkg/calls-store';
+import { useRoom } from '@xipkg/calls-providers';
+import { useMedia } from '@xipkg/calls-utils';
 import {
   getPipHeightExpandedPx,
   PIP_EXTRA_HEIGHT_PX,

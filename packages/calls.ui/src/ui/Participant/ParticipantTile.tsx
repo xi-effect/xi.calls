@@ -27,10 +27,10 @@ import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
-import { useCallStore } from 'calls.store';
-import { isLocal } from 'common.utils';
+import { useCallStore } from '@xipkg/calls-store';
+import { isLocal } from '@xipkg/calls-utils';
 import { cn } from '@xipkg/utils';
-import { useMedia } from 'common.utils';
+import { useMedia } from '@xipkg/calls-utils';
 
 type TrackRefContextIfNeededPropsT = {
   trackRef?: TrackReferenceOrPlaceholder;

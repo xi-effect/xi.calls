@@ -35,20 +35,13 @@ monorepo-starter/
 ├── apps/                       # Приложения
 │   └── web/                    # Основное фронтенд-приложение
 ├── packages/                   # Переиспользуемые пакеты
-│   ├── common.*                # Общие компоненты и утилиты
-│   │   ├── common.api/         # API клиенты и интеграции
-│   │   ├── common.auth/        # Аутентификация
-│   │   ├── common.config/      # Конфигурация
-│   │   ├── common.entities/    # Общие сущности и типы
-│   │   ├── common.eslint/      # Конфигурация ESLint
-│   │   ├── common.env/         # Переменные окружения
-│   │   ├── common.services/    # Общие сервисы
-│   │   ├── common.sockets/     # WebSocket клиенты
-│   │   ├── common.theme/       # Тема приложения
-│   │   ├── common.typescript/  # Конфигурация TypeScript
-│   │   ├── common.ui/          # Базовые UI компоненты
-│   │   ├── common.utils/       # Утилиты
-│   │   └── common.types/       # Общие типы
+│   ├── calls.*                 # Пакеты ВКС (@xipkg/calls-*)
+│   │   ├── calls/              # @xipkg/calls — основной UI
+│   │   ├── calls.config/       # @xipkg/calls-config
+│   │   ├── calls.types/        # @xipkg/calls-types
+│   │   ├── calls.utils/        # @xipkg/calls-utils
+│   │   └── …                   # hooks, ui, store, providers, …
+│   └── common.*                # Инфраструктура монорепо (eslint, env, typescript)
 ```
 
 ## 🛠️ Технологии
@@ -168,6 +161,7 @@ VITE_DEVTOOLS_ENABLED=true
 - [TanStack Router документация](https://tanstack.com/router)
 - [TanStack Query документация](https://tanstack.com/query)
 - [Vite документация](https://vite.dev)
+- [Миграции пакетов calls](./docs/migrations/README.md)
 
 ## 📄 Лицензия
 

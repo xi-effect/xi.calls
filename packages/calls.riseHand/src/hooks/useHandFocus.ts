@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Track } from 'livekit-client';
-import { useCallStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
+import { useCallStore } from '@xipkg/calls-store';
+import { useRoom } from '@xipkg/calls-providers';
 import { useMaybeLayoutContext } from '@livekit/components-react';
 
 export const useHandFocus = () => {

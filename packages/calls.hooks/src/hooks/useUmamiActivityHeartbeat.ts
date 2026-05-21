@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useCallStore } from 'calls.store';
-import { useCallsNavigation } from 'calls.providers';
+import { useCallStore } from '@xipkg/calls-store';
+import { useCallsNavigation } from '@xipkg/calls-providers';
 
 const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000; // 5 минут
 

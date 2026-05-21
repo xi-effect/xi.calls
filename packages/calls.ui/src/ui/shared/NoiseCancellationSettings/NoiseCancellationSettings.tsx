@@ -1,9 +1,9 @@
 import { Label } from '@xipkg/label';
 import { Switch } from '@xipkg/switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@xipkg/select';
-import type { UseNoiseCancellationResult } from 'calls.hooks';
-import type { NoiseCancellationMode } from 'common.types';
-import { NOISE_CANCELLATION_MODES } from 'common.types';
+import type { UseNoiseCancellationResult } from '@xipkg/calls-hooks';
+import type { NoiseCancellationMode } from '@xipkg/calls-types';
+import { NOISE_CANCELLATION_MODES } from '@xipkg/calls-types';
 
 const MODE_LABELS: Record<NoiseCancellationMode, string> = {
   off: 'Выключено',

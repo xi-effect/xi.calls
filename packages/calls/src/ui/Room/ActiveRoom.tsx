@@ -1,12 +1,12 @@
 import { useLocalParticipant } from '@livekit/components-react';
 import { LocalVideoTrack } from 'livekit-client';
-import { Chat } from 'calls.chat';
-import { UpBar, VideoGrid, CallsOnboarding } from 'calls.ui';
-import { useCallStore, useFeaturesStore } from 'calls.store';
-import { useVideoBlur, useParticipantJoinSync } from 'calls.hooks';
-import { useHandFocus } from 'calls.risehand';
+import { Chat } from '@xipkg/calls-chat';
+import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
+import { useCallStore, useFeaturesStore } from '@xipkg/calls-store';
+import { useVideoBlur, useParticipantJoinSync } from '@xipkg/calls-hooks';
+import { useHandFocus } from '@xipkg/calls-risehand';
 import { BottomBar } from '../Bottom/BottomBar';
-import 'calls.ui/video-security.css';
+import '@xipkg/calls-ui/video-security.css';
 
 export const ActiveRoom = () => {
   const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);

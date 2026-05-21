@@ -1,6 +1,11 @@
 export { CallsProvider, useCalls } from './CallsProvider';
 export { RoomProvider, useRoom } from './RoomProvider';
 export type { CallsProviderDepsT } from './CallsProvider';
+export {
+  CallsRuntimeConfigProvider,
+  useCallsRuntimeConfig,
+  defaultCallsRuntimeConfig,
+} from './CallsRuntimeConfigProvider';
 export { LiveKitProvider } from './LiveKitProvider';
 export { CallsNavigationProvider, useCallsNavigation } from './navigation/CallsNavigationProvider';
 export { CallsSessionProvider, useCallsSession } from './session/CallsSessionProvider';
@@ -10,4 +15,7 @@ export type {
   CallsSessionPortT,
   ConferenceMetadataPortT,
   CallsAppConfigPortT,
+  CallsLiveKitConfigT,
+  CallsNoiseCancellationConfigT,
+  CallsRuntimeConfigT,
 } from './config';

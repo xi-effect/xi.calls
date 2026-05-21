@@ -8,6 +8,9 @@ export {
   useCallsNavigation,
   CallsSessionProvider,
   useCallsSession,
+  CallsRuntimeConfigProvider,
+  useCallsRuntimeConfig,
+  defaultCallsRuntimeConfig,
 } from './src';
 export type {
   CallsProviderDepsT,
@@ -16,4 +19,7 @@ export type {
   CallsSessionPortT,
   ConferenceMetadataPortT,
   CallsAppConfigPortT,
+  CallsLiveKitConfigT,
+  CallsNoiseCancellationConfigT,
+  CallsRuntimeConfigT,
 } from './src';

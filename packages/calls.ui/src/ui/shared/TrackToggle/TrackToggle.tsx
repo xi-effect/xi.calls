@@ -12,8 +12,8 @@ import {
 } from '@xipkg/icons';
 import { useMemo } from 'react';
 import { cn } from '@xipkg/utils';
-import { useCannotUseDevice } from 'calls.hooks';
-import { openPermissionsDialog } from 'calls.store';
+import { useCannotUseDevice } from '@xipkg/calls-hooks';
+import { openPermissionsDialog } from '@xipkg/calls-store';
 
 interface ExtendedTrackToggleProps extends TrackToggleProps<any> {
   microTrack?: LocalAudioTrack;

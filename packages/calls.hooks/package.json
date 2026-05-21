@@ -1,5 +1,5 @@
 {
-  "name": "calls.hooks",
+  "name": "@xipkg/calls-hooks",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -13,11 +13,11 @@
   "dependencies": {
     "zustand": "5.0.3",
     "livekit-client": "2.15.6",
-    "calls.store": "*",
-    "calls.providers": "*",
-    "common.types": "*",
-    "common.utils": "*",
-    "common.config": "*"
+    "@xipkg/calls-store": "*",
+    "@xipkg/calls-providers": "*",
+    "@xipkg/calls-types": "*",
+    "@xipkg/calls-utils": "*",
+    "@xipkg/calls-config": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
@@ -35,11 +35,11 @@
     "globals": "^15.14.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
-    "calls.providers": "*"
+    "@xipkg/calls-providers": "*"
   },
   "peerDependencies": {
     "react": "19"
   },
-  "description": "calls.hooks",
+  "description": "@xipkg/calls-hooks",
   "author": "xi.effect"
 }

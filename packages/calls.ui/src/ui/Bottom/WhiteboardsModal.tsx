@@ -13,12 +13,12 @@ import { Badge } from '@xipkg/badge';
 import { Checkbox } from '@xipkg/checkbox';
 import { useState } from 'react';
 import { Close, Search } from '@xipkg/icons';
-import { useCallStore } from 'calls.store';
-import { useModeSync } from 'calls.hooks';
-import { useCalls, useCallsNavigation } from 'calls.providers';
-import { useMedia } from 'common.utils';
+import { useCallStore } from '@xipkg/calls-store';
+import { useModeSync } from '@xipkg/calls-hooks';
+import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useMedia } from '@xipkg/calls-utils';
 
-// Типы материалов определены в common.types -> ClassroomMaterialsT
+// Типы материалов определены в @xipkg/calls-types -> ClassroomMaterialsT
 
 type WhiteboardsModalProps = {
   open: boolean;

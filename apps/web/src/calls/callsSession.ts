@@ -1,5 +1,5 @@
-import type { CallsSessionPortT } from 'calls.providers';
-import { useChatStore } from 'calls.chat';
+import type { CallsSessionPortT } from '@xipkg/calls-providers';
+import { useChatStore } from '@xipkg/calls-chat';
 
 export const callsSessionPort: CallsSessionPortT = {
   clearConferenceUiState: () => {

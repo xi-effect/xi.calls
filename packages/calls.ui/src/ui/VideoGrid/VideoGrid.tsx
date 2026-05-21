@@ -12,8 +12,8 @@ import {
 } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
 import { calcMaxTilesPerPage, CarouselContainer, GridLayout } from './VideoGridLayout';
-import { useCallStore } from 'calls.store';
-import { useSortedTracks, useSize } from 'calls.hooks';
+import { useCallStore } from '@xipkg/calls-store';
+import { useSortedTracks, useSize } from '@xipkg/calls-hooks';
 import '../../styles/grid.css';
 
 const GRID_GAP = 8;

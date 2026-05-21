@@ -6,7 +6,7 @@ import { usePiP } from '../providers';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
-import { ParticipantTile } from 'calls.ui';
+import { ParticipantTile } from '@xipkg/calls-ui';
 import { TILE_GAP_PX, TILE_HEIGHT_16_9_PX } from '../constants';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 

@@ -6,11 +6,11 @@ import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert
 import { InfoCircle } from '@xipkg/icons';
 import { MediaDeviceMenu } from './MediaDeviceMenu';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { UseNoiseCancellationResult, usePersistentUserChoices } from 'calls.hooks';
-import { useCallStore, usePermissionsStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
+import { UseNoiseCancellationResult, usePersistentUserChoices } from '@xipkg/calls-hooks';
+import { useCallStore, usePermissionsStore } from '@xipkg/calls-store';
+import { useRoom } from '@xipkg/calls-providers';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
-import { NoiseCancellationSettings } from 'calls.ui';
+import { NoiseCancellationSettings } from '@xipkg/calls-ui';
 
 interface MediaDevicesProps {
   audioTrack?: LocalAudioTrack;

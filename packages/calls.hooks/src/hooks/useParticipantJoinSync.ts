@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { RoomEvent, RemoteParticipant } from 'livekit-client';
-import { useRoom, useCalls, useCallsNavigation } from 'calls.providers';
-import { useCallStore } from 'calls.store';
+import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useCallStore } from '@xipkg/calls-store';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
 
 const STATE_REQUEST_MESSAGE_TYPE = 'state_request';

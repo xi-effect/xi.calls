@@ -6,7 +6,7 @@ import {
   LocalUserChoices as LocalUserChoicesLK,
 } from '@livekit/components-core';
 import { VideoQuality } from 'livekit-client';
-import type { NoiseCancellationMode } from 'common.types';
+import type { NoiseCancellationMode } from '@xipkg/calls-types';
 
 export type VideoResolution = 'h720' | 'h360' | 'h180';
 

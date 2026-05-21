@@ -3,7 +3,7 @@ import type { LocalAudioTrack, RemoteAudioTrack } from 'livekit-client';
 import { Participant, Track } from 'livekit-client';
 import { ChevronBottom, MicrophoneOff, RedLine } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
-import { ParticipantName, TrackMutedIndicator, RaisedHandIndicator } from 'calls.ui';
+import { ParticipantName, TrackMutedIndicator, RaisedHandIndicator } from '@xipkg/calls-ui';
 import { cn } from '@xipkg/utils';
 
 type CompactCallCollapsedBarProps = {

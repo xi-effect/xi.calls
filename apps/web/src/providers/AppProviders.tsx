@@ -1,4 +1,4 @@
-import { QueryProvider } from 'common.config';
+import { QueryProvider } from '../api';
 import { StrictMode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { RouterRoot } from './RouterWithAuth';

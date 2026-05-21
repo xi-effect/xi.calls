@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { CompactView } from 'calls.compactview';
+import { CompactView } from '@xipkg/calls-compactview';
 import { CallsDemoShell } from '../../../../calls/CallsDemoShell';
 import { DemoChrome } from '../../../../calls/DemoChrome';
 

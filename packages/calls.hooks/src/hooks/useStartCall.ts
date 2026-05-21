@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallStore } from 'calls.store';
-import { useCalls, useCallsNavigation } from 'calls.providers';
-import { StartCallDataT } from 'common.types';
+import { useCallStore } from '@xipkg/calls-store';
+import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { StartCallDataT } from '@xipkg/calls-types';
 
 export const useStartCall = () => {
   const navigation = useCallsNavigation();

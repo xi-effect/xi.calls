@@ -8,9 +8,9 @@ import {
   ModalFooter,
 } from '@xipkg/modal';
 import { Button } from '@xipkg/button';
-import { usePermissionsStore, closePermissionsDialog } from 'calls.store';
-import { useWatchPermissions } from 'calls.hooks';
-import { isSafari, isFireFox } from 'common.utils';
+import { usePermissionsStore, closePermissionsDialog } from '@xipkg/calls-store';
+import { useWatchPermissions } from '@xipkg/calls-hooks';
+import { isSafari, isFireFox } from '@xipkg/calls-utils';
 import { Settings, Close } from '@xipkg/icons';
 
 /** Ссылки на официальные инструкции по выдаче прав в браузерах */

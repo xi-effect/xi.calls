@@ -1,17 +1,19 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { serverUrl, serverUrlDev, isDevMode, devToken } from 'common.config';
-import { useCallStore } from 'calls.store';
+import { useCallStore } from '@xipkg/calls-store';
 import { useEffect, useRef } from 'react';
 import { Track } from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
 import { useCallsSession } from './session/CallsSessionProvider';
+import { useCallsRuntimeConfig } from './CallsRuntimeConfigProvider';
 
 type LiveKitProviderPropsT = {
   children: React.ReactNode;
 };
 
 export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
+  const { liveKit } = useCallsRuntimeConfig();
+  const { serverUrl, serverUrlDev, isDevMode, devToken } = liveKit;
   const { room } = useRoom();
   const navigation = useCallsNavigation();
   const { clearConferenceUiState } = useCallsSession();

@@ -7,11 +7,11 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallStore } from 'calls.store';
+import { useCallStore } from '@xipkg/calls-store';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
-import { useVideoBlur, useModeSync } from 'calls.hooks';
-import { useRoom, useCalls, useCallsNavigation } from 'calls.providers';
-import { useMedia } from 'common.utils';
+import { useVideoBlur, useModeSync } from '@xipkg/calls-hooks';
+import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useMedia } from '@xipkg/calls-utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
 import {

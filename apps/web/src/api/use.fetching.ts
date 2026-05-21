@@ -16,7 +16,7 @@ type UseFetchingProps = {
   disabled?: boolean;
   urlParams?: Record<string, unknown>;
   queryKey: (string | number)[];
-  data?: any; // Новый параметр для передачи тела запроса
+  data?: any;
 };
 
 export const useFetching = ({

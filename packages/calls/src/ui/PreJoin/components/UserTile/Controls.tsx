@@ -1,8 +1,8 @@
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback, useMemo } from 'react';
 
-import { DevicesBar } from 'calls.ui';
-import { usePersistentUserChoices } from 'calls.hooks';
+import { DevicesBar } from '@xipkg/calls-ui';
+import { usePersistentUserChoices } from '@xipkg/calls-hooks';
 
 type ControlsProps = {
   audioTrack?: LocalAudioTrack;

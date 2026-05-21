@@ -1,5 +1,5 @@
-import { useUserChoicesStore } from 'calls.store';
-import type { VideoResolution } from 'calls.store';
+import { useUserChoicesStore } from '@xipkg/calls-store';
+import type { VideoResolution } from '@xipkg/calls-store';
 import type { VideoQuality } from 'livekit-client';
 
 export function usePersistentUserChoices() {

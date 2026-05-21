@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useCallStore } from 'calls.store';
+import { useCallStore } from '@xipkg/calls-store';
 import { useMediaDevices } from '@livekit/components-react';
 
 export const useInitUserDevices = () => {

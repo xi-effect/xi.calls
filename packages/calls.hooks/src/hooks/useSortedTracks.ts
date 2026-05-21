@@ -1,8 +1,8 @@
 import { useMemo, useRef } from 'react';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { Track } from 'livekit-client';
-import { useCallStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
+import { useCallStore } from '@xipkg/calls-store';
+import { useRoom } from '@xipkg/calls-providers';
 
 const SPEAKER_STICKY_MS = 10_000;
 

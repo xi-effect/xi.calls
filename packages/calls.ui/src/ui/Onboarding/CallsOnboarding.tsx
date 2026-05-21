@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Close } from '@xipkg/icons';
-import { useCallStore } from 'calls.store';
-import { ONBOARDING_IDS } from 'common.config';
+import { useCallStore } from '@xipkg/calls-store';
+import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { driver, type DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import '../../styles/driver.css';

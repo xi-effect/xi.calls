@@ -1,5 +1,5 @@
 {
-  "name": "calls.providers",
+  "name": "@xipkg/calls-providers",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -11,9 +11,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "common.types": "*",
-    "common.config": "*",
-    "calls.store": "*"
+    "@xipkg/calls-types": "*",
+    "@xipkg/calls-store": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

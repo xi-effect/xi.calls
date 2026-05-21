@@ -1,5 +1,5 @@
 {
-  "name": "calls.risehand",
+  "name": "@xipkg/calls-risehand",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -13,11 +13,11 @@
   "dependencies": {
     "@xipkg/icons": "^2.7.0",
     "@xipkg/button": "3.2.0",
-    "calls.ui": "*",
-    "common.utils": "*",
-    "common.config": "*",
-    "calls.providers": "*",
-    "calls.store": "*"
+    "@xipkg/calls-ui": "*",
+    "@xipkg/calls-utils": "*",
+    "@xipkg/calls-config": "*",
+    "@xipkg/calls-providers": "*",
+    "@xipkg/calls-store": "*"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

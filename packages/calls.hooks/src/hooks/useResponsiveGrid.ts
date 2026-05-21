@@ -4,7 +4,7 @@ import {
   type GridBreakpoint,
   getGridLayoutsForScreen,
   getOptimalGridLayout,
-} from 'common.config';
+} from '@xipkg/calls-config';
 
 /**
  * Улучшенный хук для адаптивных настроек сетки с поддержкой кастомных gridLayouts

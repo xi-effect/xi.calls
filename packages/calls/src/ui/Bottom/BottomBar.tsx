@@ -6,15 +6,15 @@ import {
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback } from 'react';
-import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from 'calls.ui';
-import { ChatButton, useChatStore } from 'calls.chat';
-import { useCallStore, useFeaturesStore } from 'calls.store';
+import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
+import { ChatButton, useChatStore } from '@xipkg/calls-chat';
+import { useCallStore, useFeaturesStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
-import { useRoom, useCalls, useCallsNavigation } from 'calls.providers';
-import { RaiseHandButton } from 'calls.risehand';
+import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { RaiseHandButton } from '@xipkg/calls-risehand';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({

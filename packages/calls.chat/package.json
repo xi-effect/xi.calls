@@ -1,5 +1,5 @@
 {
-  "name": "calls.chat",
+  "name": "@xipkg/calls-chat",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -16,13 +16,13 @@
     "@xipkg/icons": "^2.7.0",
     "@xipkg/textarea": "1.1.0",
     "@xipkg/button": "3.2.0",
-    "calls.ui": "*",
-    "common.utils": "*",
-    "common.types": "*",
-    "common.config": "*",
-    "calls.providers": "*",
-    "calls.store": "*",
-    "calls.hooks": "*",
+    "@xipkg/calls-ui": "*",
+    "@xipkg/calls-utils": "*",
+    "@xipkg/calls-types": "*",
+    "@xipkg/calls-config": "*",
+    "@xipkg/calls-providers": "*",
+    "@xipkg/calls-store": "*",
+    "@xipkg/calls-hooks": "*",
     "zustand": "5.0.3"
   },
   "devDependencies": {

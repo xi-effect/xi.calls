@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StartCallDataT } from 'common.types';
+import { StartCallDataT } from '@xipkg/calls-types';
 
 export type AuthPortT = {
   useCurrentUser(disabled?: boolean): {

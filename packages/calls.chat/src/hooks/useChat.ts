@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { useLiveKitDataChannel, useLiveKitDataChannelListener } from 'calls.hooks';
-import { useRoom } from 'calls.providers';
-import { useSoundEffectsStore } from 'calls.store';
-import { playSound } from 'common.utils';
+import { useLiveKitDataChannel, useLiveKitDataChannelListener } from '@xipkg/calls-hooks';
+import { useRoom } from '@xipkg/calls-providers';
+import { useSoundEffectsStore } from '@xipkg/calls-store';
+import { playSound } from '@xipkg/calls-utils';
 import { useChatStore } from '../store';
 
 const CHAT_MESSAGE_TYPE = 'chat_message';

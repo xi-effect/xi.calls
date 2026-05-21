@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Room, Track, LocalAudioTrack } from 'livekit-client';
-import { useUserChoicesStore } from 'calls.store';
-import type { NoiseCancellationMode } from 'common.types';
-import { allowKrispNoiseCancellation, noiseCancellationFeatureEnabled } from 'common.config';
-import { trackNoiseCancellationEvent, NOISE_CANCELLATION_EVENTS } from 'common.utils';
+import { useUserChoicesStore } from '@xipkg/calls-store';
+import type { NoiseCancellationMode } from '@xipkg/calls-types';
+import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
+import { trackNoiseCancellationEvent, NOISE_CANCELLATION_EVENTS } from '@xipkg/calls-utils';
 
 /** Сообщение при ошибке аутентификации Krisp (404 / нет LiveKit Cloud). */
 const KRISP_AUTH_ERROR_MESSAGE = 'Усиленное шумоподавление недоступно (требуется LiveKit Cloud).';
@@ -70,6 +70,11 @@ export function useNoiseCancellation(
   room: Room | null,
   options: UseNoiseCancellationOptions = {},
 ): UseNoiseCancellationResult {
+  const { noiseCancellation: noiseCancellationConfig } = useCallsRuntimeConfig();
+  const {
+    featureEnabled: noiseCancellationFeatureEnabled,
+    allowKrisp: allowKrispNoiseCancellation,
+  } = noiseCancellationConfig;
   const { localAudioTrack: fallbackLocalAudioTrack } = options;
 
   const noiseCancellationEnabled = useUserChoicesStore((s) => s.noiseCancellationEnabled ?? false);

@@ -21,11 +21,14 @@ import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Track, LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 
-import { useUserChoicesStore, usePermissionsStore, openPermissionsDialog } from 'calls.store';
-import { useRoom, useCallsNavigation } from 'calls.providers';
-import { useNoiseCancellation } from 'calls.hooks';
+import {
+  useUserChoicesStore,
+  usePermissionsStore,
+  openPermissionsDialog,
+} from '@xipkg/calls-store';
+import { useRoom, useCallsNavigation, useCallsRuntimeConfig } from '@xipkg/calls-providers';
+import { useNoiseCancellation } from '@xipkg/calls-hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
-import { noiseCancellationFeatureEnabled } from 'common.config';
 import { Button } from '@xipkg/button';
 
 type SettingsPropsT = {
@@ -83,6 +86,9 @@ const DeviceSelector = ({
 
 export const Settings = ({ children }: SettingsPropsT) => {
   const { room } = useRoom();
+  const {
+    noiseCancellation: { featureEnabled: noiseCancellationFeatureEnabled },
+  } = useCallsRuntimeConfig();
   const { microphoneTrack, cameraTrack, isMicrophoneEnabled, isCameraEnabled } =
     useLocalParticipant();
   const noiseCancellation = useNoiseCancellation(room);

@@ -1,23 +1,25 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { TooltipProvider } from '@xipkg/tooltip';
 import { Toaster } from 'sonner';
 import {
   CallsNavigationProvider,
   CallsSessionProvider,
   CallsProvider,
+  CallsRuntimeConfigProvider,
+  useCallsRuntimeConfig,
   RoomProvider,
   LiveKitProvider,
-} from 'calls.providers';
-import { ModeSyncProvider } from 'calls.hooks';
-import { useCallStore, useFeaturesStore } from 'calls.store';
-import { devToken, isDevMode } from 'common.config';
+} from '@xipkg/calls-providers';
+import { ModeSyncProvider } from '@xipkg/calls-hooks';
+import { useCallStore, useFeaturesStore } from '@xipkg/calls-store';
 import { useTanstackCallsNavigation } from './useTanstackCallsNavigation';
 import { callsSessionPort } from './callsSession';
 import { createMockCallsDeps } from './mockCallsDeps';
+import { createCallsRuntimeConfigFromEnv } from './createCallsRuntimeConfig';
 
 import '@livekit/components-styles';
-import 'calls.ui/video-security.css';
-import 'calls.ui/driver.css';
+import '@xipkg/calls-ui/video-security.css';
+import '@xipkg/calls-ui/driver.css';
 
 type CallsDemoShellPropsT = {
   children: ReactNode;
@@ -25,6 +27,9 @@ type CallsDemoShellPropsT = {
 
 const CallsDemoInit = () => {
   const navigation = useTanstackCallsNavigation();
+  const {
+    liveKit: { isDevMode, devToken },
+  } = useCallsRuntimeConfig();
 
   useEffect(() => {
     useFeaturesStore.getState().setFeatures({
@@ -49,31 +54,34 @@ const CallsDemoInit = () => {
     if (callId) {
       updateStore('activeClassroom', callId);
     }
-  }, [navigation]);
+  }, [navigation, isDevMode, devToken]);
 
   return null;
 };
 
 export const CallsDemoShell = ({ children }: CallsDemoShellPropsT) => {
+  const runtimeConfig = useMemo(() => createCallsRuntimeConfigFromEnv(), []);
   const mockDeps = createMockCallsDeps();
 
   return (
-    <CallsNavigationProvider useNavigation={useTanstackCallsNavigation}>
-      <CallsSessionProvider session={callsSessionPort}>
-        <CallsProvider deps={mockDeps}>
-          <TooltipProvider>
-            <RoomProvider>
-              <LiveKitProvider>
-                <ModeSyncProvider>
-                  <CallsDemoInit />
-                  {children}
-                  <Toaster position="top-center" richColors />
-                </ModeSyncProvider>
-              </LiveKitProvider>
-            </RoomProvider>
-          </TooltipProvider>
-        </CallsProvider>
-      </CallsSessionProvider>
-    </CallsNavigationProvider>
+    <CallsRuntimeConfigProvider config={runtimeConfig}>
+      <CallsNavigationProvider useNavigation={useTanstackCallsNavigation}>
+        <CallsSessionProvider session={callsSessionPort}>
+          <CallsProvider deps={mockDeps}>
+            <TooltipProvider>
+              <RoomProvider>
+                <LiveKitProvider>
+                  <ModeSyncProvider>
+                    <CallsDemoInit />
+                    {children}
+                    <Toaster position="top-center" richColors />
+                  </ModeSyncProvider>
+                </LiveKitProvider>
+              </RoomProvider>
+            </TooltipProvider>
+          </CallsProvider>
+        </CallsSessionProvider>
+      </CallsNavigationProvider>
+    </CallsRuntimeConfigProvider>
   );
 };

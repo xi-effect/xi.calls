@@ -8,8 +8,8 @@ import { HorizontalFocusLayout } from './HorizontalFocusLayout';
 import { VerticalFocusLayout } from './VerticalFocusLayout';
 import { PagedCarousel } from './PagedCarousel';
 import { GridPaginationControls } from './GridPaginationControls';
-import { useSize } from 'calls.hooks';
-import { useCallStore } from 'calls.store';
+import { useSize } from '@xipkg/calls-hooks';
+import { useCallStore } from '@xipkg/calls-store';
 
 const ASPECT = 16 / 9;
 const GRID_GAP = 8;

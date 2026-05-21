@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useCallsNavigation } from 'calls.providers';
-import { useInitUserDevices, useVideoSecurity } from 'calls.hooks';
-import { useCallStore, useFocusModeStore } from 'calls.store';
+import { useCallsNavigation } from '@xipkg/calls-providers';
+import { useInitUserDevices, useVideoSecurity } from '@xipkg/calls-hooks';
+import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
-import 'calls.ui/video-security.css';
+import '@xipkg/calls-ui/video-security.css';
 
 export const Call = () => {
   const isStarted = useCallStore((state) => state.isStarted);

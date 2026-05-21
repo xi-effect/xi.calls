@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useMemo, useRef } from 'react';
 import { Participant, RoomEvent } from 'livekit-client';
-import { useCallStore, useSoundEffectsStore } from 'calls.store';
-import { useCalls, useRoom, useCallsNavigation } from 'calls.providers';
-import { playSound } from 'common.utils';
+import { useCallStore, useSoundEffectsStore } from '@xipkg/calls-store';
+import { useCalls, useRoom, useCallsNavigation } from '@xipkg/calls-providers';
+import { playSound } from '@xipkg/calls-utils';
 
 export const useRaisedHands = () => {
   const navigation = useCallsNavigation();

@@ -1,6 +1,6 @@
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Header, UserTile, MediaDevices } from './components';
-import { PermissionsDialog } from 'calls.ui';
+import { PermissionsDialog } from '@xipkg/calls-ui';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
   Track,
@@ -14,7 +14,7 @@ import {
   useVideoBlur,
   useResolveInitiallyDefaultDeviceId,
   usePersistentUserChoices,
-} from 'calls.hooks';
+} from '@xipkg/calls-hooks';
 
 export const PreJoin = () => {
   const {

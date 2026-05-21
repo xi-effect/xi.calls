@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import type { CallsNavigationT, UseCallsNavigationHookT } from 'calls.providers';
+import type { CallsNavigationT, UseCallsNavigationHookT } from '@xipkg/calls-providers';
 
 export const useTanstackCallsNavigation: UseCallsNavigationHookT = () => {
   const navigate = useNavigate();

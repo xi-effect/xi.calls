@@ -6,7 +6,7 @@ import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Modal, ModalContent } from '@xipkg/modal';
 import { useChat } from '../hooks';
-import { useCalls } from 'calls.providers';
+import { useCalls } from '@xipkg/calls-providers';
 import { useChatStore } from '../store';
 import { cn, useMediaQuery } from '@xipkg/utils';
 import { parseLinks } from '../utils/chat';

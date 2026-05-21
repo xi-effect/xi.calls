@@ -12,10 +12,10 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
-import { useCallStore, useFocusModeStore } from 'calls.store';
-import { useCalls, useCallsNavigation } from 'calls.providers';
-import { ONBOARDING_IDS } from 'common.config';
-import { useMedia } from 'common.utils';
+import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
+import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { ONBOARDING_IDS } from '@xipkg/calls-config';
+import { useMedia } from '@xipkg/calls-utils';
 import { Settings } from './Settings';
 
 export const UpBar = () => {

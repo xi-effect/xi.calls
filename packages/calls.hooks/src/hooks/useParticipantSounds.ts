@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { RoomEvent } from 'livekit-client';
-import { useSoundEffectsStore } from 'calls.store';
-import { useRoom } from 'calls.providers';
-import { playSound } from 'common.utils';
+import { useSoundEffectsStore } from '@xipkg/calls-store';
+import { useRoom } from '@xipkg/calls-providers';
+import { playSound } from '@xipkg/calls-utils';
 
 /**
  * Воспроизводит звуки при подключении / отключении удалённых участников.

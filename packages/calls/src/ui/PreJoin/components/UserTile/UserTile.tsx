@@ -2,13 +2,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { facingModeFromLocalTrack, LocalVideoTrack, LocalAudioTrack } from 'livekit-client';
 import { Controls } from './Controls';
-import { useCannotUseDevice, usePersistentUserChoices } from 'calls.hooks';
-import { openPermissionsDialog } from 'calls.store';
+import { useCannotUseDevice, usePersistentUserChoices } from '@xipkg/calls-hooks';
+import { openPermissionsDialog } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
-import { SecureVideo } from 'calls.ui';
+import { SecureVideo } from '@xipkg/calls-ui';
 import { Settings } from '@xipkg/icons';
-import { isSafari } from 'common.utils';
-import { useCalls } from 'calls.providers';
+import { isSafari } from '@xipkg/calls-utils';
+import { useCalls } from '@xipkg/calls-providers';
 
 const UserTileUI = ({
   audioTrack,

@@ -3,7 +3,7 @@ import { useTracks } from '@livekit/components-react';
 import { isTrackReference } from '@livekit/components-core';
 import { Track, RoomEvent } from 'livekit-client';
 import type { TrackReference } from '@livekit/components-core';
-import { useRoom } from 'calls.providers';
+import { useRoom } from '@xipkg/calls-providers';
 
 export const useSpeakingParticipant = (): TrackReference | null => {
   const { room } = useRoom();

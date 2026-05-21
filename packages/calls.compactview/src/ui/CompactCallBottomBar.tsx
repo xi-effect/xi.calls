@@ -10,10 +10,10 @@ import {
 } from '@xipkg/dropdown';
 import { Account, Maximize, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
-import { DevicesBar, DisconnectButton, ScreenShareButton } from 'calls.ui';
-import { ChatButton } from 'calls.chat';
-import { RaiseHandButton } from 'calls.risehand';
-import { useFeaturesStore } from 'calls.store';
+import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
+import { ChatButton } from '@xipkg/calls-chat';
+import { RaiseHandButton } from '@xipkg/calls-risehand';
+import { useFeaturesStore } from '@xipkg/calls-store';
 
 type CompactCallDevicesPropsT = {
   microTrack: LocalAudioTrack | undefined;

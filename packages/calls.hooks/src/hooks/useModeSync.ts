@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { RoomEvent } from 'livekit-client';
 import type { Room } from 'livekit-client';
-import { useCallStore } from 'calls.store';
-import { useCalls, useRoom, useCallsNavigation } from 'calls.providers';
+import { useCallStore } from '@xipkg/calls-store';
+import { useCalls, useRoom, useCallsNavigation } from '@xipkg/calls-providers';
 
 /** Один раз за сессию комнаты применяем начальные метаданные (чтобы при монтировании второго CompactCall в DragOverlay не редиректило) */
 const initialMetadataAppliedForRoomRef = { current: null as Room | null };

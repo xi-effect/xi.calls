@@ -1,6 +1,6 @@
 import { Component, type ReactNode } from 'react';
 import * as Sentry from '@sentry/browser';
-import { ErrorPage } from 'calls.ui';
+import { ErrorPage } from '@xipkg/calls-ui';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

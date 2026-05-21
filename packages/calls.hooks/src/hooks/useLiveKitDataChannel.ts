@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { RoomEvent, RemoteParticipant } from 'livekit-client';
-import { useRoom } from 'calls.providers';
+import { useRoom } from '@xipkg/calls-providers';
 
 type DataMessage = {
   type: string;

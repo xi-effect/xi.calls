@@ -1,6 +1,6 @@
 import { useDisconnectButton } from '@livekit/components-react';
 import { Endcall } from '@xipkg/icons';
-import { useCallStore } from 'calls.store';
+import { useCallStore } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
 import { cn } from '@xipkg/utils';
 

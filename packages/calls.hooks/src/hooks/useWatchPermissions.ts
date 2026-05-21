@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { usePermissionsStore } from 'calls.store';
-import { isSafari } from 'common.utils';
+import { usePermissionsStore } from '@xipkg/calls-store';
+import { isSafari } from '@xipkg/calls-utils';
 
 const POLLING_TIME = 500;
 

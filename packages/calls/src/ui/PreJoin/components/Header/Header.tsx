@@ -1,7 +1,7 @@
 import { Button } from '@xipkg/button';
 import { ArrowLeft } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
-import { useCalls, useCallsNavigation } from 'calls.providers';
+import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 
 /* eslint-disable no-irregular-whitespace */
 export const Header = () => {
