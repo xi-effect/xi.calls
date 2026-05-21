@@ -3,14 +3,20 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./index.ts",
+    ".": {
+      "development": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
     "./video-security.css": "./src/styles/video-security.css",
     "./driver.css": "./src/styles/driver.css"
   },
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "dev": "tsc --watch"
+    "dev": "tsup --watch",
+    "build": "tsup"
   },
   "dependencies": {
     "framer-motion": "12.34.3",
@@ -56,5 +62,14 @@
     "react": "19"
   },
   "description": "calls ui package",
-  "author": "xi.effect"
+  "author": "xi.effect",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/styles"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

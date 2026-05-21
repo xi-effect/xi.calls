@@ -1,7 +1,8 @@
 import { Button } from '@xipkg/button';
 import { Chat } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
-import { useChat, useChatStore } from '@xipkg/calls-chat';
+import { useChat } from '../hooks/useChat';
+import { useChatStore } from '../store/chatStore';
 
 type ChatButtonProps = {
   /** Дополнительные классы (например, для компактной панели: h-8 w-8 rounded-xl) */

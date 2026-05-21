@@ -3,12 +3,18 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": {
+      "development": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
   },
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "dev": "tsc --watch"
+    "dev": "tsup --watch",
+    "build": "tsup"
   },
   "dependencies": {},
   "devDependencies": {
@@ -31,5 +37,10 @@
   "author": "xi.effect",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
 }

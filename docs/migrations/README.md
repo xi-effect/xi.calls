@@ -6,3 +6,4 @@
 | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [calls-runtime-config.md](./calls-runtime-config.md) | Injectable runtime config вместо env в config-пакете                            |
 | [calls-package-rename.md](./calls-package-rename.md) | `common.types` / `common.config` → `@xipkg/calls-types` / `@xipkg/calls-config` |
+| [calls-build.md](./calls-build.md)                   | Сборка пакетов в `dist/` через tsup                                             |
