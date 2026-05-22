@@ -32,44 +32,9 @@ jobs:
         with:
           filters: .github/package-filters.yml
 
-  build-packages:
+  deploy-packages:
     needs: analyze-packages
     if: needs.analyze-packages.outputs.packages != '[]'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8.15.4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.22.1
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
-      - name: Build calls packages
-        run: pnpm exec turbo run build --filter='./packages/calls...'
-
-      - name: Upload built packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: calls-packages
-          path: packages/
-          retention-days: 1
-
-  publish-packages:
-    needs: [analyze-packages, build-packages]
-    if: |
-      needs.analyze-packages.outputs.packages != '[]' &&
-      contains(fromJSON(needs.analyze-packages.outputs.packages), matrix.package)
     runs-on: ubuntu-latest
 
     permissions:
@@ -84,39 +49,82 @@ jobs:
         || 'xi-production-manual'
       }}
 
-    strategy:
-      fail-fast: true
-      max-parallel: 1
-      matrix:
-        package:
-          - calls.types
-          - calls.config
-          - calls.utils
-          - calls.store
-          - calls.providers
-          - calls.hooks
-          - calls.ui
-          - calls.risehand
-          - calls.chat
-          - calls.compactview
-          - calls
-
     steps:
-      - name: Download built packages
-        uses: actions/download-artifact@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          name: calls-packages
-          path: packages
+          version: 8.15.4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.22.1
           registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Upgrade npm (required for trusted publishing)
         run: npm install -g npm@latest
 
-      - name: Publish package
-        working-directory: packages/${{ matrix.package }}
+      - name: Build calls packages
+        run: pnpm exec turbo run build --filter='./packages/calls...'
+
+      - name: Publish calls.types
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.types')
+        working-directory: packages/calls.types
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.config
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.config')
+        working-directory: packages/calls.config
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.utils
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.utils')
+        working-directory: packages/calls.utils
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.store
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.store')
+        working-directory: packages/calls.store
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.providers
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.providers')
+        working-directory: packages/calls.providers
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.hooks
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.hooks')
+        working-directory: packages/calls.hooks
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.ui
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.ui')
+        working-directory: packages/calls.ui
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.risehand
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.risehand')
+        working-directory: packages/calls.risehand
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.chat
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.chat')
+        working-directory: packages/calls.chat
+        run: npm publish --access public --provenance
+
+      - name: Publish calls.compactview
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls.compactview')
+        working-directory: packages/calls.compactview
+        run: npm publish --access public --provenance
+
+      - name: Publish calls
+        if: contains(fromJSON(needs.analyze-packages.outputs.packages), 'calls')
+        working-directory: packages/calls
         run: npm publish --access public --provenance

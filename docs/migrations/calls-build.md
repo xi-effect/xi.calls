@@ -56,7 +56,7 @@ pnpm --filter @xipkg/calls-hooks dev
 
 ## npm publish
 
-Перед публикацией CI (или локально) запускает `pnpm run build`. В npm уходит только `dist/` (+ CSS для ui).
+CI при merge в `main` сам запускает build и публикует изменённые пакеты. В npm уходит только `dist/` (+ CSS для ui).
 
 `publishConfig.access: public` уже прописан во всех calls-пакетах.
 
@@ -73,20 +73,7 @@ Trusted publishing: workflow `front-production.yml`, environment `xi-production`
 
 Перед publish нужно **поднять version** в `package.json` — npm вернёт `409`, если версия уже есть.
 
-## Первый publish
-
-Обычный путь — merge в `main`: CI сам соберёт и опубликует пакеты с изменёнными версиями.
-
-Для разовой ручной проверки до merge:
-
-```bash
-npm login
-pnpm install --frozen-lockfile --ignore-scripts
-pnpm exec turbo run build --filter='./packages/calls...'
-cd packages/calls.types && npm publish --access public --dry-run
-```
-
-При добавлении нового `packages/calls.*` обновите `.github/package-filters.yml` и `matrix.package` в `front-production.yml`.
+При добавлении нового `packages/calls.*` обновите `.github/package-filters.yml` и шаг publish в `front-production.yml`.
 
 ## Замечания
 
