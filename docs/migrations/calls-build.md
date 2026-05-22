@@ -73,6 +73,16 @@ Trusted publishing: workflow `front-production.yml`, environment `xi-production`
 
 Перед publish нужно **поднять version** в `package.json` — npm вернёт `409`, если версия уже есть.
 
+## Первый ручной publish
+
+```bash
+npm login
+./scripts/publish-calls-all.sh --dry-run   # проверка без загрузки
+./scripts/publish-calls-all.sh             # build + publish всех 11 пакетов
+```
+
+Опции: `--skip-build`, `--yes` (без подтверждения).
+
 ## Замечания
 
 - Зависимости (`@xipkg/*`, `livekit-client`, `react` и т.д.) **не бандлятся** — `esbuildOptions.packages = 'external'`

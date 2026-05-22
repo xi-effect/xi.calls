@@ -1,0 +1,93 @@
+name: Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/common-prepare.yml
+
+  analyze-packages:
+    needs: prepare
+    if: needs.prepare.outputs.packages == 'true'
+    runs-on: ubuntu-latest
+
+    env:
+      filename: .github/workflows/generated-filters.yml
+
+    outputs:
+      packages: ${{ steps.package_filter.outputs.changes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate package filters
+        run: ./.github/workflows/generate-package-filters.sh
+        shell: bash
+
+      - name: Filter packages
+        uses: dorny/paths-filter@v2
+        id: package_filter
+        with:
+          filters: ${{ env.filename }}
+
+  deploy-packages:
+    needs: analyze-packages
+    if: needs.analyze-packages.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    environment: >-
+      ${{
+        contains(fromJSON('["niqzart", "unknownproperty"]'), github.triggering_actor)
+        && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        && 'xi-production'
+        || 'xi-production-manual'
+      }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Upgrade npm (required for trusted publishing)
+        run: npm install -g npm@latest
+
+      - name: Verify Node/npm/pnpm versions
+        run: |
+          node -v
+          npm -v
+          pnpm -v
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build calls packages
+        run: pnpm exec turbo run build --filter='./packages/calls...'
+
+      - name: Publish changed packages
+        env:
+          CHANGED_PACKAGES: ${{ needs.analyze-packages.outputs.packages }}
+        run: ./.github/workflows/publish-calls-packages.sh
