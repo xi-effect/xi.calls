@@ -10,18 +10,17 @@
 
 configs: &configs  # изменения тут обязательно запускают все пайплайны
   - ".github/workflows/*"
+  - ".github/actions/**"
   - "package.json"
   - ".npmrc"
-
-app_common: &app_common  # тригерят все билды (и депой в main-ветке)
-  - *configs
-  - "packages/**"
-  - "Dockerfile"
-  - "turbo.json"
+  - "scripts/calls-publish-order.json"
+  - "scripts/calls-publish-lib.mjs"
+  - "scripts/generate-package-filters.mjs"
+  - "scripts/publish-calls-packages.mjs"
 
 lintable:  # запускает прогон линтера
   - *configs
-  - ".eslintrc.js"
+  - "**/eslint.config.js"
   - "prettier.config.js"
   - "**.[jt]s"
   - "**.[jt]sx"

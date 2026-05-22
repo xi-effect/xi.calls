@@ -77,11 +77,11 @@ Trusted publishing: workflow `front-production.yml`, environment `xi-production`
 
 ```bash
 npm login
-./scripts/publish-calls-all.sh --dry-run   # проверка без загрузки
-./scripts/publish-calls-all.sh             # build + publish всех 11 пакетов
+pnpm run publish:calls:dry-run   # проверка без загрузки
+pnpm run publish:calls           # build + publish всех 11 пакетов
 ```
 
-Опции: `--skip-build`, `--yes` (без подтверждения).
+Дополнительные флаги: `node scripts/publish-calls-packages.mjs --all --skip-build --yes`.
 
 ## Замечания
 

@@ -1,0 +1,20 @@
+name: Generate package filters
+description: Generate dorny/paths-filter config for publishable @xipkg/calls-* packages
+
+inputs:
+  output-file:
+    description: Path to write the generated filters YAML
+    required: false
+    default: .github/generated/package-filters.yml
+
+outputs:
+  output-file:
+    description: Path to the generated filters file
+    value: ${{ inputs.output-file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Generate package filters
+      shell: bash
+      run: node scripts/generate-package-filters.mjs --output "${{ inputs.output-file }}"

@@ -1,0 +1,13 @@
+[
+  "calls.types",
+  "calls.config",
+  "calls.utils",
+  "calls.store",
+  "calls.providers",
+  "calls.hooks",
+  "calls.ui",
+  "calls.risehand",
+  "calls.chat",
+  "calls.compactview",
+  "calls"
+]

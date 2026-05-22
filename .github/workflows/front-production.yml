@@ -19,9 +19,6 @@ jobs:
     if: needs.prepare.outputs.packages == 'true'
     runs-on: ubuntu-latest
 
-    env:
-      filename: .github/workflows/generated-filters.yml
-
     outputs:
       packages: ${{ steps.package_filter.outputs.changes }}
 
@@ -30,14 +27,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate package filters
-        run: ./.github/workflows/generate-package-filters.sh
-        shell: bash
+        id: generate_filters
+        uses: ./.github/actions/generate-package-filters
 
       - name: Filter packages
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v4
         id: package_filter
         with:
-          filters: ${{ env.filename }}
+          filters: ${{ steps.generate_filters.outputs.output-file }}
 
   deploy-packages:
     needs: analyze-packages
@@ -60,17 +57,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
         with:
-          version: 8.15.4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.22.1
           registry-url: https://registry.npmjs.org
-          cache: pnpm
 
       - name: Upgrade npm (required for trusted publishing)
         run: npm install -g npm@latest
@@ -81,13 +71,10 @@ jobs:
           npm -v
           pnpm -v
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
       - name: Build calls packages
         run: pnpm exec turbo run build --filter='./packages/calls...'
 
       - name: Publish changed packages
-        env:
-          CHANGED_PACKAGES: ${{ needs.analyze-packages.outputs.packages }}
-        run: ./.github/workflows/publish-calls-packages.sh
+        uses: ./.github/actions/publish-calls-packages
+        with:
+          changed-packages: ${{ needs.analyze-packages.outputs.packages }}
