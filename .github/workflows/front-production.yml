@@ -26,19 +26,50 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate package filters
-        id: generate_filters
-        uses: ./.github/actions/generate-package-filters
-
       - name: Filter packages
         uses: dorny/paths-filter@v4
         id: package_filter
         with:
-          filters: ${{ steps.generate_filters.outputs.output-file }}
+          filters: .github/package-filters.yml
 
-  deploy-packages:
+  build-packages:
     needs: analyze-packages
     if: needs.analyze-packages.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build calls packages
+        run: pnpm exec turbo run build --filter='./packages/calls...'
+
+      - name: Upload built packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: calls-packages
+          path: packages/
+          retention-days: 1
+
+  publish-packages:
+    needs: [analyze-packages, build-packages]
+    if: |
+      needs.analyze-packages.outputs.packages != '[]' &&
+      contains(fromJSON(needs.analyze-packages.outputs.packages), matrix.package)
     runs-on: ubuntu-latest
 
     permissions:
@@ -53,28 +84,39 @@ jobs:
         || 'xi-production-manual'
       }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        package:
+          - calls.types
+          - calls.config
+          - calls.utils
+          - calls.store
+          - calls.providers
+          - calls.hooks
+          - calls.ui
+          - calls.risehand
+          - calls.chat
+          - calls.compactview
+          - calls
 
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+    steps:
+      - name: Download built packages
+        uses: actions/download-artifact@v4
         with:
+          name: calls-packages
+          path: packages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
           registry-url: https://registry.npmjs.org
 
       - name: Upgrade npm (required for trusted publishing)
         run: npm install -g npm@latest
 
-      - name: Verify Node/npm/pnpm versions
-        run: |
-          node -v
-          npm -v
-          pnpm -v
-
-      - name: Build calls packages
-        run: pnpm exec turbo run build --filter='./packages/calls...'
-
-      - name: Publish changed packages
-        uses: ./.github/actions/publish-calls-packages
-        with:
-          changed-packages: ${{ needs.analyze-packages.outputs.packages }}
+      - name: Publish package
+        working-directory: packages/${{ matrix.package }}
+        run: npm publish --access public --provenance

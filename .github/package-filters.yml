@@ -1,0 +1,25 @@
+# Per-package path filters for selective npm publish (dorny/paths-filter).
+# Update this file when adding a new packages/calls.* package.
+
+calls.types:
+  - packages/calls.types/**
+calls.config:
+  - packages/calls.config/**
+calls.utils:
+  - packages/calls.utils/**
+calls.store:
+  - packages/calls.store/**
+calls.providers:
+  - packages/calls.providers/**
+calls.hooks:
+  - packages/calls.hooks/**
+calls.ui:
+  - packages/calls.ui/**
+calls.risehand:
+  - packages/calls.risehand/**
+calls.chat:
+  - packages/calls.chat/**
+calls.compactview:
+  - packages/calls.compactview/**
+calls:
+  - packages/calls/**

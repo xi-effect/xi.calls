@@ -10,13 +10,9 @@
 
 configs: &configs  # изменения тут обязательно запускают все пайплайны
   - ".github/workflows/*"
-  - ".github/actions/**"
+  - ".github/package-filters.yml"
   - "package.json"
   - ".npmrc"
-  - "scripts/calls-publish-order.json"
-  - "scripts/calls-publish-lib.mjs"
-  - "scripts/generate-package-filters.mjs"
-  - "scripts/publish-calls-packages.mjs"
 
 lintable:  # запускает прогон линтера
   - *configs

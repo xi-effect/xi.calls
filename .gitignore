@@ -34,7 +34,6 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
-.github/generated/
 /.idea/.gitignore
 /.idea/codeStyles/codeStyleConfig.xml
 /.idea/dbnavigator.xml

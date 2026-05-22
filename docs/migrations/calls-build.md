@@ -73,15 +73,20 @@ Trusted publishing: workflow `front-production.yml`, environment `xi-production`
 
 Перед publish нужно **поднять version** в `package.json` — npm вернёт `409`, если версия уже есть.
 
-## Первый ручной publish
+## Первый publish
+
+Обычный путь — merge в `main`: CI сам соберёт и опубликует пакеты с изменёнными версиями.
+
+Для разовой ручной проверки до merge:
 
 ```bash
 npm login
-pnpm run publish:calls:dry-run   # проверка без загрузки
-pnpm run publish:calls           # build + publish всех 11 пакетов
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm exec turbo run build --filter='./packages/calls...'
+cd packages/calls.types && npm publish --access public --dry-run
 ```
 
-Дополнительные флаги: `node scripts/publish-calls-packages.mjs --all --skip-build --yes`.
+При добавлении нового `packages/calls.*` обновите `.github/package-filters.yml` и `matrix.package` в `front-production.yml`.
 
 ## Замечания
 
