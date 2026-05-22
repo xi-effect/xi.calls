@@ -42,12 +42,12 @@ jobs:
       id-token: write
 
     environment: >-
-      ${{
+      ${{ case(
         contains(fromJSON('["niqzart", "unknownproperty"]'), github.triggering_actor)
-        && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        && 'xi-production'
-        || 'xi-production-manual'
-      }}
+          && github.ref == format('refs/heads/{0}', github.event.repository.default_branch),
+        'xi-production',
+        'xi-production-manual'
+      ) }}
 
     steps:
       - name: Checkout repository
