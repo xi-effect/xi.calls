@@ -1,0 +1,11 @@
+name: Staging
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/common-prepare.yml

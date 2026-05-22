@@ -1,0 +1,21 @@
+name: Development
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - staging
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/common-prepare.yml
+
+  # build-frodo:
+  #   needs: prepare
+  #   if: needs.prepare.outputs.xi-frodo == 'true'
+  #   uses: xi-effect/xi.actions/.github/workflows/docker-build-nocache.yml@main
+  #   with:
+  #     tag: frodo-${{ github.run_id }}
+  #     arguments: "APP_NAME=xi.frodo"
+  #   secrets: inherit

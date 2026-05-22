@@ -1,0 +1,33 @@
+name: Common Preparation Steps
+
+on:
+  workflow_call:
+    outputs:
+      packages:
+        description: Will be 'true' if any package files have changed
+        value: ${{ jobs.analyze_files.outputs.packages }}
+
+jobs:
+  analyze_files:
+    runs-on: ubuntu-latest
+
+    outputs:
+      lintable: ${{ steps.path_filter.outputs.lintable }}
+      packages: ${{ steps.path_filter.outputs.packages }}
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout repository
+
+      - name: Filter paths
+        uses: dorny/paths-filter@v2
+        id: path_filter
+        with:
+          filters: .github/filters.yml
+
+  lint_and_format:
+    needs: analyze_files
+    if: needs.analyze_files.outputs.lintable == 'true'
+    uses: xi-effect/xi.actions/.github/workflows/front-lint-and-format.yml@main
+    with:
+      node-version: 22.22.1

@@ -1,0 +1,34 @@
+# Основная документация: https://github.com/dorny/paths-filter (см. всё к полю `filters`)
+
+# Пути прописываются в виде picomatch-паттернов:
+#   https://github.com/micromatch/picomatch#basic-globbing
+
+# Можно использовать все фишки YAML-я:
+#   https://ru.wikipedia.org/wiki/YAML#%D0%A1%D0%B8%D0%BD%D1%82%D0%B0%D0%BA%D1%81%D0%B8%D1%81
+
+# Имена последних объектов (packages, lintable) лучше не менять
+
+configs: &configs  # изменения тут обязательно запускают все пайплайны
+  - ".github/workflows/*"
+  - "package.json"
+  - ".npmrc"
+
+app_common: &app_common  # тригерят все билды (и депой в main-ветке)
+  - *configs
+  - "packages/**"
+  - "Dockerfile"
+  - "turbo.json"
+
+lintable:  # запускает прогон линтера
+  - *configs
+  - ".eslintrc.js"
+  - "prettier.config.js"
+  - "**.[jt]s"
+  - "**.[jt]sx"
+  - "**.md"
+
+packages:  # запускает деплой @xipkg/calls-* в main-ветке (только обновлённых)
+  - *configs
+  - "packages/calls/**"
+  - "packages/calls.*/**"
+  - "tsup.calls.base.ts"
