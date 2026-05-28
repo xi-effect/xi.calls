@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "exports": {
     ".": {
@@ -33,12 +33,12 @@
     "@xipkg/switcher": "3.0.13",
     "@xipkg/scrollarea": "2.2.0",
     "@xipkg/slider": "2.2.0",
-    "@xipkg/calls-store": "*",
-    "@xipkg/calls-hooks": "*",
-    "@xipkg/calls-providers": "*",
-    "@xipkg/calls-config": "*",
-    "@xipkg/calls-utils": "*",
-    "@xipkg/calls-types": "*"
+    "@xipkg/calls-store": "^0.0.1",
+    "@xipkg/calls-hooks": "^0.0.1",
+    "@xipkg/calls-providers": "^0.0.1",
+    "@xipkg/calls-config": "^0.0.1",
+    "@xipkg/calls-utils": "^0.0.1",
+    "@xipkg/calls-types": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
