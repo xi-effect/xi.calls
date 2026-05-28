@@ -53,7 +53,7 @@ export function CompactCallCollapsedBar({
               <MicrophoneOff className="absolute h-4 w-4 fill-gray-100" />
               <RedLine className="fill-red-80 absolute h-4 w-4" />
             </div>
-            <span className="text-xs-base-size leading-4 text-gray-100">Нет участников</span>
+            <span className="text-xs-base-size leading-[16px] text-gray-100">Нет участников</span>
           </>
         )}
       </div>
@@ -64,7 +64,7 @@ export function CompactCallCollapsedBar({
             {bars.map((h, i) => (
               <div
                 key={i}
-                className="bg-brand-80 w-0.5 min-w-0.5 rounded-full transition-all duration-75"
+                className="bg-brand-80 w-0.5 min-w-[2px] rounded-full transition-all duration-75"
                 style={{ height: `${Math.min(100, Math.max(20, h * 150))}%` }}
               />
             ))}

@@ -15,7 +15,7 @@ import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
 import { Chat, useChatStore } from '@xipkg/calls-chat';
 import { PermissionsDialog } from '@xipkg/calls-ui';
-import { useCallStore, useFeaturesStore, useFocusModeStore } from '@xipkg/calls-store';
+import { useCallStore } from '@xipkg/calls-store';
 import type { CornerT } from '@xipkg/calls-store';
 import { useMedia } from '@xipkg/calls-utils';
 import { useRoom } from '@xipkg/calls-providers';
@@ -89,12 +89,9 @@ type CompactPropsT = CompactViewPropsT & {
 export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) => {
   const navigation = useCallsNavigation();
   const { activeCorner, updateStore } = useCallStore();
-  const focusMode = useFocusModeStore((s) => s.focusMode);
   const isMobile = useMedia('(max-width: 720px)');
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-
-  const { chat: isChatEnabled } = useFeaturesStore((s) => s.features);
 
   useEffect(() => {
     if (!isMobile || hideOverlay || !headerRef.current) return;
@@ -147,13 +144,11 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   };
 
   const container = (
-    <div
-      className={`relative flex flex-col bg-transparent ${focusMode ? 'h-dvh' : 'h-[calc(100dvh-64px)]'}`}
-    >
+    <div className={`relative flex h-dvh flex-col bg-transparent`}>
       {isMobile ? (
         <>
           {!hideOverlay && (
-            <div ref={headerRef} className="fixed top-16 right-0 left-0 z-10 w-full px-2">
+            <div ref={headerRef} className="fixed top-[64px] right-0 left-0 z-10 w-full px-2">
               <CompactCall withOutShadows />
             </div>
           )}
@@ -169,9 +164,7 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
           {!hideOverlay && (
             <>
               <DroppableAreas />
-              {isChatEnabled && (
-                <Chat compactPositionClassName={getChatPositionClasses(activeCorner)} />
-              )}
+              <Chat compactPositionClassName={getChatPositionClasses(activeCorner)} />
               <div
                 className={`absolute z-100 ${getCornerPosition(activeCorner)} transition-all duration-500 ease-out`}
               >

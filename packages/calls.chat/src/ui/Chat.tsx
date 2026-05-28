@@ -4,7 +4,7 @@ import { Textarea } from '@xipkg/textarea';
 import { Send, Close } from '@xipkg/icons';
 import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
-import { Modal, ModalContent } from '@xipkg/modal';
+import { Modal, ModalContent, ModalTitle } from '@xipkg/modal';
 import { useChat } from '../hooks';
 import { useCalls } from '@xipkg/calls-providers';
 import { useChatStore } from '../store';
@@ -169,7 +169,11 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   if (isMobile) {
     return (
       <Modal open={isChatOpen} onOpenChange={(open) => !open && closeChat()}>
-        <ModalContent className="border-gray-20 bg-gray-0 flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1">
+        <ModalContent
+          className="border-gray-20 bg-gray-0 flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1"
+          aria-describedby={undefined}
+        >
+          <ModalTitle className="sr-only">Чат</ModalTitle>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{chatContent}</div>
         </ModalContent>
       </Modal>
@@ -180,7 +184,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
     return (
       <div
         className={cn(
-          'border-gray-20 bg-gray-0 fixed z-100 flex min-h-0 w-82 flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
+          'border-gray-20 bg-gray-0 fixed z-100 flex min-h-0 w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
           compactPositionClassName,
         )}
       >
@@ -190,7 +194,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   }
 
   return (
-    <div className="bg-gray-0 border-gray-0 sm:border-gray-20 fixed flex h-full min-h-0 w-full max-w-none min-w-82 flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-82">
+    <div className="bg-gray-0 border-gray-0 sm:border-gray-20 fixed flex h-full min-h-0 w-full max-w-none min-w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-[328px]">
       {chatContent}
     </div>
   );

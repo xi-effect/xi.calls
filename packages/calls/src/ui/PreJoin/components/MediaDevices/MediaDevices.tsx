@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Button } from '@xipkg/button';
-import { Switch } from '@xipkg/switcher';
+import { Toggle } from '@xipkg/toggle';
 import { Label } from '@xipkg/label';
 import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert';
 import { InfoCircle } from '@xipkg/icons';
@@ -156,7 +156,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-gray-30 flex flex-col justify-between rounded-[16px] border p-5">
+      <div className="border-gray-30 bg-gray-0 flex flex-col justify-between rounded-2xl border p-5">
         <div>
           <div className="mb-8">
             <h2 className="mb-1 font-sans">Камера</h2>
@@ -191,7 +191,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
             <div className="my-4">
               <div className="flex items-center justify-between">
                 <Label className="font-medium text-gray-100">Размытие фона</Label>
-                <Switch checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
+                <Toggle checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
             </div>
           )}

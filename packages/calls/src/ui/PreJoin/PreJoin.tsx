@@ -1,6 +1,5 @@
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Header, UserTile, MediaDevices } from './components';
-import { PermissionsDialog } from '@xipkg/calls-ui';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
   Track,
@@ -10,11 +9,14 @@ import {
   createLocalAudioTrack,
 } from 'livekit-client';
 import { usePreviewTracks } from '@livekit/components-react';
+import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 import {
   useVideoBlur,
   useResolveInitiallyDefaultDeviceId,
   usePersistentUserChoices,
+  useNoiseCancellation,
 } from '@xipkg/calls-hooks';
+import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 
 export const PreJoin = () => {
   const {
@@ -22,6 +24,10 @@ export const PreJoin = () => {
     saveAudioInputDeviceId,
     saveVideoInputDeviceId,
   } = usePersistentUserChoices();
+
+  const {
+    noiseCancellation: { featureEnabled: noiseCancellationFeatureEnabled },
+  } = useCallsRuntimeConfig();
 
   const initialUserChoices = useRef<{
     audioEnabled: boolean;
@@ -44,34 +50,31 @@ export const PreJoin = () => {
     console.error('PreJoin ERROR:', e);
   }, []);
 
-  // Автоматически запрашиваем разрешения при загрузке
+  // При входе в PreJoin запрашиваем разрешения — браузер покажет диалог при первом заходе.
+  // Если пользователь отклонит или ещё не ответил, useWatchPermissions обновит store и покажем состояние «нет прав» на контролах.
   useEffect(() => {
-    const requestPermissions = async () => {
+    let cancelled = false;
+    const request = async () => {
       try {
-        // Проверяем, есть ли уже разрешения
-        const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
-        if (permissions.state === 'prompt') {
-          // Запрашиваем разрешения
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-          });
-          // Останавливаем поток, нам нужны только разрешения
-          stream.getTracks().forEach((track) => track.stop());
-        }
-      } catch (error) {
-        console.log('Permission request failed:', error);
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (!cancelled) stream.getTracks().forEach((t) => t.stop());
+      } catch {
+        // Отказ или ошибка — состояние обработает useWatchPermissions и UI (перечёркнутые контролы)
       }
     };
-
-    requestPermissions();
+    request();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Preview треки - создаются только если пользователь изначально включил их
+  const baselineAudio = getBaselineAudioCaptureOptions();
   const tracks = usePreviewTracks(
     {
       audio: !!initialUserChoices.current &&
         initialUserChoices.current?.audioEnabled && {
+          ...baselineAudio,
           deviceId: initialUserChoices.current.audioDeviceId,
         },
       video: !!initialUserChoices.current &&
@@ -124,6 +127,7 @@ export const PreJoin = () => {
     const createAudioTrack = async () => {
       try {
         const track = await createLocalAudioTrack({
+          ...getBaselineAudioCaptureOptions(),
           deviceId: { exact: audioDeviceId },
         });
         setDynamicAudioTrack(track);
@@ -159,36 +163,6 @@ export const PreJoin = () => {
   const videoTrack = dynamicVideoTrack || previewVideoTrack;
   const audioTrack = dynamicAudioTrack || previewAudioTrack;
 
-  // Отладочная информация
-  useEffect(() => {
-    console.log('PreJoin tracks debug:', {
-      initialUserChoices: initialUserChoices.current,
-      videoEnabled,
-      audioEnabled,
-      videoDeviceId,
-      audioDeviceId,
-      tracks: tracks?.map((t) => ({ kind: t.kind, enabled: !t.isMuted })),
-      previewVideoTrack: previewVideoTrack ? { enabled: !previewVideoTrack.isMuted } : null,
-      previewAudioTrack: previewAudioTrack ? { enabled: !previewAudioTrack.isMuted } : null,
-      dynamicVideoTrack: dynamicVideoTrack ? { enabled: !dynamicVideoTrack.isMuted } : null,
-      dynamicAudioTrack: dynamicAudioTrack ? { enabled: !dynamicAudioTrack.isMuted } : null,
-      finalVideoTrack: videoTrack ? { enabled: !videoTrack.isMuted } : null,
-      finalAudioTrack: audioTrack ? { enabled: !audioTrack.isMuted } : null,
-    });
-  }, [
-    tracks,
-    previewVideoTrack,
-    previewAudioTrack,
-    dynamicVideoTrack,
-    dynamicAudioTrack,
-    videoTrack,
-    audioTrack,
-    videoEnabled,
-    audioEnabled,
-    videoDeviceId,
-    audioDeviceId,
-  ]);
-
   // Разрешаем device ID для треков
   useResolveInitiallyDefaultDeviceId(audioDeviceId, audioTrack, saveAudioInputDeviceId);
   useResolveInitiallyDefaultDeviceId(videoDeviceId, videoTrack, saveVideoInputDeviceId);
@@ -196,18 +170,25 @@ export const PreJoin = () => {
   // Передаем видеотрек для использования блюра
   useVideoBlur(videoTrack);
 
+  const noiseCancellation = useNoiseCancellation(null, {
+    localAudioTrack: audioTrack ?? undefined,
+  });
+
   return (
     <>
       <ScrollArea className="h-full w-full">
-        <div className="max-xs:p-4 p-4 pt-1">
+        <div className="bg-gray-5 h-full min-h-[calc(100dvh)] p-5">
           <Header />
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <UserTile audioTrack={audioTrack} videoTrack={videoTrack} />
-            <MediaDevices audioTrack={audioTrack} videoTrack={videoTrack} />
+            <MediaDevices
+              audioTrack={audioTrack}
+              videoTrack={videoTrack}
+              noiseCancellation={noiseCancellationFeatureEnabled ? noiseCancellation : undefined}
+            />
           </div>
         </div>
       </ScrollArea>
-      <PermissionsDialog />
     </>
   );
 };

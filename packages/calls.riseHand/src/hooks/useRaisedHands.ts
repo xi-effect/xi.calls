@@ -11,7 +11,6 @@ export const useRaisedHands = () => {
 
   const callId = navigation.getCallId();
   const { room } = useRoom();
-  const { data: user } = useCalls().auth.useCurrentUser();
 
   const { addRaisedHand, removeRaisedHand } = useCallStore();
 
@@ -33,18 +32,11 @@ export const useRaisedHands = () => {
       await updateParticipantMetadata({
         classroom_id: callId,
         is_hand_raised: !isHandRaised,
-        role: user?.defaultLayout,
       });
     } catch (e) {
       console.error('raise hand error', e);
     }
-  }, [
-    room?.localParticipant,
-    callId,
-    updateParticipantMetadata,
-    isHandRaised,
-    user?.defaultLayout,
-  ]);
+  }, [room?.localParticipant, callId, updateParticipantMetadata, isHandRaised]);
 
   useEffect(() => {
     if (!room) return;

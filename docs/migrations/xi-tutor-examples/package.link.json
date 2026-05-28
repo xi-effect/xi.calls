@@ -1,0 +1,17 @@
+{
+  "_comment": "Эталон link:-зависимостей для modules.calls в xi.tutor. Путь: modules/calls → ../../xi.calls/packages/...",
+  "dependencies": {
+    "@livekit/components-styles": "1.1.6",
+    "@xipkg/calls": "link:../../xi.calls/packages/calls",
+    "@xipkg/calls-chat": "link:../../xi.calls/packages/calls.chat",
+    "@xipkg/calls-compactview": "link:../../xi.calls/packages/calls.compactview",
+    "@xipkg/calls-config": "link:../../xi.calls/packages/calls.config",
+    "@xipkg/calls-hooks": "link:../../xi.calls/packages/calls.hooks",
+    "@xipkg/calls-providers": "link:../../xi.calls/packages/calls.providers",
+    "@xipkg/calls-risehand": "link:../../xi.calls/packages/calls.risehand",
+    "@xipkg/calls-store": "link:../../xi.calls/packages/calls.store",
+    "@xipkg/calls-types": "link:../../xi.calls/packages/calls.types",
+    "@xipkg/calls-ui": "link:../../xi.calls/packages/calls.ui",
+    "@xipkg/calls-utils": "link:../../xi.calls/packages/calls.utils"
+  }
+}

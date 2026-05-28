@@ -13,7 +13,6 @@ import { cn } from '@xipkg/utils';
 import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { ChatButton } from '@xipkg/calls-chat';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
-import { useFeaturesStore } from '@xipkg/calls-store';
 
 type CompactCallDevicesPropsT = {
   microTrack: LocalAudioTrack | undefined;
@@ -60,17 +59,11 @@ export function CompactCallBottomBar({
     withOutShadows ? '' : 'shadow-lg',
   );
 
-  const {
-    chat: isChatEnabled,
-    raiseHand: isRiseHandEnabled,
-    whiteboard: isWhiteboardEnabled,
-  } = useFeaturesStore((s) => s.features);
-
   return (
-    <div className="flex h-10 flex-row">
+    <div className="flex h-[40px] flex-row">
       <div className={barCn}>
         <DevicesBar
-          className="h-8 w-8"
+          className="h-[32px] w-[32px]"
           microTrack={devices.microTrack}
           microEnabled={devices.microEnabled}
           microTrackToggle={devices.microTrackToggle}
@@ -107,7 +100,7 @@ export function CompactCallBottomBar({
         </div>
       )}
 
-      {isWhiteboardEnabled && showBackToBoardButton && (
+      {showBackToBoardButton && (
         <div className={cn(barCn, 'ml-1')}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -127,9 +120,9 @@ export function CompactCallBottomBar({
       )}
 
       <div className={cn(barCn, 'ml-auto')}>
-        <ScreenShareButton className="h-8 w-8" />
-        {isChatEnabled && <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />}
-        {isRiseHandEnabled && <RaiseHandButton className="h-8 w-8" />}
+        <ScreenShareButton className="h-[32px] w-[32px]" />
+        <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />
+        <RaiseHandButton className="h-[32px] w-[32px]" />
       </div>
 
       <div className={cn(barCn, 'ml-1')}>
@@ -149,7 +142,7 @@ export function CompactCallBottomBar({
               </TooltipTrigger>
               <TooltipContent>Вернуться в конференцию</TooltipContent>
             </Tooltip>
-            <DropdownMenuContent side="top" align="end" className="z-1000 min-w-50">
+            <DropdownMenuContent side="top" align="end" className="z-1000 min-w-[200px]">
               <DropdownMenuLabel className="text-gray-60 text-sm">
                 Вернуть в конференцию
               </DropdownMenuLabel>
@@ -182,7 +175,7 @@ export function CompactCallBottomBar({
             <TooltipContent>Вернуться в конференцию</TooltipContent>
           </Tooltip>
         )}
-        <DisconnectButton className="h-8 w-8 rounded-xl" />
+        <DisconnectButton className="h-[32px] w-[32px] rounded-xl" />
       </div>
     </div>
   );

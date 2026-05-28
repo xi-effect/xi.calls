@@ -9,7 +9,7 @@ import { Account, Users } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
-import { useCallStore, useFeaturesStore } from '@xipkg/calls-store';
+import { useCallStore } from '@xipkg/calls-store';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
@@ -73,9 +73,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
     goToPrev,
   } = useCompactNavigation();
 
-  const { raiseHand: isRiseHandEnabled } = useFeaturesStore((s) => s.features);
-
-  // Размер окна PiP: подписка на resize — при изменении высоты подстраиваем количество плиток
+  // Размер окна PiP:
   useEffect(() => {
     const updateSize = () =>
       setPipSize({ width: pipWindow.innerWidth, height: pipWindow.innerHeight });
@@ -177,7 +175,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
       <div className="flex h-12 shrink-0 items-center gap-0.5">
         <div className={barCn}>
           <DevicesBar
-            className="h-7 w-7"
+            className="h-[28px] w-[28px]"
             microTrack={microphoneTrack?.track as LocalAudioTrack}
             microEnabled={isMicrophoneEnabled}
             microTrackToggle={{
@@ -202,7 +200,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
                 size="icon"
                 variant="none"
                 onClick={() => setViewMode(compactViewMode === 'basic' ? 'expanded' : 'basic')}
-                className="hover:bg-gray-5 h-7 w-7 rounded-xl p-0 text-gray-100"
+                className="hover:bg-gray-5 h-[28px] w-[28px] rounded-xl p-0 text-gray-100"
                 aria-label={compactViewMode === 'basic' ? 'Развёрнутый вид' : 'Один участник'}
               >
                 {compactViewMode === 'basic' ? (
@@ -221,12 +219,12 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
         </div>
 
         <div className={cn(barCn, 'ml-auto')}>
-          <ScreenShareButton className="h-7 w-7" />
-          {isRiseHandEnabled && <RaiseHandButton className="h-7 w-7" />}
+          <ScreenShareButton className="h-[28px] w-[28px]" />
+          <RaiseHandButton className="h-[28px] w-[28px]" />
         </div>
 
         <div className={barCn}>
-          <DisconnectButton className="h-7 w-7 rounded-xl" />
+          <DisconnectButton className="h-[28px] w-[28px] rounded-xl" />
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback } from 'react';
 import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
-import { useCallStore, useFeaturesStore } from '@xipkg/calls-store';
+import { useCallStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
@@ -60,12 +60,6 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { data: user } = useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
 
-  const {
-    chat: isChatEnabled,
-    raiseHand: isRiseHandEnabled,
-    whiteboard: isWhiteboardEnabled,
-  } = useFeaturesStore((s) => s.features);
-
   const showBackToBoardButton =
     mode === 'full' &&
     activeBoardId &&
@@ -115,9 +109,9 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
           </div>
           <div className="bg-gray-0 border-gray-10 flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
             <ScreenShareButton />
-            {isWhiteboardEnabled && isTutor && <WhiteBoardButton />}
-            {isChatEnabled && <ChatButton />}
-            {isRiseHandEnabled && <RaiseHandButton />}
+            {isTutor && <WhiteBoardButton />}
+            <ChatButton />
+            <RaiseHandButton />
           </div>
         </div>
         <div className="relative flex flex-row items-center justify-center gap-4">
