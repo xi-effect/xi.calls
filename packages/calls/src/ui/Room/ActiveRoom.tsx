@@ -7,6 +7,7 @@ import { useVideoBlur, useParticipantJoinSync, useParticipantSounds } from '@xip
 import { useHandFocus } from '@xipkg/calls-risehand';
 import { BottomBar } from '../Bottom/BottomBar';
 import '@xipkg/calls-ui/video-security.css';
+import '@xipkg/calls-ui/grid.css';
 
 export const ActiveRoom = () => {
   // Автоматический фокус на участниках с поднятыми руками

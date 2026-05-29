@@ -18,8 +18,7 @@ import { createMockCallsDeps } from './mockCallsDeps';
 import { createCallsRuntimeConfigFromEnv } from './createCallsRuntimeConfig';
 
 import '@livekit/components-styles';
-import '@xipkg/calls-ui/video-security.css';
-import '@xipkg/calls-ui/driver.css';
+import '@xipkg/calls-ui/styles.css';
 
 type CallsDemoShellPropsT = {
   children: ReactNode;

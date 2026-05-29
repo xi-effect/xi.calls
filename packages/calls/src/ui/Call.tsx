@@ -5,6 +5,7 @@ import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { PreJoin } from './PreJoin';
 import { ActiveRoom } from './Room';
 import '@xipkg/calls-ui/video-security.css';
+import '@xipkg/calls-ui/grid.css';
 
 export const Call = () => {
   const isStarted = useCallStore((state) => state.isStarted);

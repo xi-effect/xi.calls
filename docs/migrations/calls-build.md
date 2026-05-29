@@ -50,9 +50,13 @@ pnpm --filter @xipkg/calls-hooks dev
 `@xipkg/calls-ui` дополнительно публикует CSS:
 
 ```json
+"./styles.css": "./src/styles/calls.css",
+"./grid.css": "./src/styles/grid.css",
 "./video-security.css": "./src/styles/video-security.css",
 "./driver.css": "./src/styles/driver.css"
 ```
+
+Хост-приложение (xi.tutor) должно один раз импортировать `@xipkg/calls-ui/styles.css` в `CallsShell` — иначе переменные сетки (`--available-height`) не применятся.
 
 ## npm publish
 

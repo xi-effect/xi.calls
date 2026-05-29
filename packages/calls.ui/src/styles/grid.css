@@ -41,7 +41,8 @@
 }
 
 .lk-participant-tile {
-  contain: layout style paint;
+  /* без paint: иначе в Chromium рамка speaking иногда рисуется без скругления */
+  contain: layout style;
   transform: translateZ(0); /* Активируем аппаратное ускорение */
   overflow: hidden;
   border-radius: 16px;
@@ -57,6 +58,7 @@
 .lk-participant-tile[data-lk-speaking='true']:not([data-lk-source='screen_share']) {
   transition: border 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid var(--xi-green-60);
+  border-radius: 16px;
 }
 
 .lk-participant-tile .lk-focus-toggle-button {

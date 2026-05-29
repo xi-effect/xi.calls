@@ -21,7 +21,7 @@ xi.effect/
 | Требование                                                       | Статус                                                  |
 | ---------------------------------------------------------------- | ------------------------------------------------------- |
 | `"development": "./index.ts"` в `exports` всех `packages/calls*` | ✅                                                      |
-| CSS subpath exports (`@xipkg/calls-ui/video-security.css`)       | ✅                                                      |
+| CSS subpath exports (`@xipkg/calls-ui/styles.css`, `grid.css`)   | ✅ — в CallsShell импортировать `styles.css`            |
 | Эталон Vite для cross-repo link                                  | `docs/migrations/xi-tutor-examples/vite.calls-local.ts` |
 | Эталон `link:` dependencies                                      | `docs/migrations/xi-tutor-examples/package.link.json`   |
 

@@ -1,6 +1,6 @@
 {
   "name": "modules.calls",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "exports": {
     ".": "./index.ts"
@@ -12,11 +12,11 @@
   "dependencies": {
     "@livekit/components-styles": "1.1.6",
     "@tanstack/react-router": "^1.166.6",
-    "@xipkg/calls": "^0.0.0",
-    "@xipkg/calls-compactview": "^0.0.0",
-    "@xipkg/calls-hooks": "^0.0.0",
-    "@xipkg/calls-providers": "^0.0.0",
-    "@xipkg/calls-store": "^0.0.0",
+    "@xipkg/calls": "^0.0.3",
+    "@xipkg/calls-compactview": "^0.0.3",
+    "@xipkg/calls-hooks": "^0.0.3",
+    "@xipkg/calls-providers": "^0.0.3",
+    "@xipkg/calls-store": "^0.0.3",
     "@xipkg/tooltip": "2.1.0",
     "common.env": "workspace:*",
     "common.services": "workspace:*"

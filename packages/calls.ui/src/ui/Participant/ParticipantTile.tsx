@@ -197,7 +197,7 @@ export const ParticipantTile = ({
 
   return (
     <div
-      className="lk-participant-tile relative"
+      className="lk-participant-tile relative overflow-hidden rounded-2xl"
       data-lk-source={trackReference.source}
       {...elementProps}
       onDoubleClick={
@@ -211,7 +211,7 @@ export const ParticipantTile = ({
     >
       <TrackRefContextIfNeeded trackRef={trackReference}>
         <ParticipantContextIfNeeded participant={trackReference.participant}>
-          <div className="m-auto flex aspect-video h-full w-full justify-center overflow-hidden rounded-xl in-[.lk-grid-layout]:relative in-[.lk-grid-layout]:overflow-hidden in-[.lk-grid-layout]:rounded-2xl [.lk-grid-layout_&]:m-0 [.lk-grid-layout_&]:flex-none [.lk-grid-layout_&]:bg-black">
+          <div className="m-auto flex aspect-video h-full w-full justify-center overflow-hidden rounded-[14px] in-[.lk-grid-layout]:relative in-[.lk-grid-layout]:overflow-hidden in-[.lk-grid-layout]:rounded-[14px] [.lk-grid-layout_&]:m-0 [.lk-grid-layout_&]:flex-none [.lk-grid-layout_&]:bg-black">
             {children ?? (
               <div className="relative flex h-full w-full justify-center in-[.lk-grid-layout]:relative in-[.lk-grid-layout]:h-full in-[.lk-grid-layout]:w-full">
                 {/* Аватар только когда камера выключена; для демонстрации экрана — только нейтральный фон */}

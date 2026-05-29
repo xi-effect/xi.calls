@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-ui",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
   "exports": {
     ".": {
@@ -9,8 +9,10 @@
       "import": "./dist/index.mjs",
       "default": "./dist/index.mjs"
     },
+    "./styles.css": "./src/styles/calls.css",
     "./video-security.css": "./src/styles/video-security.css",
-    "./driver.css": "./src/styles/driver.css"
+    "./driver.css": "./src/styles/driver.css",
+    "./grid.css": "./src/styles/grid.css"
   },
   "license": "MIT",
   "scripts": {
@@ -33,12 +35,12 @@
     "@xipkg/switcher": "3.0.13",
     "@xipkg/scrollarea": "2.2.0",
     "@xipkg/slider": "2.2.0",
-    "@xipkg/calls-store": "^0.0.1",
-    "@xipkg/calls-hooks": "^0.0.1",
-    "@xipkg/calls-providers": "^0.0.1",
-    "@xipkg/calls-config": "^0.0.1",
-    "@xipkg/calls-utils": "^0.0.1",
-    "@xipkg/calls-types": "^0.0.1"
+    "@xipkg/calls-store": "^0.0.3",
+    "@xipkg/calls-hooks": "^0.0.3",
+    "@xipkg/calls-providers": "^0.0.3",
+    "@xipkg/calls-config": "^0.0.3",
+    "@xipkg/calls-utils": "^0.0.3",
+    "@xipkg/calls-types": "^0.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
