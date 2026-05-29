@@ -21,6 +21,7 @@ import { useMedia } from '@xipkg/calls-utils';
 import { useRoom } from '@xipkg/calls-providers';
 import { PiPProvider, usePiP } from '../providers';
 import { useParticipantSounds, useParticipantJoinSync } from '@xipkg/calls-hooks';
+import { COMPACT_MOBILE_CONTENT_GAP_PX, COMPACT_MOBILE_OVERLAY_FALLBACK_PX } from '../constants';
 
 type CompactViewPropsT = {
   children: React.ReactNode;
@@ -123,6 +124,12 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   const isBoardPage = navigation.pathnameIncludes('/board');
   const bottomOffset = isBoardPage ? 'bottom-[72px]' : 'bottom-4';
 
+  const mobileContentMarginTop =
+    hideOverlay || !isMobile
+      ? 0
+      : (headerHeight > 0 ? headerHeight : COMPACT_MOBILE_OVERLAY_FALLBACK_PX) +
+        COMPACT_MOBILE_CONTENT_GAP_PX;
+
   const getCornerPosition = (corner: CornerT) => {
     switch (corner) {
       case 'top-left':
@@ -148,13 +155,13 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
       {isMobile ? (
         <>
           {!hideOverlay && (
-            <div ref={headerRef} className="fixed top-[64px] right-0 left-0 z-10 w-full px-2">
+            <div ref={headerRef} className="fixed top-2 right-0 left-0 z-10 w-full px-2">
               <CompactCall withOutShadows />
             </div>
           )}
           <div
-            className="flex min-h-0 flex-1 flex-col"
-            style={{ marginTop: hideOverlay ? 0 : headerHeight > 0 ? headerHeight : 120 }}
+            className="mb-16 flex min-h-0 flex-1 flex-col"
+            style={{ marginTop: mobileContentMarginTop }}
           >
             {children}
           </div>

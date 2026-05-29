@@ -102,6 +102,22 @@ pnpm exec turbo run build --filter='./packages/calls...'
 
 Путь к `xi.calls/packages` вычисляй через `path.resolve` от `apps/web/vite.config.ts`.
 
+#### 2.1. Tailwind — сканирование `@xipkg/calls-ui`
+
+Классы Tailwind в calls-пакетах (например кнопка фокуса на плитке) **не попадут в CSS**, пока хост их не сканирует.
+
+В глобальный CSS xi.tutor (Tailwind v4), например `apps/web/src/index.css`:
+
+```css
+@import 'tailwindcss';
+@source '../../xi.calls/packages/calls.ui/src';
+@source '../../xi.calls/packages/calls.compactview/src';
+@source '../../xi.calls/packages/calls/src';
+@source '../../xi.calls/packages/calls.chat/src';
+```
+
+Пути подстрой под расположение `modules.calls` / monorepo. Без `@source` плитки и кнопки фокуса выглядят «сломанными», хотя `grid.css` подключён.
+
 #### 3. TypeScript (опционально, для IDE)
 
 Если после link TypeScript не видит типы — один раз в `xi.calls` выполни:
@@ -158,6 +174,7 @@ pnpm exec turbo run build --filter='./packages/calls...'
 | Invalid hook call                        | `resolve.dedupe` для react                                                              |
 | Импорт `.mjs` из dist                    | добавить `resolve.conditions: ['development', 'import']`                                |
 | TS ошибки типов                          | `turbo build` в xi.calls                                                                |
+| Нет скругления / стилей кнопки фокуса    | `@source` на `calls-ui` в Tailwind + `import '@xipkg/calls-ui/styles.css'` в CallsShell |
 
 ## Связанные документы
 

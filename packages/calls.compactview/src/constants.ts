@@ -1,5 +1,12 @@
 /** Высота шапки приложения (top-16) */
 export const HEADER_HEIGHT_PX = 64;
+/**
+ * Доп. зазор между fixed compact overlay и контентом доски на mobile.
+ * marginTop контента = высота overlay + этот отступ.
+ */
+export const COMPACT_MOBILE_CONTENT_GAP_PX = 12;
+/** Fallback высоты overlay, пока ResizeObserver ещё не дал headerHeight */
+export const COMPACT_MOBILE_OVERLAY_FALLBACK_PX = 120;
 /** Тулбар доски сверху и снизу при работе на доске */
 export const BOARD_TOP_TOOLBAR_PX = 64;
 export const BOARD_BOTTOM_TOOLBAR_PX = 64;

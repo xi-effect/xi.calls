@@ -66,7 +66,7 @@
   background-color: var(--xi-gray-0) !important;
   height: 24px;
   width: 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg) !important;
   top: 8px;
   right: 8px;
   display: flex;
@@ -79,13 +79,13 @@
 /* На десктопе кнопка фокуса показывается по hover */
 @media (min-width: 1025px) {
   .lk-participant-tile:hover .lk-focus-toggle-button {
-    opacity: 0.8;
+    opacity: 0.8 !important;
   }
 }
 
 /* На мобилке и планшетах кнопка фокуса всегда видна */
 @media (max-width: 1024px) {
   .lk-participant-tile .lk-focus-toggle-button {
-    opacity: 0.8;
+    opacity: 0.8 !important;
   }
 }

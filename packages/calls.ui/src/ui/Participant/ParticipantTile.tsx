@@ -197,7 +197,7 @@ export const ParticipantTile = ({
 
   return (
     <div
-      className="lk-participant-tile relative overflow-hidden rounded-2xl"
+      className="lk-participant-tile group relative overflow-hidden rounded-2xl"
       data-lk-source={trackReference.source}
       {...elementProps}
       onDoubleClick={
@@ -336,12 +336,7 @@ export const ParticipantTile = ({
             </div>
           )}
 
-          {isFocusToggleDisable ? null : (
-            <FocusToggle
-              style={{ background: 'transparent', padding: '5px' }}
-              trackRef={trackReference}
-            />
-          )}
+          {isFocusToggleDisable ? null : <FocusToggle trackRef={trackReference} />}
         </ParticipantContextIfNeeded>
       </TrackRefContextIfNeeded>
     </div>
