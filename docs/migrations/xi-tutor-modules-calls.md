@@ -106,7 +106,7 @@ modules.calls/
     "@xipkg/calls-hooks": "^0.0.0",
     "@xipkg/calls-providers": "^0.0.0",
     "@xipkg/calls-store": "^0.0.0",
-    "@livekit/components-styles": "1.1.6"
+    "@livekit/components-styles": "1.2.0"
   }
 }
 ```

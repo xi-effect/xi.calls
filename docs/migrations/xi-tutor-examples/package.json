@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@livekit/components-styles": "1.1.6",
+    "@livekit/components-styles": "1.2.0",
     "@tanstack/react-router": "^1.166.6",
     "@xipkg/calls": "^0.0.3",
     "@xipkg/calls-compactview": "^0.0.3",

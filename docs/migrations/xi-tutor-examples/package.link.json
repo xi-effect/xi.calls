@@ -1,7 +1,7 @@
 {
   "_comment": "Эталон link:-зависимостей для modules.calls в xi.tutor. Путь: modules/calls → ../../xi.calls/packages/...",
   "dependencies": {
-    "@livekit/components-styles": "1.1.6",
+    "@livekit/components-styles": "1.2.0",
     "@xipkg/calls": "link:../../xi.calls/packages/calls",
     "@xipkg/calls-chat": "link:../../xi.calls/packages/calls.chat",
     "@xipkg/calls-compactview": "link:../../xi.calls/packages/calls.compactview",
