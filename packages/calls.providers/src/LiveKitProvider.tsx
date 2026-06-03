@@ -142,18 +142,21 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     };
   }, [isStarted, connect, room, updateStore]);
 
-  if (!token || !room) {
-    if (isStarted) console.warn('No token available for LiveKit connection');
+  const lkToken = (isDevMode ? devToken : token) ?? '';
+  const canConnect = Boolean(lkToken) && Boolean(connect);
 
-    return <>{children}</>;
+  if (!lkToken && isStarted) {
+    console.warn('No token available for LiveKit connection');
   }
 
+  // LiveKitRoom всегда монтируем с room — иначе useRoomContext / useLocalParticipant падают
+  // до подключения (демо, PreJoin, CompactView). connect включаем только при наличии токена.
   return (
     <LiveKitRoom
       room={room}
-      token={isDevMode ? devToken : token}
+      token={lkToken}
       serverUrl={isDevMode ? serverUrlDev : serverUrl}
-      connect={connect}
+      connect={canConnect}
       onConnected={handleConnect}
       onDisconnected={handleDisconnect}
       audio={audioEnabled || false}

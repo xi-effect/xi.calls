@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-providers",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "exports": {
     ".": {
@@ -17,8 +17,8 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@xipkg/calls-types": "^0.0.4",
-    "@xipkg/calls-store": "^0.0.4"
+    "@xipkg/calls-types": "^0.0.5",
+    "@xipkg/calls-store": "^0.0.5"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
@@ -27,8 +27,8 @@
     "@types/node": "^20.3.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
-    "@xipkg/eslint": "3.2.0",
-    "@xipkg/typescript": "latest",
+    "@xipkg/eslint": "4.6.0",
+    "@xipkg/typescript": "0.2.0",
     "common.eslint": "*",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",

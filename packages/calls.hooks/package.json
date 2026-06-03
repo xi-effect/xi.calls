@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-hooks",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "exports": {
     ".": {
@@ -19,11 +19,11 @@
   "dependencies": {
     "zustand": "5.0.3",
     "livekit-client": "2.15.6",
-    "@xipkg/calls-store": "^0.0.4",
-    "@xipkg/calls-providers": "^0.0.4",
-    "@xipkg/calls-types": "^0.0.4",
-    "@xipkg/calls-utils": "^0.0.4",
-    "@xipkg/calls-config": "^0.0.4"
+    "@xipkg/calls-store": "^0.0.5",
+    "@xipkg/calls-providers": "^0.0.5",
+    "@xipkg/calls-types": "^0.0.5",
+    "@xipkg/calls-utils": "^0.0.5",
+    "@xipkg/calls-config": "^0.0.5"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
@@ -32,8 +32,8 @@
     "@types/node": "^20.3.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
-    "@xipkg/eslint": "3.2.0",
-    "@xipkg/typescript": "latest",
+    "@xipkg/eslint": "4.6.0",
+    "@xipkg/typescript": "0.2.0",
     "common.eslint": "*",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",
@@ -41,7 +41,7 @@
     "globals": "^15.14.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
-    "@xipkg/calls-providers": "^0.0.4"
+    "@xipkg/calls-providers": "^0.0.5"
   },
   "peerDependencies": {
     "react": "19"

@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-chat",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "exports": {
     ".": {
@@ -18,18 +18,19 @@
   },
   "dependencies": {
     "@xipkg/scrollarea": "2.2.0",
-    "@xipkg/userprofile": "4.0.14",
-    "@xipkg/icons": "^2.7.0",
-    "@xipkg/textarea": "1.1.0",
-    "@xipkg/button": "3.2.0",
-    "@xipkg/calls-ui": "^0.0.4",
-    "@xipkg/calls-utils": "^0.0.4",
-    "@xipkg/calls-types": "^0.0.4",
-    "@xipkg/calls-config": "^0.0.4",
-    "@xipkg/calls-providers": "^0.0.4",
-    "@xipkg/calls-store": "^0.0.4",
-    "@xipkg/calls-hooks": "^0.0.4",
-    "zustand": "5.0.3"
+    "@xipkg/userprofile": "4.1.0",
+    "@xipkg/icons": "^3.0.15",
+    "@xipkg/textarea": "1.2.0",
+    "@xipkg/button": "4.1.0",
+    "@xipkg/calls-ui": "^0.0.5",
+    "@xipkg/calls-utils": "^0.0.5",
+    "@xipkg/calls-types": "^0.0.5",
+    "@xipkg/calls-config": "^0.0.5",
+    "@xipkg/calls-providers": "^0.0.5",
+    "@xipkg/calls-store": "^0.0.5",
+    "@xipkg/calls-hooks": "^0.0.5",
+    "zustand": "5.0.3",
+    "@xipkg/utils": "^1.8.0"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
@@ -38,8 +39,8 @@
     "@types/node": "^20.3.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
-    "@xipkg/eslint": "3.2.0",
-    "@xipkg/typescript": "latest",
+    "@xipkg/eslint": "4.6.0",
+    "@xipkg/typescript": "0.2.0",
     "common.eslint": "*",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",

@@ -12,9 +12,9 @@ export const RaiseHandButton = ({ className }: { className?: string }) => {
       variant="none"
       onClick={toggleHand}
       className={cn(
-        `relative m-0 h-10 w-10 rounded-lg p-0 ${
-          isHandRaised ? 'bg-brand-20 text-brand-100' : 'hover:bg-gray-5 text-gray-100'
-        }`,
+        'bg-gray-0 hover:bg-gray-5 relative m-0 p-0 text-gray-100',
+        !className && 'h-10 w-10 rounded-lg',
+        isHandRaised && 'text-brand-100',
         className,
       )}
       data-umami-event="call-raise-hand"

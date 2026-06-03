@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-config",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "exports": {
     ".": {
@@ -22,8 +22,8 @@
     "common.eslint": "*",
     "common.typescript": "*",
     "@types/node": "^20.3.1",
-    "@xipkg/eslint": "3.2.0",
-    "@xipkg/typescript": "latest",
+    "@xipkg/eslint": "4.6.0",
+    "@xipkg/typescript": "0.2.0",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",

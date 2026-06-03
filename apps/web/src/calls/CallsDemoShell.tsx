@@ -16,6 +16,7 @@ import { useTanstackCallsNavigation } from './useTanstackCallsNavigation';
 import { callsSessionPort } from './callsSession';
 import { createMockCallsDeps } from './mockCallsDeps';
 import { createCallsRuntimeConfigFromEnv } from './createCallsRuntimeConfig';
+import { CallsDemoEnvBanner } from './CallsDemoEnvBanner';
 
 import '@livekit/components-styles';
 import '@xipkg/calls-ui/styles.css';
@@ -72,6 +73,7 @@ export const CallsDemoShell = ({ children }: CallsDemoShellPropsT) => {
                 <LiveKitProvider>
                   <ModeSyncProvider>
                     <CallsDemoInit />
+                    <CallsDemoEnvBanner />
                     {children}
                     <Toaster position="top-center" richColors />
                   </ModeSyncProvider>
