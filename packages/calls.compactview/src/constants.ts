@@ -1,3 +1,5 @@
+import type { CompactViewModeT } from '@xipkg/calls-store';
+
 /** Высота шапки приложения (top-16) */
 export const HEADER_HEIGHT_PX = 64;
 /**
@@ -14,6 +16,8 @@ export const BOARD_BOTTOM_TOOLBAR_PX = 64;
 export const BOTTOM_OFFSET_BOARD_PX = BOARD_BOTTOM_TOOLBAR_PX;
 export const BOTTOM_OFFSET_DEFAULT_PX = 16;
 export const COMPACT_BOTTOM_BAR_PX = 40;
+/** Высота полоски «только аудио» (CompactCallCollapsedBar) */
+export const COMPACT_AUDIO_BAR_HEIGHT_PX = 48;
 export const TILES_PADDING_PX = 16;
 
 export const TILE_MIN_HEIGHT_PX = 120;
@@ -55,6 +59,22 @@ export const PIP_EXTRA_HEIGHT_EXPANDED_PX = 12;
 /** Высота окна PiP в basic: панель + одна плитка 16:9 + padding */
 export const PIP_HEIGHT_BASIC_PX =
   PIP_BAR_HEIGHT_PX + PIP_TILE_HEIGHT_16_9_PX + EXPANDED_VIDEO_PADDING_VERTICAL_PX;
+/** Высота окна PiP в режиме «только аудио» */
+export const PIP_HEIGHT_AUDIO_PX =
+  PIP_BAR_HEIGHT_PX + COMPACT_AUDIO_BAR_HEIGHT_PX + EXPANDED_VIDEO_PADDING_VERTICAL_PX;
+
+const COMPACT_VIEW_MODES: CompactViewModeT[] = ['basic', 'expanded', 'audio'];
+
+export function getNextCompactViewMode(current: CompactViewModeT): CompactViewModeT {
+  const index = COMPACT_VIEW_MODES.indexOf(current);
+  return COMPACT_VIEW_MODES[(index + 1) % COMPACT_VIEW_MODES.length];
+}
+
+export function getPipHeightForMode(mode: CompactViewModeT, participantCount: number): number {
+  if (mode === 'audio') return PIP_HEIGHT_AUDIO_PX;
+  if (mode === 'basic') return PIP_HEIGHT_BASIC_PX;
+  return getPipHeightExpandedPx(participantCount);
+}
 
 /**
  * Высота окна PiP в expanded: панель + до 4 плиток 16:9 + зазоры + padding + доп. высота.

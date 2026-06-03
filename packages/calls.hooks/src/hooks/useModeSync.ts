@@ -45,9 +45,11 @@ export const useModeSync = () => {
       const targetClassroom = metadataClassroomId ?? currentActiveClassroom ?? classroomIdFromRoute;
 
       if (activeMaterialId === 0 || activeMaterialId === null) {
+        const isOnBoardPage = navigation.pathnameIncludes('/board');
         if (
-          navigation.isOnClassroomOverviewWithActiveCall() ||
-          navigation.isOnOtherPageWithCompactCall()
+          !isOnBoardPage &&
+          (navigation.isOnClassroomOverviewWithActiveCall() ||
+            navigation.isOnOtherPageWithCompactCall())
         ) {
           return;
         }

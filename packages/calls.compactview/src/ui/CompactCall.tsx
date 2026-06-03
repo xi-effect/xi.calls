@@ -7,7 +7,7 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallStore } from '@xipkg/calls-store';
+import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useModeSync } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
@@ -20,6 +20,7 @@ import {
   EXPANDED_VIDEO_PADDING_VERTICAL_PX,
   TILE_GAP_PX,
   TILE_HEIGHT_16_9_PX,
+  getNextCompactViewMode,
 } from '../constants';
 
 export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) => {
@@ -73,7 +74,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
   const compactViewMode = useCallStore((state) => state.compactViewMode);
   const updateStore = useCallStore((state) => state.updateStore);
   const setCompactViewMode = useCallback(
-    (mode: 'basic' | 'expanded') => updateStore('compactViewMode', mode),
+    (mode: CompactViewModeT) => updateStore('compactViewMode', mode),
     [updateStore],
   );
   const [multiScrollIndex, setMultiScrollIndex] = useState(0);
@@ -204,6 +205,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
         onMultiNext={() =>
           setMultiScrollIndex((i) => Math.min(totalParticipants - multiVisibleCount, i + 1))
         }
+        onAudioExpand={() => setCompactViewMode('basic')}
       />
       <CompactCallBottomBar
         withOutShadows={withOutShadows}
@@ -225,9 +227,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
         }}
         isMobile={isMobile}
         compactViewMode={compactViewMode}
-        onViewModeToggle={() =>
-          setCompactViewMode(compactViewMode === 'basic' ? 'expanded' : 'basic')
-        }
+        onViewModeToggle={() => setCompactViewMode(getNextCompactViewMode(compactViewMode))}
         showBackToBoardButton={!!showBackToBoardButton}
         onBackToBoard={handleBackToBoard}
         onMaximize={handleMaximize}

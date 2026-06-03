@@ -1,4 +1,5 @@
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
+import type { CompactViewModeT } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
 import { ChevronUp, External } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
@@ -18,7 +19,7 @@ type CompactCallVideoAreaProps = {
   dragAttributes?: object;
   dragListeners?: object;
   /** Режим вида на десктопе */
-  compactViewMode: 'basic' | 'expanded';
+  compactViewMode: CompactViewModeT;
   currentParticipant: TrackReferenceOrPlaceholder | null;
   currentAudioTrack:
     | import('livekit-client').RemoteAudioTrack
@@ -36,6 +37,7 @@ type CompactCallVideoAreaProps = {
   multiCanNext: boolean;
   onMultiPrev: () => void;
   onMultiNext: () => void;
+  onAudioExpand: () => void;
 };
 
 export function CompactCallVideoArea({
@@ -60,6 +62,7 @@ export function CompactCallVideoArea({
   multiCanNext,
   onMultiPrev,
   onMultiNext,
+  onAudioExpand,
 }: CompactCallVideoAreaProps) {
   const pip = usePiP();
   const showPiPButton = pip?.isSupported && currentParticipant;
@@ -77,6 +80,17 @@ export function CompactCallVideoArea({
         audioTrack={currentAudioTrack ?? null}
         onExpand={() => onCollapsedChange(false)}
         className={cn('mb-2', withOutShadows ? '' : 'shadow-lg')}
+      />
+    );
+  }
+
+  if (!isMobile && compactViewMode === 'audio') {
+    return (
+      <CompactCallCollapsedBar
+        participant={currentParticipant?.participant ?? null}
+        audioTrack={currentAudioTrack ?? null}
+        onExpand={onAudioExpand}
+        className={cn('mb-2 w-[360px]', withOutShadows ? '' : 'shadow-lg')}
       />
     );
   }
@@ -143,7 +157,7 @@ export function CompactCallVideoArea({
         emptyState
       )}
 
-      {showPiPButton && (
+      {showPiPButton && compactViewMode !== 'audio' && (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

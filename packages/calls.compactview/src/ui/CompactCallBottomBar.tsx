@@ -8,8 +8,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@xipkg/dropdown';
-import { Account, Maximize, Users, WhiteBoard } from '@xipkg/icons';
+import { Account, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
+import type { CompactViewModeT } from '@xipkg/calls-store';
+import { getNextCompactViewMode } from '../constants';
 import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { ChatButton } from '@xipkg/calls-chat';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
@@ -35,7 +37,7 @@ type CompactCallBottomBarPropsT = {
   withOutShadows: boolean;
   devices: CompactCallDevicesPropsT;
   isMobile: boolean;
-  compactViewMode: 'basic' | 'expanded';
+  compactViewMode: CompactViewModeT;
   onViewModeToggle: () => void;
   showBackToBoardButton: boolean;
   onBackToBoard: () => void;
@@ -54,6 +56,14 @@ export function CompactCallBottomBar({
   onMaximize,
   isTutor,
 }: CompactCallBottomBarPropsT) {
+  const nextViewMode = getNextCompactViewMode(compactViewMode);
+  const viewModeToggleMeta = {
+    expanded: { Icon: Users, label: 'Развёрнутый вид (несколько участников)' },
+    audio: { Icon: SoundTwo, label: 'Только аудио' },
+    basic: { Icon: Account, label: 'Один участник' },
+  }[nextViewMode];
+  const ViewModeIcon = viewModeToggleMeta.Icon;
+
   const barCn = cn(
     'bg-gray-0 border-gray-20 flex items-center justify-center rounded-2xl border p-1',
     withOutShadows ? '' : 'shadow-lg',
@@ -82,20 +92,12 @@ export function CompactCallBottomBar({
                 variant="none"
                 onClick={onViewModeToggle}
                 className="hover:bg-gray-5 h-8 w-8 rounded-xl p-0 text-gray-100"
-                aria-label={compactViewMode === 'basic' ? 'Развёрнутый вид' : 'Один участник'}
+                aria-label={viewModeToggleMeta.label}
               >
-                {compactViewMode === 'basic' ? (
-                  <Users className="h-5 w-5" />
-                ) : (
-                  <Account className="h-5 w-5" />
-                )}
+                <ViewModeIcon className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              {compactViewMode === 'basic'
-                ? 'Развёрнутый вид (несколько участников)'
-                : 'Один участник'}
-            </TooltipContent>
+            <TooltipContent>{viewModeToggleMeta.label}</TooltipContent>
           </Tooltip>
         </div>
       )}

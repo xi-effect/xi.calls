@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-compactview",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "exports": {
     ".": {
@@ -22,15 +22,15 @@
     "@xipkg/icons": "^3.0.15",
     "@xipkg/textarea": "1.1.0",
     "@xipkg/button": "4.1.0",
-    "@xipkg/calls-ui": "^0.0.3",
-    "@xipkg/calls-utils": "^0.0.3",
-    "@xipkg/calls-types": "^0.0.3",
-    "@xipkg/calls-config": "^0.0.3",
-    "@xipkg/calls-providers": "^0.0.3",
-    "@xipkg/calls-store": "^0.0.3",
-    "@xipkg/calls-hooks": "^0.0.3",
-    "@xipkg/calls-chat": "^0.0.3",
-    "@xipkg/calls-risehand": "^0.0.3"
+    "@xipkg/calls-ui": "^0.0.4",
+    "@xipkg/calls-utils": "^0.0.4",
+    "@xipkg/calls-types": "^0.0.4",
+    "@xipkg/calls-config": "^0.0.4",
+    "@xipkg/calls-providers": "^0.0.4",
+    "@xipkg/calls-store": "^0.0.4",
+    "@xipkg/calls-hooks": "^0.0.4",
+    "@xipkg/calls-chat": "^0.0.4",
+    "@xipkg/calls-risehand": "^0.0.4"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

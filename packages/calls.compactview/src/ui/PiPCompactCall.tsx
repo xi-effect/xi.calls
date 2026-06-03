@@ -4,18 +4,24 @@ import {
   usePersistentUserChoices,
   useTrackToggle,
 } from '@livekit/components-react';
-import { Track, LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { Account, Users } from '@xipkg/icons';
+import { Track, LocalAudioTrack, LocalVideoTrack, RemoteAudioTrack } from 'livekit-client';
+import { Account, SoundTwo, Users } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
-import { useCallStore } from '@xipkg/calls-store';
+import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
-import { PIP_RESERVED_HEIGHT_PX, PIP_TILE_HEIGHT_16_9_PX, TILE_GAP_PX } from '../constants';
+import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
+import {
+  PIP_RESERVED_HEIGHT_PX,
+  PIP_TILE_HEIGHT_16_9_PX,
+  TILE_GAP_PX,
+  getNextCompactViewMode,
+} from '../constants';
 
 /**
  * Минимальная высота окна PiP, необходимая для отображения n полных плиток
@@ -33,9 +39,16 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
   const compactViewMode = useCallStore((s) => s.compactViewMode);
   const updateStore = useCallStore((s) => s.updateStore);
   const setViewMode = useCallback(
-    (mode: 'basic' | 'expanded') => updateStore('compactViewMode', mode),
+    (mode: CompactViewModeT) => updateStore('compactViewMode', mode),
     [updateStore],
   );
+  const nextViewMode = getNextCompactViewMode(compactViewMode);
+  const viewModeToggleMeta = {
+    expanded: { Icon: Users, label: 'Развёрнутый вид (несколько участников)' },
+    audio: { Icon: SoundTwo, label: 'Только аудио' },
+    basic: { Icon: Account, label: 'Один участник' },
+  }[nextViewMode];
+  const ViewModeIcon = viewModeToggleMeta.Icon;
   const [multiScrollIndex, setMultiScrollIndex] = useState(0);
   const [pipSize, setPipSize] = useState({
     width: pipWindow.innerWidth,
@@ -99,6 +112,10 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
   const multiCanPrev = multiScrollIndex > 0;
   const multiCanNext = multiScrollIndex + multiVisibleCount < totalParticipants;
 
+  const currentAudioTrack = currentParticipant?.participant?.getTrackPublication(
+    Track.Source.Microphone,
+  )?.track as LocalAudioTrack | RemoteAudioTrack | undefined;
+
   useEffect(() => {
     if (multiScrollIndex + multiVisibleCount > totalParticipants && totalParticipants > 0) {
       setMultiScrollIndex(Math.max(0, totalParticipants - multiVisibleCount));
@@ -118,7 +135,14 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
   return (
     <div className="flex h-full flex-col gap-1 p-1">
       <div className="group relative min-h-0 flex-1 overflow-hidden rounded-2xl">
-        {compactViewMode === 'expanded' ? (
+        {compactViewMode === 'audio' ? (
+          <CompactCallCollapsedBar
+            participant={currentParticipant?.participant ?? null}
+            audioTrack={currentAudioTrack ?? null}
+            onExpand={() => setViewMode('basic')}
+            className="h-full w-full"
+          />
+        ) : compactViewMode === 'expanded' ? (
           <div
             className="relative flex h-full flex-col overflow-hidden rounded-2xl p-0.5"
             style={{ gap: TILE_GAP_PX }}
@@ -199,22 +223,14 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
               <Button
                 size="icon"
                 variant="none"
-                onClick={() => setViewMode(compactViewMode === 'basic' ? 'expanded' : 'basic')}
+                onClick={() => setViewMode(getNextCompactViewMode(compactViewMode))}
                 className="hover:bg-gray-5 h-[28px] w-[28px] rounded-xl p-0 text-gray-100"
-                aria-label={compactViewMode === 'basic' ? 'Развёрнутый вид' : 'Один участник'}
+                aria-label={viewModeToggleMeta.label}
               >
-                {compactViewMode === 'basic' ? (
-                  <Users className="h-4 w-4" />
-                ) : (
-                  <Account className="h-4 w-4" />
-                )}
+                <ViewModeIcon className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              {compactViewMode === 'basic'
-                ? 'Развёрнутый вид (несколько участников)'
-                : 'Один участник'}
-            </TooltipContent>
+            <TooltipContent>{viewModeToggleMeta.label}</TooltipContent>
           </Tooltip>
         </div>
 

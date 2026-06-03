@@ -7,7 +7,7 @@ import { useCallStore } from '@xipkg/calls-store';
 import { useRoom } from '@xipkg/calls-providers';
 import { useMedia } from '@xipkg/calls-utils';
 import {
-  getPipHeightExpandedPx,
+  getPipHeightForMode,
   PIP_EXTRA_HEIGHT_PX,
   PIP_HEIGHT_BASIC_PX,
   PIP_PANEL_WIDTH_PX,
@@ -71,8 +71,7 @@ export function PiPProvider({ children }: PiPProviderProps) {
   });
 
   const openPiP = useCallback(async () => {
-    const height =
-      compactViewMode === 'basic' ? PIP_HEIGHT_BASIC_PX : getPipHeightExpandedPx(totalParticipants);
+    const height = getPipHeightForMode(compactViewMode, totalParticipants);
     await openPiPRaw({ height });
   }, [openPiPRaw, compactViewMode, totalParticipants]);
 
@@ -96,7 +95,7 @@ export function PiPProvider({ children }: PiPProviderProps) {
     const height =
       compactViewMode === 'basic'
         ? PIP_HEIGHT_BASIC_PX + PIP_EXTRA_HEIGHT_PX
-        : getPipHeightExpandedPx(totalParticipants);
+        : getPipHeightForMode(compactViewMode, totalParticipants);
     resizePiP(PIP_PANEL_WIDTH_PX, height);
   }, [pipWindow, resizePiP, compactViewMode, totalParticipants]);
 

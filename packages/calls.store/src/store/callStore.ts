@@ -10,6 +10,7 @@ type RaisedHandT = {
 };
 
 export type CornerT = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type CompactViewModeT = 'basic' | 'expanded' | 'audio';
 
 type useCallStoreT = {
   // разрешение от браузера на использование камеры
@@ -34,8 +35,8 @@ type useCallStoreT = {
   preferredFocusLayout: 'horizontal' | 'vertical';
   activeCorner: CornerT;
 
-  /** Режим вида компакт-ВКС на десктопе: одна плитка или развёрнутый список (учёт при DnD) */
-  compactViewMode: 'basic' | 'expanded';
+  /** Режим вида компакт-ВКС: одна плитка, несколько плиток или только аудио */
+  compactViewMode: CompactViewModeT;
 
   // Текущая активная доска (для синхронизации с новыми участниками)
   activeBoardId: string | undefined;
@@ -124,7 +125,7 @@ export const useCallStore = create<useCallStoreT>()(
     }),
     {
       name: 'call-store',
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const state = persisted as Record<string, unknown>;
         if (version < 2) {
@@ -136,6 +137,11 @@ export const useCallStore = create<useCallStoreT>()(
         if (version < 3) {
           const ct = state.carouselType;
           state.preferredFocusLayout = ct === 'horizontal' || ct === 'vertical' ? ct : 'horizontal';
+        }
+        if (version < 4) {
+          const mode = state.compactViewMode;
+          state.compactViewMode =
+            mode === 'basic' || mode === 'expanded' || mode === 'audio' ? mode : 'basic';
         }
         return state as useCallStoreT;
       },
@@ -149,6 +155,7 @@ export const useCallStore = create<useCallStoreT>()(
         carouselType: state.carouselType,
         preferredFocusLayout: state.preferredFocusLayout,
         activeCorner: state.activeCorner,
+        compactViewMode: state.compactViewMode,
       }),
     },
   ),

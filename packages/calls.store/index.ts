@@ -9,4 +9,4 @@ export {
   useFocusModeStore,
 } from './src';
 
-export type { VideoResolution, CornerT } from './src';
+export type { VideoResolution, CornerT, CompactViewModeT } from './src';
