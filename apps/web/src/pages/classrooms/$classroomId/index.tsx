@@ -10,7 +10,7 @@ export const Route = createFileRoute('/classrooms/$classroomId/')({
 function ClassroomOverviewPage() {
   return (
     <CallsDemoShell>
-      <DemoChrome title="Кабинет (compact overlay)">
+      <DemoChrome>
         <CompactView>
           <div className="bg-gray-0 flex h-full items-center justify-center p-8">
             <div className="max-w-lg text-center">

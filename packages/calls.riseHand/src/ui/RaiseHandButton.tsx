@@ -12,8 +12,8 @@ export const RaiseHandButton = ({ className }: { className?: string }) => {
       variant="none"
       onClick={toggleHand}
       className={cn(
-        'bg-gray-0 hover:bg-gray-5 relative m-0 p-0 text-gray-100',
-        !className && 'h-10 w-10 rounded-lg',
+        'bg-gray-0 hover:bg-gray-5 relative m-0 rounded-xl p-0 text-gray-100',
+        !className && 'h-10 w-10',
         isHandRaised && 'text-brand-100',
         className,
       )}
@@ -21,7 +21,7 @@ export const RaiseHandButton = ({ className }: { className?: string }) => {
       data-umami-event-state={isHandRaised ? 'lower' : 'raise'}
       disabled={isPending}
     >
-      <Hand className={cn('h-5 w-5', isHandRaised ? 'fill-brand-100' : 'fill-gray-100')} />
+      <Hand className={cn('h-6 w-6', isHandRaised ? 'fill-brand-100' : 'fill-gray-100')} />
     </Button>
   );
 };

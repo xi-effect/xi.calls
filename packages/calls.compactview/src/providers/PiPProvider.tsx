@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocalParticipant } from '@livekit/components-react';
 import { useDocumentPiP, useCompactNavigation } from '../hooks';
@@ -6,17 +6,13 @@ import { PiPCompactCall } from '../ui';
 import { useCallStore } from '@xipkg/calls-store';
 import { useRoom } from '@xipkg/calls-providers';
 import { useMedia } from '@xipkg/calls-utils';
-import {
-  getPipHeightForMode,
-  PIP_EXTRA_HEIGHT_PX,
-  PIP_HEIGHT_BASIC_PX,
-  PIP_PANEL_WIDTH_PX,
-} from '../constants';
+import { getPipHeightForMode, PIP_HEIGHT_BASIC_PX, PIP_PANEL_WIDTH_PX } from '../constants';
 
 type PiPContextValue = {
   openPiP: () => Promise<void>;
   isPiPActive: boolean;
   isSupported: boolean;
+  resizePiPTo: (height: number) => void;
 };
 
 const PiPContext = createContext<PiPContextValue | null>(null);
@@ -71,9 +67,16 @@ export function PiPProvider({ children }: PiPProviderProps) {
   });
 
   const openPiP = useCallback(async () => {
+    const width = PIP_PANEL_WIDTH_PX;
     const height = getPipHeightForMode(compactViewMode, totalParticipants);
-    await openPiPRaw({ height });
-  }, [openPiPRaw, compactViewMode, totalParticipants]);
+    const pip = await openPiPRaw({ width, height });
+    if (pip) {
+      // requestWindow не всегда сразу даёт нужный innerHeight — подгоняем сразу при открытии
+      requestAnimationFrame(() => {
+        resizePiP?.(width, height);
+      });
+    }
+  }, [openPiPRaw, resizePiP, compactViewMode, totalParticipants]);
 
   useEffect(() => {
     if (!room || !pipWindow) return;
@@ -90,25 +93,53 @@ export function PiPProvider({ children }: PiPProviderProps) {
     };
   }, [room, pipWindow, closePiP]);
 
+  const resizePiPTo = useCallback(
+    (height: number) => {
+      resizePiP?.(PIP_PANEL_WIDTH_PX, height);
+    },
+    [resizePiP],
+  );
+
+  const openPiPRef = useRef(openPiP);
+  openPiPRef.current = openPiP;
+
+  // Media Session PiP — с корректной высотой под текущий режим (не дефолт basic)
   useEffect(() => {
-    if (!pipWindow || !resizePiP) return;
-    const height =
-      compactViewMode === 'basic'
-        ? PIP_HEIGHT_BASIC_PX + PIP_EXTRA_HEIGHT_PX
-        : getPipHeightForMode(compactViewMode, totalParticipants);
-    resizePiP(PIP_PANEL_WIDTH_PX, height);
-  }, [pipWindow, resizePiP, compactViewMode, totalParticipants]);
+    if (!isSupported || isMobile) return;
+
+    const action = 'enterpictureinpicture' as MediaSessionAction;
+    try {
+      navigator.mediaSession.setActionHandler(action, () => {
+        void openPiPRef.current();
+      });
+    } catch {
+      // enterpictureinpicture не поддерживается
+    }
+
+    return () => {
+      try {
+        navigator.mediaSession.setActionHandler(action, null);
+      } catch {
+        // ignore
+      }
+    };
+  }, [isSupported, isMobile]);
 
   const value: PiPContextValue = {
     openPiP,
     isPiPActive: pipWindow !== null,
     isSupported: isSupported && !isMobile,
+    resizePiPTo,
   };
 
   return (
     <PiPContext.Provider value={value}>
       {children}
-      {pipWindow && createPortal(<PiPCompactCall pipWindow={pipWindow} />, pipWindow.document.body)}
+      {pipWindow &&
+        createPortal(
+          <PiPCompactCall pipWindow={pipWindow} resizePiPTo={resizePiPTo} />,
+          pipWindow.document.body,
+        )}
     </PiPContext.Provider>
   );
 }

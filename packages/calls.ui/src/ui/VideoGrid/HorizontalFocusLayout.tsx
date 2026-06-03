@@ -18,9 +18,9 @@ export function HorizontalFocusLayout({
   className = '',
 }: HorizontalFocusLayoutProps) {
   return (
-    <div className={`flex h-full w-full flex-col gap-2 p-1 ${className}`}>
+    <div className={`flex h-full min-h-0 w-full flex-col gap-1 px-1 py-0.5 ${className}`}>
       {/* Горизонтальная карусель вверху */}
-      <div className="h-auto min-h-36 w-full">
+      <div className="horizontal-focus-thumbs w-full shrink-0 overflow-visible pt-0.5">
         <PagedCarousel
           items={thumbs}
           orientation="horizontal"
@@ -28,7 +28,7 @@ export function HorizontalFocusLayout({
           minItemSize={150}
           maxItemSize={250}
           renderItem={(node) => (
-            <div className="relative aspect-video w-full">
+            <div className="relative h-full w-full overflow-hidden">
               <div className="absolute inset-0">{node}</div>
             </div>
           )}
@@ -36,7 +36,7 @@ export function HorizontalFocusLayout({
       </div>
 
       {/* Сцена - занимает основное пространство */}
-      <div className="min-h-0 flex-1">
+      <div className="focus-stage-area min-h-0 flex-1 overflow-visible">
         <FocusStage>{focus}</FocusStage>
       </div>
     </div>

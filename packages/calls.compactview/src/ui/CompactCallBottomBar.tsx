@@ -94,7 +94,7 @@ export function CompactCallBottomBar({
                 className="hover:bg-gray-5 h-8 w-8 rounded-xl p-0 text-gray-100"
                 aria-label={viewModeToggleMeta.label}
               >
-                <ViewModeIcon className="h-5 w-5" />
+                <ViewModeIcon className="h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{viewModeToggleMeta.label}</TooltipContent>
@@ -113,7 +113,7 @@ export function CompactCallBottomBar({
                 onClick={onBackToBoard}
                 aria-label="На доску"
               >
-                <WhiteBoard className="fill-gray-0 h-5 w-5" />
+                <WhiteBoard className="fill-gray-0 h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Обратно на доску</TooltipContent>
@@ -122,9 +122,9 @@ export function CompactCallBottomBar({
       )}
 
       <div className={cn(barCn, 'ml-auto')}>
-        <ScreenShareButton className="h-[32px] w-[32px]" />
+        <ScreenShareButton className="h-8 w-8" />
         <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />
-        <RaiseHandButton className="h-[32px] w-[32px]" />
+        <RaiseHandButton className="h-8 w-8 min-w-8" />
       </div>
 
       <div className={cn(barCn, 'ml-1')}>

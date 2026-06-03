@@ -17,6 +17,7 @@ import { callsSessionPort } from './callsSession';
 import { createMockCallsDeps } from './mockCallsDeps';
 import { createCallsRuntimeConfigFromEnv } from './createCallsRuntimeConfig';
 import { CallsDemoEnvBanner } from './CallsDemoEnvBanner';
+import { DemoFloatingNav } from './DemoFloatingNav';
 
 import '@livekit/components-styles';
 import '@xipkg/calls-ui/styles.css';
@@ -74,6 +75,7 @@ export const CallsDemoShell = ({ children }: CallsDemoShellPropsT) => {
                   <ModeSyncProvider>
                     <CallsDemoInit />
                     <CallsDemoEnvBanner />
+                    <DemoFloatingNav />
                     {children}
                     <Toaster position="top-center" richColors />
                   </ModeSyncProvider>

@@ -12,7 +12,7 @@ function BoardInClassroomPage() {
 
   return (
     <CallsDemoShell>
-      <DemoChrome title="Доска в кабинете (compact)">
+      <DemoChrome>
         <CompactView>
           <div className="bg-gray-10 flex h-full flex-col">
             <div className="border-gray-10 bg-gray-0 border-b px-6 py-4">

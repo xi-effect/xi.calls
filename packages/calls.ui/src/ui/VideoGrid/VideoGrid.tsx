@@ -141,7 +141,14 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
     <div className="align-stretch relative flex h-full w-full justify-center" {...props}>
       {isWeb() && (
         <LayoutContextProvider value={layoutContext}>
-          <div ref={contentRef} className="flex h-full w-full items-center justify-center">
+          <div
+            ref={contentRef}
+            className={`flex h-full min-h-0 w-full ${
+              effectiveCarouselType === 'grid'
+                ? 'items-center justify-center'
+                : 'items-stretch justify-center'
+            }`}
+          >
             {effectiveCarouselType === 'grid' ? (
               <div className="h-full w-full min-w-0">
                 <GridLayout tracks={sortedTracks}>
@@ -158,7 +165,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
                 </GridLayout>
               </div>
             ) : (
-              <div className="h-(--available-height) max-h-(--available-height) w-full overflow-hidden">
+              <div className="h-full max-h-full min-h-0 w-full overflow-hidden">
                 <CarouselContainer focusTrack={focusTrack} carouselTracks={carouselTracks} />
               </div>
             )}

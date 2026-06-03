@@ -19,15 +19,15 @@ export const ChatButton = ({ className }: ChatButtonProps) => {
       variant="none"
       onClick={toggleChat}
       className={cn(
-        'bg-gray-0 hover:bg-gray-5 relative m-0 p-0 text-gray-100',
-        !className && 'h-10 w-10 min-w-10 rounded-lg',
+        'bg-gray-0 hover:bg-gray-5 relative m-0 rounded-xl p-0 text-gray-100',
+        !className && 'h-10 w-10 min-w-10',
         isChatOpen && 'text-brand-100',
         className,
       )}
       data-umami-event="call-toggle-chat"
       data-umami-event-state={isChatOpen ? 'close' : 'open'}
     >
-      <Chat className={cn('h-5 w-5', isChatOpen ? 'fill-brand-100' : 'fill-gray-100')} />
+      <Chat className={cn('h-6 w-6', isChatOpen ? 'fill-brand-100' : 'fill-gray-100')} />
       {unreadMessagesCount > 0 && (
         <div className="text-red-0 bg-brand-100 absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium">
           {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}

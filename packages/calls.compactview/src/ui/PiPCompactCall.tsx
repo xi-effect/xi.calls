@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   useLocalParticipant,
   usePersistentUserChoices,
@@ -17,25 +17,20 @@ import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import {
-  PIP_RESERVED_HEIGHT_PX,
   PIP_TILE_HEIGHT_16_9_PX,
   TILE_GAP_PX,
   getNextCompactViewMode,
+  getPipContentHeight,
+  getPipRequiredHeightForTiles,
+  getPipWindowHeight,
 } from '../constants';
-
-/**
- * Минимальная высота окна PiP, необходимая для отображения n полных плиток
- * вместе с панелью управления и всеми отступами.
- */
-function requiredPipHeight(n: number): number {
-  return PIP_RESERVED_HEIGHT_PX + n * PIP_TILE_HEIGHT_16_9_PX + Math.max(0, n - 1) * TILE_GAP_PX;
-}
 
 type PiPCompactCallPropsT = {
   pipWindow: Window;
+  resizePiPTo?: (height: number) => void;
 };
 
-export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
+export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT) {
   const compactViewMode = useCallStore((s) => s.compactViewMode);
   const updateStore = useCallStore((s) => s.updateStore);
   const setViewMode = useCallback(
@@ -99,11 +94,38 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
   // Плитка добавляется, только когда есть полное место; убирается сразу, как перестаёт влезать.
   const multiVisibleCount = useMemo(() => {
     let n = 1;
-    while (n < totalParticipants && requiredPipHeight(n + 1) <= pipSize.height) {
+    while (n < totalParticipants && getPipRequiredHeightForTiles(n + 1) <= pipSize.height) {
       n++;
     }
     return n;
   }, [pipSize.height, totalParticipants]);
+
+  const pipContentHeight = useMemo(() => {
+    if (compactViewMode === 'audio') {
+      return getPipContentHeight('audio');
+    }
+    if (compactViewMode === 'expanded') {
+      return getPipContentHeight('expanded', multiVisibleCount);
+    }
+    return getPipContentHeight('basic');
+  }, [compactViewMode, multiVisibleCount]);
+
+  const pipWindowHeight = useMemo(
+    () =>
+      getPipWindowHeight(compactViewMode, compactViewMode === 'expanded' ? multiVisibleCount : 1),
+    [compactViewMode, multiVisibleCount],
+  );
+
+  // Сразу после открытия/смены режима — innerHeight ещё может быть меньше расчётного
+  useLayoutEffect(() => {
+    resizePiPTo?.(pipWindowHeight);
+  }, [resizePiPTo, pipWindowHeight]);
+
+  useEffect(() => {
+    if (pipSize.height < pipContentHeight - 2) {
+      resizePiPTo?.(pipWindowHeight);
+    }
+  }, [resizePiPTo, pipWindowHeight, pipContentHeight, pipSize.height]);
 
   const multiVisibleParticipants = useMemo(
     () => participants.slice(multiScrollIndex, multiScrollIndex + multiVisibleCount),
@@ -134,67 +156,69 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
 
   return (
     <div className="flex h-full flex-col gap-1 p-1">
-      <div className="group relative min-h-0 flex-1 overflow-hidden rounded-2xl">
-        {compactViewMode === 'audio' ? (
-          <CompactCallCollapsedBar
-            participant={currentParticipant?.participant ?? null}
-            audioTrack={currentAudioTrack ?? null}
-            onExpand={() => setViewMode('basic')}
-            className="h-full w-full"
-          />
-        ) : compactViewMode === 'expanded' ? (
-          <div
-            className="relative flex h-full flex-col overflow-hidden rounded-2xl p-0.5"
-            style={{ gap: TILE_GAP_PX }}
-          >
-            {multiVisibleParticipants.length === 0
-              ? emptyState
-              : multiVisibleParticipants.map((trackRef) => (
-                  <div
-                    key={`${trackRef.participant.identity}-${trackRef.source}`}
-                    className="aspect-video w-full shrink-0 overflow-hidden rounded-xl"
-                    style={{ minHeight: PIP_TILE_HEIGHT_16_9_PX }}
-                  >
-                    <ParticipantTile
-                      trackRef={trackRef}
-                      participant={trackRef.participant}
-                      className="h-full w-full [&_video]:object-cover"
-                      isFocusToggleDisable
-                    />
-                  </div>
-                ))}
-            <CompactMultiViewControls
-              canPrev={multiCanPrev}
-              canNext={multiCanNext}
-              onPrev={() => setMultiScrollIndex((i) => Math.max(0, i - 1))}
-              onNext={() =>
-                setMultiScrollIndex((i) => Math.min(totalParticipants - multiVisibleCount, i + 1))
-              }
-            />
-          </div>
-        ) : currentParticipant ? (
-          <>
-            <ParticipantTile
-              trackRef={currentParticipant}
-              participant={currentParticipant.participant}
-              className="h-full w-full"
-              isFocusToggleDisable
-            />
-            {totalParticipants > 1 && (
-              <CompactNavigationControls
-                canPrev={canGoPrev}
-                canNext={canGoNext}
-                onPrev={goToPrev}
-                onNext={goToNext}
-                currentIndex={currentIndex}
-                totalParticipants={totalParticipants}
+      {compactViewMode === 'audio' ? (
+        <CompactCallCollapsedBar
+          participant={currentParticipant?.participant ?? null}
+          audioTrack={currentAudioTrack ?? null}
+          onExpand={() => setViewMode('basic')}
+          className="h-12 w-full shrink-0"
+        />
+      ) : (
+        <div className="group relative min-h-0 flex-1 overflow-hidden rounded-2xl">
+          {compactViewMode === 'expanded' ? (
+            <div
+              className="relative flex h-full flex-col justify-start overflow-hidden rounded-2xl p-0.5"
+              style={{ gap: TILE_GAP_PX }}
+            >
+              {multiVisibleParticipants.length === 0
+                ? emptyState
+                : multiVisibleParticipants.map((trackRef) => (
+                    <div
+                      key={`${trackRef.participant.identity}-${trackRef.source}`}
+                      className="aspect-video w-full shrink-0 overflow-hidden rounded-xl"
+                      style={{ minHeight: PIP_TILE_HEIGHT_16_9_PX }}
+                    >
+                      <ParticipantTile
+                        trackRef={trackRef}
+                        participant={trackRef.participant}
+                        className="h-full w-full [&_video]:object-cover"
+                        isFocusToggleDisable
+                      />
+                    </div>
+                  ))}
+              <CompactMultiViewControls
+                canPrev={multiCanPrev}
+                canNext={multiCanNext}
+                onPrev={() => setMultiScrollIndex((i) => Math.max(0, i - 1))}
+                onNext={() =>
+                  setMultiScrollIndex((i) => Math.min(totalParticipants - multiVisibleCount, i + 1))
+                }
               />
-            )}
-          </>
-        ) : (
-          emptyState
-        )}
-      </div>
+            </div>
+          ) : currentParticipant ? (
+            <>
+              <ParticipantTile
+                trackRef={currentParticipant}
+                participant={currentParticipant.participant}
+                className="h-full w-full"
+                isFocusToggleDisable
+              />
+              {totalParticipants > 1 && (
+                <CompactNavigationControls
+                  canPrev={canGoPrev}
+                  canNext={canGoNext}
+                  onPrev={goToPrev}
+                  onNext={goToNext}
+                  currentIndex={currentIndex}
+                  totalParticipants={totalParticipants}
+                />
+              )}
+            </>
+          ) : (
+            emptyState
+          )}
+        </div>
+      )}
 
       <div className="flex h-12 shrink-0 items-center gap-0.5">
         <div className={barCn}>
@@ -227,7 +251,7 @@ export function PiPCompactCall({ pipWindow }: PiPCompactCallPropsT) {
                 className="hover:bg-gray-5 h-[28px] w-[28px] rounded-xl p-0 text-gray-100"
                 aria-label={viewModeToggleMeta.label}
               >
-                <ViewModeIcon className="h-4 w-4" />
+                <ViewModeIcon className="h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{viewModeToggleMeta.label}</TooltipContent>

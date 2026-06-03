@@ -30,7 +30,7 @@ const NavigationButton = ({ onClick, disabled, orientation, direction }: Navigat
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="z-10 bg-transparent fill-gray-100 p-0 text-center hover:opacity-100 disabled:hidden disabled:cursor-not-allowed"
+      className="z-30 bg-transparent fill-gray-100 p-0 text-center hover:opacity-100 disabled:hidden disabled:cursor-not-allowed"
     >
       <div
         data-disabled={disabled}
@@ -60,13 +60,13 @@ export function PaginationControls({
   const isVertical = orientation === 'vertical';
 
   return (
-    <div className="pointer-events-none absolute inset-0">
+    <div className="pointer-events-none absolute inset-0 z-30">
       {/* Кнопка "Назад" */}
       <div
         className={
           isVertical
-            ? 'pointer-events-auto absolute top-2 left-1/2 -translate-x-1/2'
-            : 'pointer-events-auto absolute top-1/2 left-2 -translate-y-1/2'
+            ? 'pointer-events-auto absolute top-0 left-1/2 z-30 -translate-x-1/2 -translate-y-1/2'
+            : 'pointer-events-auto absolute top-1/2 left-0 z-30 -translate-x-1/2 -translate-y-1/2'
         }
       >
         <NavigationButton
@@ -81,8 +81,8 @@ export function PaginationControls({
       <div
         className={
           isVertical
-            ? 'pointer-events-auto absolute bottom-2 left-1/2 -translate-x-1/2'
-            : 'pointer-events-auto absolute top-1/2 right-2 -translate-y-1/2'
+            ? 'pointer-events-auto absolute bottom-0 left-1/2 z-30 -translate-x-1/2 translate-y-1/2'
+            : 'pointer-events-auto absolute top-1/2 right-0 z-30 translate-x-1/2 -translate-y-1/2'
         }
       >
         <NavigationButton

@@ -12,7 +12,7 @@ function StandaloneBoardPage() {
 
   return (
     <CallsDemoShell>
-      <DemoChrome title="Доска /board (compact)">
+      <DemoChrome>
         <CompactView>
           <div className="bg-gray-10 flex h-full items-center justify-center p-8">
             <p className="text-m-base text-gray-60 max-w-md text-center">

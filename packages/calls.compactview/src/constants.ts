@@ -41,27 +41,66 @@ export const PIP_BAR_HEIGHT_PX = 48;
 export const PIP_VIDEO_BAR_GAP_PX = 4;
 /** Внутренний вертикальный padding области плиток в PiP expanded (p-0.5) */
 export const PIP_EXPANDED_INNER_PADDING_PX = 4;
+/** Панель управления + gap + внешний padding корня PiP (p-1 + gap-1 + h-12) */
+export const PIP_CHROME_HEIGHT_PX =
+  PIP_BAR_HEIGHT_PX + PIP_VIDEO_BAR_GAP_PX + EXPANDED_VIDEO_PADDING_VERTICAL_PX;
+
 /**
- * Высота, всегда резервируемая под панель и отступы в PiP (панель всегда видна).
- * bar + gap + outer padding + inner padding области плиток.
+ * Доп. высота окна Document PiP: шапка браузера не входит в innerHeight,
+ * без неё обрезается нижняя панель (~⅔ высоты control bar).
  */
-export const PIP_RESERVED_HEIGHT_PX =
-  PIP_BAR_HEIGHT_PX +
-  PIP_VIDEO_BAR_GAP_PX +
-  EXPANDED_VIDEO_PADDING_VERTICAL_PX +
-  PIP_EXPANDED_INNER_PADDING_PX;
+export const PIP_DOCUMENT_WINDOW_FRAME_PX = Math.round((PIP_BAR_HEIGHT_PX * 2) / 3);
+
+/**
+ * Высота «хрома» + внутренний padding expanded-области (p-0.5).
+ * Используется при расчёте, сколько плиток влезает по высоте окна.
+ */
+export const PIP_RESERVED_HEIGHT_PX = PIP_CHROME_HEIGHT_PX + PIP_EXPANDED_INNER_PADDING_PX;
+
 /** Высота одной плитки 16:9 при ширине PiP */
 export const PIP_TILE_HEIGHT_16_9_PX = Math.round((PIP_PANEL_WIDTH_PX * 9) / 16);
-/** Дополнительные 36px высоты при открытии/ресайзе PiP (basic и expanded) */
-export const PIP_EXTRA_HEIGHT_PX = 36;
-/** Ещё 12px при expanded (переключение basic → expanded) */
-export const PIP_EXTRA_HEIGHT_EXPANDED_PX = 12;
-/** Высота окна PiP в basic: панель + одна плитка 16:9 + padding */
-export const PIP_HEIGHT_BASIC_PX =
-  PIP_BAR_HEIGHT_PX + PIP_TILE_HEIGHT_16_9_PX + EXPANDED_VIDEO_PADDING_VERTICAL_PX;
-/** Высота окна PiP в режиме «только аудио» */
-export const PIP_HEIGHT_AUDIO_PX =
-  PIP_BAR_HEIGHT_PX + COMPACT_AUDIO_BAR_HEIGHT_PX + EXPANDED_VIDEO_PADDING_VERTICAL_PX;
+
+/**
+ * Высота области с плитками в PiP.
+ * @param tileCount — число видимых плиток 16:9
+ * @param withExpandedInnerPadding — p-0.5 вокруг стека в expanded
+ */
+export function getPipTilesStackHeightPx(
+  tileCount: number,
+  withExpandedInnerPadding = false,
+): number {
+  const n = Math.max(1, tileCount);
+  const innerPad = withExpandedInnerPadding ? PIP_EXPANDED_INNER_PADDING_PX : 0;
+  return innerPad + n * PIP_TILE_HEIGHT_16_9_PX + Math.max(0, n - 1) * TILE_GAP_PX;
+}
+
+/** Высота контента PiP (innerHeight), без шапки окна браузера */
+export function getPipContentHeight(mode: CompactViewModeT, tileCount = 1): number {
+  if (mode === 'audio') {
+    return PIP_CHROME_HEIGHT_PX + COMPACT_AUDIO_BAR_HEIGHT_PX;
+  }
+  if (mode === 'basic') {
+    return PIP_CHROME_HEIGHT_PX + getPipTilesStackHeightPx(1, false);
+  }
+  const n = Math.min(Math.max(1, tileCount), 4);
+  return PIP_CHROME_HEIGHT_PX + getPipTilesStackHeightPx(n, true);
+}
+
+/** Высота для resizeTo / requestWindow (контент + шапка Document PiP) */
+export function getPipWindowHeight(mode: CompactViewModeT, tileCount = 1): number {
+  return getPipContentHeight(mode, tileCount) + PIP_DOCUMENT_WINDOW_FRAME_PX;
+}
+
+/** Минимальный innerHeight для n плиток в expanded */
+export function getPipRequiredHeightForTiles(tileCount: number): number {
+  return getPipContentHeight('expanded', tileCount);
+}
+
+/** @deprecated Используйте getPipWindowHeight('basic', 1) */
+export const PIP_HEIGHT_BASIC_PX = getPipWindowHeight('basic', 1);
+
+/** @deprecated Используйте getPipWindowHeight('audio', 1) */
+export const PIP_HEIGHT_AUDIO_PX = getPipWindowHeight('audio', 1);
 
 const COMPACT_VIEW_MODES: CompactViewModeT[] = ['basic', 'expanded', 'audio'];
 
@@ -71,23 +110,14 @@ export function getNextCompactViewMode(current: CompactViewModeT): CompactViewMo
 }
 
 export function getPipHeightForMode(mode: CompactViewModeT, participantCount: number): number {
-  if (mode === 'audio') return PIP_HEIGHT_AUDIO_PX;
-  if (mode === 'basic') return PIP_HEIGHT_BASIC_PX;
-  return getPipHeightExpandedPx(participantCount);
+  if (mode === 'expanded') {
+    const n = Math.min(Math.max(1, participantCount), 4);
+    return getPipWindowHeight('expanded', n);
+  }
+  return getPipWindowHeight(mode, 1);
 }
 
-/**
- * Высота окна PiP в expanded: панель + до 4 плиток 16:9 + зазоры + padding + доп. высота.
- * @param participantCount — число участников (локальный + удалённые)
- */
+/** @deprecated Используйте getPipWindowHeight('expanded', n) */
 export function getPipHeightExpandedPx(participantCount: number): number {
-  const n = Math.min(Math.max(1, participantCount), 4);
-  return (
-    PIP_BAR_HEIGHT_PX +
-    n * PIP_TILE_HEIGHT_16_9_PX +
-    (n - 1) * TILE_GAP_PX +
-    EXPANDED_VIDEO_PADDING_VERTICAL_PX +
-    PIP_EXTRA_HEIGHT_PX +
-    PIP_EXTRA_HEIGHT_EXPANDED_PX
-  );
+  return getPipHeightForMode('expanded', participantCount);
 }

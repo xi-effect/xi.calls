@@ -11,7 +11,7 @@ export const Route = createFileRoute('/call/$callId')({
 function CallPage() {
   return (
     <CallsDemoShell>
-      <DemoChrome title="Звонок (full)">
+      <DemoChrome>
         <CompactView>
           <Call />
         </CompactView>

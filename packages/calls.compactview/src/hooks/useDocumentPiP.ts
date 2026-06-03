@@ -116,6 +116,12 @@ export function useDocumentPiP({
         pipWindowRef.current = pip;
         setPipWindow(pip);
 
+        try {
+          pip.resizeTo(w, h);
+        } catch {
+          // ignore
+        }
+
         pip.addEventListener('pagehide', () => {
           pipWindowRef.current = null;
           setPipWindow(null);
@@ -134,27 +140,6 @@ export function useDocumentPiP({
       pipWindowRef.current.close();
     }
   }, []);
-
-  // Регистрируем Media Session handler — Chrome вызывает его сам при переключении вкладки.
-  // Handler должен быть зарегистрирован и не сниматься (компонент не размонтироваться при роутинге).
-  useEffect(() => {
-    if (!isSupported || !enabled) return;
-
-    const action = 'enterpictureinpicture' as MediaSessionAction;
-    try {
-      navigator.mediaSession.setActionHandler(action, () => void openPiP());
-    } catch {
-      // enterpictureinpicture не поддерживается
-    }
-
-    return () => {
-      try {
-        navigator.mediaSession.setActionHandler(action, null);
-      } catch {
-        // ignore
-      }
-    };
-  }, [isSupported, enabled, openPiP]);
 
   // Закрываем PiP при возврате на вкладку
   useEffect(() => {

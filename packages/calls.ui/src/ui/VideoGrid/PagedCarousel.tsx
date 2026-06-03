@@ -40,9 +40,24 @@ export function PagedCarousel<T>({
 
   const isVertical = orientation === 'vertical';
 
+  /** Фиксированная высота полосы превью (не из ResizeObserver — там часто на 1–2px меньше) */
+  const horizontalThumbHeight = React.useMemo(() => {
+    if (isVertical) return null;
+    return Math.ceil(maxItemSize / aspectRatio);
+  }, [isVertical, maxItemSize, aspectRatio]);
+
+  const horizontalItemSize = React.useMemo(() => {
+    if (!horizontalThumbHeight) return null;
+
+    const itemHeight = horizontalThumbHeight;
+    const itemWidth = Math.max(minItemSize, Math.min(maxItemSize, itemHeight * aspectRatio));
+
+    return { itemHeight, itemWidth };
+  }, [horizontalThumbHeight, minItemSize, maxItemSize, aspectRatio]);
+
   // Рассчитываем количество элементов на основе контейнера
   const pageSize = React.useMemo(() => {
-    if (!containerSize.width || !containerSize.height) {
+    if (!containerSize.width || (isVertical && !containerSize.height)) {
       return 4;
     }
 
@@ -52,58 +67,72 @@ export function PagedCarousel<T>({
       const itemHeight = Math.max(minItemSize, Math.min(maxItemSize, availableHeight));
       const itemsPerPage = Math.floor(availableHeight / (itemHeight + gap));
       return Math.max(1, itemsPerPage);
-    } else {
-      // Для горизонтальной карусели: считаем по ширине
-      const availableWidth = containerSize.width;
-      const itemWidth = Math.max(
-        minItemSize,
-        Math.min(maxItemSize, containerSize.height * aspectRatio),
-      );
-      const itemsPerPage = Math.floor(availableWidth / (itemWidth + gap));
-      return Math.max(1, itemsPerPage);
     }
-  }, [containerSize, orientation, aspectRatio, gap, minItemSize, maxItemSize]);
+
+    const itemWidth = horizontalItemSize?.itemWidth ?? minItemSize;
+    const itemsPerPage = Math.floor(containerSize.width / (itemWidth + gap));
+    return Math.max(1, itemsPerPage);
+  }, [containerSize, isVertical, gap, minItemSize, maxItemSize, horizontalItemSize]);
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const clampedPage = Math.min(page, totalPages - 1);
   const start = clampedPage * pageSize;
   const pageItems = items.slice(start, start + pageSize);
 
-  // Общие классы контейнера
   const containerCls = [
-    'relative flex overflow-hidden', // чтобы кнопки располагались поверх
+    'relative flex shrink-0',
     isVertical
-      ? 'min-h-0 h-full flex-col justify-center px-2 xs:px-0'
-      : 'h-36 w-full flex-row justify-center',
+      ? 'min-h-0 h-full w-full overflow-hidden items-center justify-center px-2 xs:px-0'
+      : 'w-full overflow-visible items-stretch justify-center',
     className ?? '',
+  ].join(' ');
+
+  const itemsCls = [
+    'relative flex shrink-0',
+    isVertical ? 'w-full flex-col' : 'h-full flex-row items-stretch',
   ].join(' ');
 
   const canPrev = clampedPage > 0;
   const canNext = clampedPage < totalPages - 1;
 
   return (
-    <div ref={containerRef} className={containerCls} style={{ gap }}>
-      {pageItems.map((item, i) => (
-        <div
-          key={i}
-          className="shrink-0 overflow-hidden"
-          style={{
-            aspectRatio: aspectRatio,
-            minHeight: isVertical ? `${minItemSize}px` : undefined,
-            maxHeight: isVertical ? `${maxItemSize}px` : undefined,
-          }}
-        >
-          {renderItem(item, start + i)}
-        </div>
-      ))}
+    <div
+      ref={containerRef}
+      className={containerCls}
+      style={horizontalThumbHeight ? { height: horizontalThumbHeight } : undefined}
+    >
+      <div className={itemsCls} style={{ gap }}>
+        {pageItems.map((item, i) => (
+          <div
+            key={i}
+            className={`shrink-0 rounded-2xl ${isVertical ? 'overflow-hidden' : 'overflow-visible'}`}
+            style={
+              isVertical
+                ? {
+                    aspectRatio: aspectRatio,
+                    minHeight: `${minItemSize}px`,
+                    maxHeight: `${maxItemSize}px`,
+                  }
+                : horizontalItemSize
+                  ? {
+                      height: `${horizontalItemSize.itemHeight}px`,
+                      width: `${horizontalItemSize.itemWidth}px`,
+                    }
+                  : { aspectRatio: aspectRatio }
+            }
+          >
+            {renderItem(item, start + i)}
+          </div>
+        ))}
 
-      <PaginationControls
-        canPrev={canPrev}
-        canNext={canNext}
-        onPrev={() => setPage((p) => Math.max(0, p - 1))}
-        onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-        orientation={orientation}
-      />
+        <PaginationControls
+          canPrev={canPrev}
+          canNext={canNext}
+          onPrev={() => setPage((p) => Math.max(0, p - 1))}
+          onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          orientation={orientation}
+        />
+      </div>
     </div>
   );
 }
