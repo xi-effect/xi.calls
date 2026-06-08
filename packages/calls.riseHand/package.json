@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-risehand",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "exports": {
     ".": {
@@ -17,13 +17,13 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@xipkg/icons": "^3.0.15",
+    "@xipkg/icons": "^3.0.20",
     "@xipkg/button": "4.1.0",
-    "@xipkg/calls-ui": "^0.0.7",
-    "@xipkg/calls-utils": "^0.0.7",
-    "@xipkg/calls-config": "^0.0.7",
-    "@xipkg/calls-providers": "^0.0.7",
-    "@xipkg/calls-store": "^0.0.7",
+    "@xipkg/calls-ui": "^0.0.8",
+    "@xipkg/calls-utils": "^0.0.8",
+    "@xipkg/calls-config": "^0.0.8",
+    "@xipkg/calls-providers": "^0.0.8",
+    "@xipkg/calls-store": "^0.0.8",
     "@xipkg/utils": "^1.8.0"
   },
   "devDependencies": {

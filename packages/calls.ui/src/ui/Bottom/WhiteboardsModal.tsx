@@ -120,16 +120,16 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
       <ModalContent
         className={
           isMobile
-            ? 'flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl'
-            : 'w-[680px]'
+            ? 'flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl text-gray-100'
+            : 'w-[680px] text-gray-100'
         }
         aria-describedby={undefined}
       >
         <ModalCloseButton>
-          <Close className="fill-gray-80 sm:fill-gray-0" />
+          <Close className="fill-gray-80" />
         </ModalCloseButton>
         <ModalHeader className="border-gray-20 shrink-0 border-b">
-          <ModalTitle className="text-m-base sm:text-l-base">
+          <ModalTitle className="text-m-base sm:text-l-base text-gray-100">
             Доска для совместной работы
           </ModalTitle>
           <Input
@@ -137,7 +137,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
             placeholder="Поиск"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="min-h-10"
+            className="placeholder:text-gray-60 min-h-10 text-gray-100"
           />
         </ModalHeader>
 
@@ -150,7 +150,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
             </div>
           ) : isError ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-red-500">Ошибка загрузки досок</p>
+              <p className="text-red-80">Ошибка загрузки досок</p>
             </div>
           ) : (
             <ScrollArea className={`h-full w-full ${isMobile ? 'max-h-[50dvh]' : 'max-h-[400px]'}`}>
@@ -158,7 +158,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                 {filteredWhiteboards.map((board) => (
                   <div
                     key={board.id}
-                    className={`hover:bg-gray-5 flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
+                    className={`hover:bg-gray-5 border-gray-20 flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
                       selectedBoardId === board.id ? 'border-brand-100 bg-brand-0' : ''
                     }`}
                     onClick={() => handleBoardSelect(board.id)}
@@ -168,7 +168,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                         variant="default"
                         className={
                           board.student_access_mode === 'read_write'
-                            ? 'text-s-base bg-gray-10 text-gray-60 px-2 py-1 font-medium'
+                            ? 'text-s-base bg-gray-10 text-gray-80 px-2 py-1 font-medium'
                             : board.student_access_mode === 'read_only'
                               ? 'text-s-base bg-cyan-20 px-2 py-1 font-medium text-cyan-100'
                               : 'text-s-base bg-violet-20 px-2 py-1 font-medium text-violet-100'

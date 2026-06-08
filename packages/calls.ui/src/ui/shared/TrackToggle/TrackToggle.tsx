@@ -145,7 +145,7 @@ export const TrackToggle = ({
   );
 
   const permissionBlockedStyles = permissionBlocked
-    ? 'bg-red-0 border-2 border-red-80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] hover:bg-red-5'
+    ? 'bg-red-0 border-2 border-red-80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] hover:bg-red-20'
     : '';
 
   if (source === Track.Source.Microphone) {

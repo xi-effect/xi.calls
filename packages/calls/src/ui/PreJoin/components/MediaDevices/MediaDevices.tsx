@@ -156,10 +156,10 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-gray-30 bg-gray-0 flex flex-col justify-between rounded-2xl border p-5">
+      <div className="border-gray-30 bg-gray-0 flex flex-col justify-between rounded-2xl border p-5 text-gray-100">
         <div>
           <div className="mb-8">
-            <h2 className="mb-1 font-sans">Камера</h2>
+            <h2 className="text-m-base mb-1 font-sans font-medium">Камера</h2>
             <MediaDeviceMenu
               key={videoMenuKey}
               initialSelection={videoDeviceId}
@@ -169,7 +169,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
             />
           </div>
           <div className="my-4">
-            <h2 className="mb-1 font-sans">Звук</h2>
+            <h2 className="text-m-base mb-1 font-sans font-medium">Звук</h2>
             <div className="flex flex-col gap-2">
               <MediaDeviceMenu
                 key={audioInputMenuKey}

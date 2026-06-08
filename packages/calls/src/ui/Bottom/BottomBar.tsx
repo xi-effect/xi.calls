@@ -125,8 +125,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                   className="bg-brand-100 hover:bg-brand-80 absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl px-2"
                   data-umami-event="call-back-to-board"
                 >
-                  <WhiteBoard className="fill-gray-0 h-5 w-5" />
-                  <span className="text-gray-0 ml-2">К доске</span>
+                  <WhiteBoard className="fill-brand-0 h-5 w-5" />
+                  <span className="text-brand-0 ml-2">К доске</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" align="center">

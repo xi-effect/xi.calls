@@ -164,7 +164,7 @@ export function CompactCallVideoArea({
               size="icon"
               variant="none"
               onClick={() => void pip!.openPiP()}
-              className="bg-gray-10/80 hover:bg-gray-10 text-gray-0 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0"
+              className="bg-gray-10/80 hover:bg-gray-10 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0 text-gray-100"
               aria-label="Открыть в отдельном окне"
             >
               <External className="h-4 w-4" />
@@ -179,10 +179,10 @@ export function CompactCallVideoArea({
           size="icon"
           variant="none"
           onClick={() => onCollapsedChange(true)}
-          className="bg-brand-100 hover:bg-brand-100/80 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0 text-gray-100"
+          className="bg-brand-100 hover:bg-brand-100/80 text-brand-0 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0"
           aria-label="Свернуть"
         >
-          <ChevronUp className="fill-gray-0 h-4 w-4" />
+          <ChevronUp className="fill-brand-0 h-4 w-4" />
         </Button>
       )}
 

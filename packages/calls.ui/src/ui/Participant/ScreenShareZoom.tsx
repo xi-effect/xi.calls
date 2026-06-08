@@ -299,10 +299,10 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               variant="ghost"
               onClick={handleZoomOut}
               disabled={zoomLevel <= MIN_ZOOM}
-              className="group fill-gray-0 h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
+              className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
               aria-label="Уменьшить"
             >
-              <ZoomOut className="text-gray-80 group-hover:text-gray-0 group-active:text-gray-0 group-focus:text-gray-0 h-4 w-4" />
+              <ZoomOut className="text-gray-80 h-4 w-4 group-hover:text-gray-100 group-focus:text-gray-100 group-active:text-gray-100" />
             </Button>
             <Slider
               className="flex-1"
@@ -321,7 +321,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
               aria-label="Увеличить"
             >
-              <ZoomIn className="text-gray-80 group-hover:text-gray-0 group-active:text-gray-0 group-focus:text-gray-0 h-4 w-4" />
+              <ZoomIn className="text-gray-80 h-4 w-4 group-hover:text-gray-100 group-focus:text-gray-100 group-active:text-gray-100" />
             </Button>
           </div>
         </div>

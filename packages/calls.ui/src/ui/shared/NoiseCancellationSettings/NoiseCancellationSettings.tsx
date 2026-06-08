@@ -55,7 +55,7 @@ export function NoiseCancellationSettings({
           disabled={nc.isApplying || !nc.isEnabled}
           data-umami-event="noise_cancellation_mode_select"
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-gray-100">
             <SelectValue placeholder="Стандартное">
               {MODE_LABELS[selectValue as NoiseCancellationMode]}
             </SelectValue>
@@ -67,7 +67,12 @@ export function NoiseCancellationSettings({
               const disabled =
                 isKrispDisabled || (mode === 'krisp' && nc.isKrispSupported === false);
               return (
-                <SelectItem key={mode} value={mode} disabled={disabled} className="h-auto">
+                <SelectItem
+                  key={mode}
+                  value={mode}
+                  disabled={disabled}
+                  className="h-auto text-gray-100"
+                >
                   {MODE_LABELS[mode]}
                   {mode === 'krisp' && (isKrispDisabled || isUnsupported) && ' (недоступно)'}
                 </SelectItem>

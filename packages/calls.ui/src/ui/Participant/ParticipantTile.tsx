@@ -261,7 +261,7 @@ export const ParticipantTile = ({
                   !trackReference.publication?.track?.isMuted &&
                   (() => {
                     const videoBlock = (
-                      <div className="absolute inset-0 aspect-video h-full w-full bg-gray-100/80">
+                      <div className="absolute inset-0 aspect-video h-full w-full bg-black/80">
                         <VideoTrack
                           className={cn(
                             `absolute inset-0 h-full w-full object-cover object-center ${getVideoClassName()}`,
@@ -273,8 +273,8 @@ export const ParticipantTile = ({
                                 transform: 'rotateY(180deg)',
                               }),
                             boxSizing: 'border-box',
-                            background: 'var(--xi-bg-gray-100)',
-                            backgroundColor: 'var(--xi-bg-gray-100)',
+                            background: '#000',
+                            backgroundColor: '#000',
                           }}
                           trackRef={trackReference}
                           onSubscriptionStatusChanged={handleSubscribe}

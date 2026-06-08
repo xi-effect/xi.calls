@@ -67,15 +67,19 @@ const DeviceSelector = ({
       value={currentDeviceId || undefined}
       disabled={disabled || !hasDevices}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full text-gray-100">
         <div className="flex items-center gap-2">
-          {icon}
+          <span className="shrink-0 fill-gray-100 [&_svg]:fill-gray-100">{icon}</span>
           <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
         </div>
       </SelectTrigger>
       <SelectContent className="w-88">
         {devices?.map((device) => (
-          <SelectItem key={device.deviceId} className="h-auto" value={device.deviceId}>
+          <SelectItem
+            key={device.deviceId}
+            className="h-auto text-gray-100"
+            value={device.deviceId}
+          >
             {device.label || `Устройство ${device.deviceId.slice(0, 8)}`}
           </SelectItem>
         ))}
@@ -210,7 +214,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="bg-gray-0 w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 shadow-2xl">
+      <SheetContent className="bg-gray-0 w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 text-gray-100 shadow-2xl">
         <SheetHeader className="mb-6 flex h-10 flex-row items-center justify-between space-y-0">
           <SheetTitle className="text-gray-100">Настройки</SheetTitle>
           <SheetClose className="hover:bg-gray-5 mt-0 rounded-md bg-transparent p-1">

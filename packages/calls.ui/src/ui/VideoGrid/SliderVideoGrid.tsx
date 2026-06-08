@@ -63,7 +63,7 @@ export const SliderVideoGrid = ({
             key={getTrackReferenceId(trackReference)}
           >
             <div key={index} className="text-center">
-              <div className="text-gray-0 mx-auto h-full w-full text-xl">
+              <div className="mx-auto h-full w-full text-xl">
                 {cloneSingleChild(props.children)}
               </div>
             </div>

@@ -112,12 +112,16 @@ export const MediaDeviceMenu = ({
         }
       >
         <SelectTrigger
-          className="flex w-full flex-row"
+          className="flex w-full flex-row text-gray-100"
           before={
             <div>
-              {kind === 'videoinput' && <Conference width={14} />}
-              {kind === 'audiooutput' && <SoundTwo width={14} />}
-              {!(kind === 'videoinput' || kind === 'audiooutput') && <Microphone width={14} />}
+              {kind === 'videoinput' && (
+                <Conference width={14} className="shrink-0 fill-gray-100" />
+              )}
+              {kind === 'audiooutput' && <SoundTwo width={14} className="shrink-0 fill-gray-100" />}
+              {!(kind === 'videoinput' || kind === 'audiooutput') && (
+                <Microphone width={14} className="shrink-0 fill-gray-100" />
+              )}
             </div>
           }
         >

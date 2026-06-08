@@ -155,8 +155,8 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
             >
               <Send
                 className={cn(
-                  'fill-gray-0 h-6 w-6 group-hover:fill-gray-100',
-                  !messageText.trim() && 'fill-gray-100',
+                  'fill-brand-0 group-hover:fill-brand-0 h-6 w-6',
+                  !messageText.trim() && 'fill-gray-60',
                 )}
               />
             </Button>

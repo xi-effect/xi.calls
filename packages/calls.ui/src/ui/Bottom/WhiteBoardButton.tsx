@@ -21,10 +21,10 @@ export const WhiteBoardButton = () => {
             size="icon"
             variant="none"
             onClick={handleClick}
-            className={'hover:bg-gray-5 relative m-0 h-10 w-10 rounded-xl p-0 text-gray-100'}
+            className="bg-gray-0 hover:bg-gray-5 relative m-0 h-10 w-10 rounded-xl p-0 text-gray-100"
             data-umami-event="call-whiteboard-button"
           >
-            <WhiteBoard />
+            <WhiteBoard className="h-6 w-6 fill-gray-100" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top" align="center">

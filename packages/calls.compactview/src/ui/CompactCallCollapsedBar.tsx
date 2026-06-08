@@ -77,10 +77,10 @@ export function CompactCallCollapsedBar({
         size="icon"
         variant="none"
         onClick={onExpand}
-        className="bg-brand-100 hover:bg-brand-100/80 h-8 w-8 shrink-0 rounded-xl p-0 text-gray-100"
+        className="bg-brand-100 hover:bg-brand-100/80 text-brand-0 h-8 w-8 shrink-0 rounded-xl p-0"
         aria-label="Развернуть"
       >
-        <ChevronBottom className="fill-gray-0 h-4 w-4" />
+        <ChevronBottom className="fill-brand-0 h-4 w-4" />
       </Button>
     </div>
   );

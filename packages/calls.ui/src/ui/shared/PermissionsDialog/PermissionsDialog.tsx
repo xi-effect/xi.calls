@@ -94,7 +94,7 @@ export const PermissionsDialog = () => {
     <Modal open={isPermissionDialogOpen} onOpenChange={closePermissionsDialog}>
       <ModalContent>
         <ModalCloseButton>
-          <Close className="fill-gray-80 sm:fill-gray-0" />
+          <Close className="fill-gray-80" />
         </ModalCloseButton>
         <ModalHeader className="border-gray-20 border-b">
           <ModalTitle className="text-xl font-semibold text-gray-100">

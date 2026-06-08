@@ -217,35 +217,35 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-chat':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       '@xipkg/icons':
-        specifier: ^3.0.15
-        version: 3.0.15(react@19.2.6)
+        specifier: ^3.0.20
+        version: 3.0.20(react@19.2.6)
       '@xipkg/label':
         specifier: 2.0.12
         version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
@@ -326,29 +326,29 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       '@xipkg/icons':
-        specifier: ^3.0.15
-        version: 3.0.15(react@19.2.6)
+        specifier: ^3.0.20
+        version: 3.0.20(react@19.2.6)
       '@xipkg/scrollarea':
         specifier: 2.2.0
         version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
@@ -420,35 +420,35 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-chat':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       '@xipkg/icons':
-        specifier: ^3.0.15
-        version: 3.0.15(react@19.2.6)
+        specifier: ^3.0.20
+        version: 3.0.20(react@19.2.6)
       '@xipkg/scrollarea':
         specifier: 2.2.0
         version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
@@ -553,19 +553,19 @@ importers:
   packages/calls.hooks:
     dependencies:
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       livekit-client:
         specifier: 2.19.1
@@ -626,10 +626,10 @@ importers:
   packages/calls.providers:
     dependencies:
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       react:
         specifier: '19'
@@ -687,23 +687,23 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       '@xipkg/icons':
-        specifier: ^3.0.15
-        version: 3.0.15(react@19.2.6)
+        specifier: ^3.0.20
+        version: 3.0.20(react@19.2.6)
       '@xipkg/utils':
         specifier: ^1.8.0
         version: 1.8.0(react@19.2.6)
@@ -760,7 +760,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       react:
         specifier: '19'
@@ -863,41 +863,41 @@ importers:
   packages/calls.ui:
     dependencies:
       '@xipkg/badge':
-        specifier: 2.0.12
-        version: 2.0.12(react@19.2.6)
+        specifier: 2.0.17
+        version: 2.0.17(react@19.2.6)
       '@xipkg/button':
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.0.7
+        specifier: ^0.0.8
         version: link:../calls.utils
       '@xipkg/checkbox':
-        specifier: 5.0.0
-        version: 5.0.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
+        specifier: 5.0.5
+        version: 5.0.5(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
       '@xipkg/dropdown':
         specifier: 3.0.12
         version: 3.0.12(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
       '@xipkg/icons':
-        specifier: ^3.0.15
-        version: 3.0.15(react@19.2.6)
+        specifier: ^3.0.20
+        version: 3.0.20(react@19.2.6)
       '@xipkg/input':
-        specifier: 2.2.9
-        version: 2.2.9(react@19.2.6)
+        specifier: 2.2.14
+        version: 2.2.14(react@19.2.6)
       '@xipkg/label':
         specifier: 2.0.12
         version: 2.0.12(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
@@ -905,8 +905,8 @@ importers:
         specifier: 2.0.12
         version: 2.0.12(react@19.2.6)
       '@xipkg/modal':
-        specifier: 4.5.0
-        version: 4.5.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
+        specifier: 4.5.5
+        version: 4.5.5(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
       '@xipkg/scrollarea':
         specifier: 2.2.0
         version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
@@ -948,8 +948,8 @@ importers:
         specifier: 4.6.0
         version: 4.6.0(turbo@2.9.15)
       '@xipkg/tailwind':
-        specifier: 0.8.1
-        version: 0.8.1
+        specifier: 0.8.6
+        version: 0.8.6
       '@xipkg/typescript':
         specifier: 0.2.0
         version: 0.2.0
@@ -4975,8 +4975,8 @@ packages:
       - react-dom
     dev: false
 
-  /@xipkg/badge@2.0.12(react@19.2.6):
-    resolution: {integrity: sha512-TQXPdo/3pxe/Qb3Z81J4WTkg/OXENFR719YqUvqXzYiHnrtA7lXVsZVHsa1R2fKSf8dvrKKCUOkEQaJISrgU0w==}
+  /@xipkg/badge@2.0.17(react@19.2.6):
+    resolution: {integrity: sha512-hcTmoFrzNN0/JUUwpLToDiv4WDSJucotYK3GZ0MDAx+51m/Ncwch4/LG8/mDO4wuTHfFm8glstCg/xXupAZ1cQ==}
     peerDependencies:
       react: ^19
     dependencies:
@@ -4998,8 +4998,8 @@ packages:
       - '@types/react'
     dev: false
 
-  /@xipkg/checkbox@5.0.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6):
-    resolution: {integrity: sha512-rsg5Rw9K3jwwHhAjDKWbLQnHYCaZ7pUpvVlJ+kc6FmgAweKhe1Sgj8nn7Egaokuf6C9xTA8MzNcRLVIE6d57Mw==}
+  /@xipkg/checkbox@5.0.5(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6):
+    resolution: {integrity: sha512-9SGULnpZ8rxaMo+W6UqaoGLDOGJWMYpfSyJ0kw1r1B3vq6Ivmt4f75gPVucpA4kIfIpVtnq2ASFP86DcR2g0sw==}
     peerDependencies:
       react: ^19
     dependencies:
@@ -5061,8 +5061,8 @@ packages:
       react: 19.2.6
     dev: false
 
-  /@xipkg/icons@3.0.15(react@19.2.6):
-    resolution: {integrity: sha512-J4Q3umO6oz4CcHiXRUsoT15/GdpEOp0ZMYmSMlkaAPRSgRu5925eBCKppUvTaw7npJwrbWWNIlEkUsrCqMJeDA==}
+  /@xipkg/icons@3.0.20(react@19.2.6):
+    resolution: {integrity: sha512-686ScO1NKYlJBvUXh1uU7Xz3n6G65HgRIo5VDMToqBuh9DYvmG61dL89kmxgfFrni15oL5RPutL8O/8273Okxw==}
     peerDependencies:
       react: ^19
     dependencies:
@@ -5072,8 +5072,8 @@ packages:
       react: 19.2.6
     dev: false
 
-  /@xipkg/input@2.2.9(react@19.2.6):
-    resolution: {integrity: sha512-CP9syd50AbNWUJwzfGZRR986dIgpmZnLqWUbTtqqfbVupaOdp4IhR9NEzmv7No7m3+Kl1AHbqH4ChPm6IXg6mg==}
+  /@xipkg/input@2.2.14(react@19.2.6):
+    resolution: {integrity: sha512-ycqQyGBb+VG6J7LpvgVc9QpotyUgdfC5wkV+JwJ6//KUY0tigZuTYmSYuhaDdMdU9HNIiRlHx1AclSCTVr1/Iw==}
     peerDependencies:
       react: ^19
     dependencies:
@@ -5107,13 +5107,13 @@ packages:
       react: 19.2.6
     dev: false
 
-  /@xipkg/modal@4.5.0(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6):
-    resolution: {integrity: sha512-gZZ5Io2L/PvjlPaI4ZNupJ8hzVI/Adc3GjkIZZfER4UN2b5C44VfZqI1UXTzuG8kHgQGfeyEJPKdeUBxMtoRjg==}
+  /@xipkg/modal@4.5.5(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6):
+    resolution: {integrity: sha512-TtlbYTkuTXeHKvXMsnzg9tZlsJ2f3fwo1bxAKDkib5DZZu3xh56Vk4GBFEDh7/wOFBgz6lpCpRz+tBTNPB2aMw==}
     peerDependencies:
       react: ^19
     dependencies:
       '@radix-ui/react-dialog': 1.1.15(@types/react-dom@19.2.3)(@types/react@19.2.15)(react-dom@19.2.6)(react@19.2.6)
-      '@xipkg/icons': 3.0.15(react@19.2.6)
+      '@xipkg/icons': 3.0.20(react@19.2.6)
       '@xipkg/utils': 1.8.0(react@19.2.6)
       react: 19.2.6
     transitivePeerDependencies:
@@ -5186,6 +5186,10 @@ packages:
 
   /@xipkg/tailwind@0.8.1:
     resolution: {integrity: sha512-DS6Z0m2fJsDjPyQMbIC9WHamGMP6k2QsVZZdNypAaIadWcKncStB1gKzCe14h4nv6kv2fdSJZmIjvLZjwu48ag==}
+    dev: true
+
+  /@xipkg/tailwind@0.8.6:
+    resolution: {integrity: sha512-RyFVnJ3Nzt7YUIlyr5iIw3A9j5D0rlL2cIQc0/rnFziL1z0VUK7JPR+YRip9HYDi0466RNsBugQMCF8u+VFbqg==}
     dev: true
 
   /@xipkg/textarea@1.2.0(react@19.2.6):

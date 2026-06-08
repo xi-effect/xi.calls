@@ -109,6 +109,11 @@ export function useDocumentPiP({
 
         copyStylesToWindow(pip);
 
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme) {
+          pip.document.documentElement.setAttribute('data-theme', theme);
+        }
+
         pip.document.body.style.margin = '0';
         pip.document.body.style.overflow = 'hidden';
         pip.document.body.style.background = 'var(--xi-gray-0, #fff)';

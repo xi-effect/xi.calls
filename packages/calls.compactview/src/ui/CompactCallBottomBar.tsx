@@ -113,7 +113,7 @@ export function CompactCallBottomBar({
                 onClick={onBackToBoard}
                 aria-label="На доску"
               >
-                <WhiteBoard className="fill-gray-0 h-6 w-6" />
+                <WhiteBoard className="fill-brand-0 h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Обратно на доску</TooltipContent>

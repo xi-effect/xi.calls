@@ -46,7 +46,7 @@
   transform: translateZ(0); /* Активируем аппаратное ускорение */
   overflow: hidden;
   border-radius: 16px;
-  background: var(--xi-bg-gray-0);
+  background: var(--xi-gray-0);
   border: 2px solid transparent;
 }
 
