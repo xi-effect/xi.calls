@@ -5,7 +5,7 @@ import { useDocumentPiP, useCompactNavigation } from '../hooks';
 import { PiPCompactCall } from '../ui';
 import { useCallStore } from '@xipkg/calls-store';
 import { useRoom } from '@xipkg/calls-providers';
-import { useMedia } from '@xipkg/calls-utils';
+import { usePhoneLayout } from '@xipkg/calls-utils';
 import { getPipHeightForMode, PIP_HEIGHT_BASIC_PX, PIP_PANEL_WIDTH_PX } from '../constants';
 
 type PiPContextValue = {
@@ -46,7 +46,7 @@ type PiPProviderProps = {
  * Document Picture-in-Picture (логика из PiPManager).
  */
 export function PiPProvider({ children }: PiPProviderProps) {
-  const isMobile = useMedia('(max-width: 720px)');
+  const isMobile = usePhoneLayout();
   const { micLive, camLive } = useMediaCaptureLive();
   const { room } = useRoom();
   const compactViewMode = useCallStore((s) => s.compactViewMode);

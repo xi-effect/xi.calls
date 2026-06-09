@@ -70,7 +70,7 @@ export function CompactCallBottomBar({
   );
 
   return (
-    <div className="flex h-[40px] flex-row">
+    <div className="flex h-[40px] shrink-0 flex-row pb-[max(0px,env(safe-area-inset-bottom))]">
       <div className={barCn}>
         <DevicesBar
           className="h-[32px] w-[32px]"

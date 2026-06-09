@@ -25,11 +25,13 @@ export const ActiveRoom = () => {
   useVideoBlur(videoTrackForBlur);
 
   return (
-    <div className="flex h-full min-h-0 flex-col justify-stretch">
+    <div className="flex h-full min-h-0 flex-col">
       <CallsOnboarding />
-      <UpBar />
-      <div className="flex h-full min-h-0 flex-1 items-stretch justify-center gap-4 overflow-x-hidden overflow-y-visible sm:px-4">
-        <div className="flex h-full min-h-0 w-full min-w-0 justify-center text-center text-gray-100">
+      <div className="shrink-0">
+        <UpBar />
+      </div>
+      <div className="flex min-h-0 flex-1 items-stretch justify-center gap-4 overflow-hidden sm:px-4">
+        <div className="flex min-h-0 w-full min-w-0 flex-1 justify-center text-center text-gray-100">
           <VideoGrid />
         </div>
         <Chat />

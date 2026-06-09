@@ -33,15 +33,14 @@ export const Call = () => {
         focusMode
           ? ({
               '--header-height': '0px',
-              '--available-height':
-                'calc(100dvh - 0px - var(--upbar-height) - var(--bottom-bar-height))',
+              '--available-height': '100%',
             } as React.CSSProperties)
           : undefined
       }
     >
       <div className="flex h-full w-full flex-col">
         {isStarted ? (
-          <div id="videoConferenceContainer" className="bg-gray-5 h-full">
+          <div id="videoConferenceContainer" className="bg-gray-5 flex h-full min-h-0 flex-col">
             <ActiveRoom />
           </div>
         ) : (

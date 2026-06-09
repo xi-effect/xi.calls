@@ -17,7 +17,7 @@ import { Chat, useChatStore } from '@xipkg/calls-chat';
 import { PermissionsDialog } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
 import type { CornerT } from '@xipkg/calls-store';
-import { useMedia } from '@xipkg/calls-utils';
+import { usePhoneLayout } from '@xipkg/calls-utils';
 import { useRoom } from '@xipkg/calls-providers';
 import { PiPProvider, usePiP } from '../providers';
 import { useParticipantSounds, useParticipantJoinSync } from '@xipkg/calls-hooks';
@@ -90,7 +90,7 @@ type CompactPropsT = CompactViewPropsT & {
 export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) => {
   const navigation = useCallsNavigation();
   const { activeCorner, updateStore } = useCallStore();
-  const isMobile = useMedia('(max-width: 720px)');
+  const isMobile = usePhoneLayout();
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 

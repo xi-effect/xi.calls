@@ -3,7 +3,7 @@ import type { CompactViewModeT } from '@xipkg/calls-store';
 /** Высота шапки приложения (top-16) */
 export const HEADER_HEIGHT_PX = 64;
 /**
- * Доп. зазор между fixed compact overlay и контентом доски на mobile.
+ * Доп. зазор между fixed compact overlay и контентом доски на телефоне.
  * marginTop контента = высота overlay + этот отступ.
  */
 export const COMPACT_MOBILE_CONTENT_GAP_PX = 12;

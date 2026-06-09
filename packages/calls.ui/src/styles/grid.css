@@ -9,10 +9,15 @@
   --upbar-height: 50px;
   --bottom-bar-height: 68px;
 
-  /* Доступная высота для сетки */
-  --available-height: calc(
-    100dvh - var(--upbar-height) - var(--bottom-bar-height)
-  );
+  /* Высота сетки относительно flex-контейнера, а не viewport (важно для iPad и вложенного layout) */
+  --available-height: 100%;
+}
+
+#videoConferenceContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 /* Адаптивность для мобильных устройств */

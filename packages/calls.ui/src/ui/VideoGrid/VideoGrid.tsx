@@ -138,7 +138,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   }, [hasScreenShare, carouselType]);
 
   return (
-    <div className="align-stretch relative flex h-full w-full justify-center" {...props}>
+    <div className="relative flex h-full min-h-0 w-full justify-center" {...props}>
       {isWeb() && (
         <LayoutContextProvider value={layoutContext}>
           <div

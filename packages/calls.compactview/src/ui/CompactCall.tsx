@@ -11,7 +11,7 @@ import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useModeSync } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
-import { useMedia } from '@xipkg/calls-utils';
+import { usePhoneLayout } from '@xipkg/calls-utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
 import {
@@ -24,7 +24,7 @@ import {
 } from '../constants';
 
 export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) => {
-  const isMobile = useMedia('(max-width: 720px)');
+  const isMobile = usePhoneLayout();
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: 'draggable-call',
     disabled: isMobile,

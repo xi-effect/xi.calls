@@ -84,7 +84,12 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   };
 
   return (
-    <div className={cn('relative w-full', isChatOpen && 'invisible sm:visible')}>
+    <div
+      className={cn(
+        'relative w-full shrink-0 pb-[max(0px,env(safe-area-inset-bottom))]',
+        isChatOpen && 'max-sm:invisible',
+      )}
+    >
       <div className="flex w-full flex-row justify-between p-4 pt-1">
         <div />
         <div className="flex flex-row gap-4">

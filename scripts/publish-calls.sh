@@ -35,4 +35,4 @@ for dir in "${PACKAGES[@]}"; do
 done
 
 echo ""
-echo "Готово. Опубликованы все calls-пакеты @0.0.1"
+echo "Готово. Опубликованы все calls-пакеты."
