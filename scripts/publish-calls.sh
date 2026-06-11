@@ -4,13 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-if ! npm whoami >/dev/null 2>&1; then
+if ! pnpm whoami >/dev/null 2>&1; then
   echo "Ошибка: не авторизованы в npm. Выполните: npm login"
   exit 1
 fi
-
-echo "Сборка calls-пакетов..."
-pnpm exec turbo run build --filter='./packages/calls*'
 
 PACKAGES=(
   packages/calls.types
@@ -21,17 +18,24 @@ PACKAGES=(
   packages/calls.hooks
   packages/calls.ui
   packages/calls.chat
-  packages/calls.riseHand
+  packages/calls.risehand
   packages/calls.compactview
   packages/calls
 )
+
+echo "Сборка calls-пакетов (последовательно, в порядке зависимостей)..."
+for dir in "${PACKAGES[@]}"; do
+  name="$(node -p "require('./$dir/package.json').name")"
+  echo "  build $name"
+  (cd "$dir" && pnpm build)
+done
 
 for dir in "${PACKAGES[@]}"; do
   name="$(node -p "require('./$dir/package.json').name")"
   version="$(node -p "require('./$dir/package.json').version")"
   echo ""
-  echo ">>> npm publish $name@$version"
-  (cd "$dir" && npm publish --access public)
+  echo ">>> pnpm publish $name@$version"
+  (cd "$dir" && pnpm publish --access public --no-git-checks)
 done
 
 echo ""

@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "exports": {
     ".": {
@@ -38,15 +38,15 @@
     "@xipkg/icons": "^3.0.20",
     "@xipkg/button": "4.1.0",
     "@xipkg/toggle": "^4.1.0",
-    "@xipkg/calls-ui": "workspace:*",
-    "@xipkg/calls-utils": "workspace:*",
-    "@xipkg/calls-types": "workspace:*",
-    "@xipkg/calls-config": "workspace:*",
-    "@xipkg/calls-providers": "workspace:*",
-    "@xipkg/calls-store": "workspace:*",
-    "@xipkg/calls-hooks": "workspace:*",
-    "@xipkg/calls-chat": "workspace:*",
-    "@xipkg/calls-risehand": "workspace:*",
+    "@xipkg/calls-ui": "^0.0.11",
+    "@xipkg/calls-utils": "^0.0.11",
+    "@xipkg/calls-types": "^0.0.11",
+    "@xipkg/calls-config": "^0.0.11",
+    "@xipkg/calls-providers": "^0.0.11",
+    "@xipkg/calls-store": "^0.0.11",
+    "@xipkg/calls-hooks": "^0.0.11",
+    "@xipkg/calls-chat": "^0.0.11",
+    "@xipkg/calls-risehand": "^0.0.11",
     "@xipkg/utils": "^1.8.0"
   },
   "devDependencies": {

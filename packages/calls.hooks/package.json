@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-hooks",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "exports": {
     ".": {
@@ -19,11 +19,11 @@
   "dependencies": {
     "zustand": "5.0.3",
     "livekit-client": "2.19.1",
-    "@xipkg/calls-store": "workspace:*",
-    "@xipkg/calls-providers": "workspace:*",
-    "@xipkg/calls-types": "workspace:*",
-    "@xipkg/calls-utils": "workspace:*",
-    "@xipkg/calls-config": "workspace:*"
+    "@xipkg/calls-store": "^0.0.11",
+    "@xipkg/calls-providers": "^0.0.11",
+    "@xipkg/calls-types": "^0.0.11",
+    "@xipkg/calls-utils": "^0.0.11",
+    "@xipkg/calls-config": "^0.0.11"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",
@@ -41,7 +41,7 @@
     "globals": "^15.14.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
-    "@xipkg/calls-providers": "workspace:*"
+    "@xipkg/calls-providers": "^0.0.11"
   },
   "peerDependencies": {
     "react": "19"
