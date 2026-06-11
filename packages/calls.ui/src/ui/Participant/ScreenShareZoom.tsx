@@ -9,11 +9,26 @@ import { cn } from '@xipkg/utils';
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 2.5;
-const ZOOM_STEP = 0.25;
+const ZOOM_STEP = 0.1;
+const INITIAL_ZOOM_FACTOR = 1.05;
 const THUMBNAIL_MAX_WIDTH = 240;
 const THUMBNAIL_MAX_HEIGHT = 135;
 
 type VideoDimensions = { width: number; height: number };
+
+const getFitZoom = (
+  videoDimensions: VideoDimensions,
+  containerSize: { width: number; height: number },
+) =>
+  Math.min(
+    containerSize.width / videoDimensions.width,
+    containerSize.height / videoDimensions.height,
+  );
+
+const getInitialZoom = (
+  videoDimensions: VideoDimensions,
+  containerSize: { width: number; height: number },
+) => Math.min(MAX_ZOOM, getFitZoom(videoDimensions, containerSize) * INITIAL_ZOOM_FACTOR);
 
 type ScreenShareZoomProps = {
   trackRef: TrackReferenceOrPlaceholder;
@@ -41,6 +56,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
     startClientX: number;
     startClientY: number;
   } | null>(null);
+  const pendingInitialZoomRef = useRef(false);
 
   const updateVideoDimensions = useCallback(() => {
     if (!containerRef.current) return;
@@ -89,25 +105,56 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
     }
   }, [isPanelOpen, updateVideoDimensions, updateContainerSize]);
 
+  const minActiveZoom =
+    videoDimensions && containerSize ? getFitZoom(videoDimensions, containerSize) : MIN_ZOOM;
+
+  useEffect(() => {
+    if (!pendingInitialZoomRef.current || !isPanelOpen || !videoDimensions || !containerSize) {
+      return;
+    }
+    pendingInitialZoomRef.current = false;
+    setZoomLevel(getInitialZoom(videoDimensions, containerSize));
+  }, [isPanelOpen, videoDimensions, containerSize]);
+
   const handleZoomIn = useCallback(() => {
     setIsPanelOpen(true);
-    setZoomLevel((z) => Math.min(MAX_ZOOM, z + ZOOM_STEP));
-  }, []);
+    setZoomLevel((z) => {
+      if (z <= MIN_ZOOM) {
+        pendingInitialZoomRef.current = true;
+        if (videoDimensions && containerSize) {
+          pendingInitialZoomRef.current = false;
+          return getInitialZoom(videoDimensions, containerSize);
+        }
+        return MIN_ZOOM;
+      }
+      return Math.min(MAX_ZOOM, z + ZOOM_STEP);
+    });
+  }, [videoDimensions, containerSize]);
 
   const handleZoomOut = useCallback(() => {
     setZoomLevel((z) => {
-      const next = Math.max(MIN_ZOOM, z - ZOOM_STEP);
-      if (next <= MIN_ZOOM) setIsPanelOpen(false);
+      const next = Math.max(minActiveZoom, z - ZOOM_STEP);
+      if (next <= minActiveZoom) {
+        setIsPanelOpen(false);
+        return MIN_ZOOM;
+      }
       return next;
     });
-  }, []);
+  }, [minActiveZoom]);
 
-  const handleSliderChange = useCallback((value: number[]) => {
-    const v = value[0] ?? MIN_ZOOM;
-    setZoomLevel(v);
-    if (v <= MIN_ZOOM) setIsPanelOpen(false);
-    else setIsPanelOpen(true);
-  }, []);
+  const handleSliderChange = useCallback(
+    (value: number[]) => {
+      const v = value[0] ?? minActiveZoom;
+      if (v <= minActiveZoom) {
+        setIsPanelOpen(false);
+        setZoomLevel(MIN_ZOOM);
+        return;
+      }
+      setZoomLevel(v);
+      setIsPanelOpen(true);
+    },
+    [minActiveZoom],
+  );
 
   // Перетаскивание синей области на миниатюре: двигаем область просмотра
   const thumbScaleRef = useRef(0);
@@ -154,18 +201,17 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   }, []);
 
-  const isZoomed = zoomLevel > MIN_ZOOM;
   const showZoomButton = !isPanelOpen;
   const showPanel = isPanelOpen;
 
   // Порядок важен: в CSS transform применяется справа налево — сначала scale, потом translate
   const zoomTransform =
-    videoDimensions && isZoomed && containerSize
+    videoDimensions && isPanelOpen && containerSize
       ? `translate(${-panX * zoomLevel}px, ${-panY * zoomLevel}px) scale(${zoomLevel})`
       : undefined;
 
-  // Зум-режим: при открытии меню (zoom > 1) не используем flex-центрирование, чтобы не было серых рамок
-  const isZoomedState = zoomLevel > MIN_ZOOM;
+  // Зум-режим: ждём размеры видео, чтобы стартовый масштаб совпал с object-contain
+  const isZoomedState = isPanelOpen && !!(videoDimensions && containerSize);
   const canApplyTransform = !!(videoDimensions && zoomTransform);
   const zoomableStyle: React.CSSProperties =
     isZoomedState && canApplyTransform
@@ -184,7 +230,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
           top: 0,
           right: 0,
           bottom: 0,
-          ...(zoomLevel <= MIN_ZOOM
+          ...(!isZoomedState
             ? {
                 display: 'flex',
                 justifyContent: 'center',
@@ -229,7 +275,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
       className={cn('absolute inset-0 overflow-hidden rounded-2xl', className)}
     >
       <div className="absolute top-0 left-0 h-full w-full" style={zoomableStyle}>
-        {zoomLevel <= MIN_ZOOM ? (
+        {!isZoomedState ? (
           <div className="flex h-full w-full items-center justify-center">
             <div className="relative aspect-video max-h-full w-full min-w-0">{children}</div>
           </div>
@@ -298,7 +344,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               size="icon"
               variant="ghost"
               onClick={handleZoomOut}
-              disabled={zoomLevel <= MIN_ZOOM}
+              disabled={!isPanelOpen}
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
               aria-label="Уменьшить"
             >
@@ -307,7 +353,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
             <Slider
               className="flex-1"
               value={[zoomLevel]}
-              min={MIN_ZOOM}
+              min={minActiveZoom}
               max={MAX_ZOOM}
               step={0.1}
               onValueChange={handleSliderChange}
