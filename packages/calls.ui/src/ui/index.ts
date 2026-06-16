@@ -2,6 +2,8 @@ export { UpBar } from './UpBar';
 export { WhiteBoardButton, DisconnectButton, ScreenShareButton } from './Bottom';
 export {
   FocusToggle,
+  ParticipantPinToggle,
+  tileOverlayButtonClassName,
   TrackToggle,
   DevicesBar,
   VideoTrack,

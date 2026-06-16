@@ -11,6 +11,7 @@ export {
   useResponsiveGrid,
   useResolveInitiallyDefaultDeviceId,
   useScreenShareCleanup,
+  usePinnedTrackCleanup,
   useSize,
   useSpeakingParticipant,
   useStartCall,

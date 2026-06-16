@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { TrackReferenceOrPlaceholder, isEqualTrackRef } from '@livekit/components-core';
-import { Track } from 'livekit-client';
+import { TrackReferenceOrPlaceholder } from '@livekit/components-core';
+
 import { TrackLoop, GridLayoutProps } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
 import { FocusLayout } from './FocusLayout';
@@ -141,7 +141,6 @@ export const GridLayout = ({ tracks, ...props }: GridLayoutProps) => {
     return tracks.map((track) => (
       <ParticipantTile
         key={`${track.participant.identity}-${track.source}`}
-        isFocusToggleDisable
         style={{ width: '100%', height: '100%' }}
         className="h-full w-full"
         {...track}
@@ -203,22 +202,20 @@ export const GridLayout = ({ tracks, ...props }: GridLayoutProps) => {
 };
 
 type CarouselContainerProps = {
-  focusTrack: TrackReferenceOrPlaceholder | undefined;
+  /** Главная плитка на focus-сцене (LiveKit focus или дефолтный участник) */
+  stageTrack: TrackReferenceOrPlaceholder | undefined;
+  /** Плитки карусели — без главной, порядок с учётом локального pin */
   carouselTracks: TrackReferenceOrPlaceholder[];
 };
 
-export const CarouselContainer = ({ focusTrack, carouselTracks }: CarouselContainerProps) => {
+export const CarouselContainer = ({ stageTrack, carouselTracks }: CarouselContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef as React.RefObject<HTMLDivElement>);
   const isMobile = containerSize.width > 0 && containerSize.width < MOBILE_BREAKPOINT;
   const carouselType = useCallStore((state) => state.carouselType);
 
   const focusElement = useMemo(() => {
-    const trackToFocus =
-      focusTrack ||
-      carouselTracks.find((track) => track.publication?.source === Track.Source.Camera);
-
-    if (!trackToFocus) {
+    if (!stageTrack) {
       return (
         <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl">
           <span className="text-lg text-gray-100">Нет участников для отображения</span>
@@ -228,35 +225,30 @@ export const CarouselContainer = ({ focusTrack, carouselTracks }: CarouselContai
 
     return (
       <ParticipantTile
-        isFocusToggleDisable
         isFocusView
         style={{
           width: '100%',
           height: '100%',
         }}
         className="h-full w-full"
-        {...trackToFocus}
+        {...stageTrack}
       />
     );
-  }, [focusTrack, carouselTracks]);
+  }, [stageTrack]);
 
-  const thumbElements = useMemo(() => {
-    const trackToFocus =
-      focusTrack ||
-      carouselTracks.find((track) => track.publication?.source === Track.Source.Camera);
-    const filteredCarouselTracks = trackToFocus
-      ? carouselTracks.filter((track) => !isEqualTrackRef(track, trackToFocus))
-      : carouselTracks;
-
-    return filteredCarouselTracks.map((track) => (
-      <ParticipantTile
-        key={`${track.participant.identity}-${track.source}`}
-        style={{ flex: 'unset' }}
-        className="h-full w-full [&_video]:object-cover"
-        {...track}
-      />
-    ));
-  }, [carouselTracks, focusTrack]);
+  const thumbElements = useMemo(
+    () =>
+      carouselTracks.map((track) => (
+        <ParticipantTile
+          key={`${track.participant.identity}-${track.source}`}
+          showFocusToggle
+          style={{ flex: 'unset' }}
+          className="h-full w-full [&_video]:object-cover"
+          {...track}
+        />
+      )),
+    [carouselTracks],
+  );
 
   const renderLayout = () => {
     if (isMobile) {

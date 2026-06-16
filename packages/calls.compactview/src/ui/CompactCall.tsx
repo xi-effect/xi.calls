@@ -134,6 +134,13 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     }
   }, [totalParticipants, multiVisibleCount, multiScrollIndex]);
 
+  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
+  useEffect(() => {
+    if (pinnedTrack) {
+      setMultiScrollIndex(0);
+    }
+  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
+
   const handleBackToBoard = useCallback(() => {
     if (!activeBoardId || !activeClassroom) return;
     callsNavigation.navigateToClassroomBoard(activeClassroom, activeBoardId);

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Track } from 'livekit-client';
 import { useTracks } from '@livekit/components-react';
-import { useScreenShareCleanup, useSortedTracks } from '@xipkg/calls-hooks';
+import { applyPinFirst, useCallStore } from '@xipkg/calls-store';
+import { usePinnedTrackCleanup, useScreenShareCleanup, useSortedTracks } from '@xipkg/calls-hooks';
 
 export const useCompactNavigation = () => {
   const [currentParticipantIndex, setCurrentParticipantIndex] = useState(0);
@@ -19,8 +20,12 @@ export const useCompactNavigation = () => {
 
   // Автоматическое удаление треков демонстрации экрана при их завершении
   useScreenShareCleanup(participants);
+  usePinnedTrackCleanup(participants);
 
-  const sorted = useSortedTracks(participants, 1);
+  const baseSorted = useSortedTracks(participants, 1);
+  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
+
+  const sorted = useMemo(() => applyPinFirst(baseSorted, pinnedTrack), [baseSorted, pinnedTrack]);
 
   const currentParticipant = sorted[currentParticipantIndex] || null;
   const totalParticipants = sorted.length;
@@ -52,6 +57,13 @@ export const useCompactNavigation = () => {
       setCurrentParticipantIndex(Math.max(0, totalParticipants - 1));
     }
   }, [totalParticipants, currentParticipantIndex]);
+
+  // При закреплении показываем закреплённого участника первым
+  useEffect(() => {
+    if (pinnedTrack) {
+      setCurrentParticipantIndex(0);
+    }
+  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
 
   // useTracks автоматически обновляется при изменениях треков,
   // поэтому дополнительные обработчики событий не нужны

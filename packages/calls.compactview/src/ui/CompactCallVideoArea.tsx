@@ -7,7 +7,7 @@ import { usePiP } from '../providers';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
-import { ParticipantTile } from '@xipkg/calls-ui';
+import { ParticipantTile, ParticipantPinToggle, tileOverlayButtonClassName } from '@xipkg/calls-ui';
 import { TILE_GAP_PX, TILE_HEIGHT_16_9_PX } from '../constants';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 
@@ -65,7 +65,13 @@ export function CompactCallVideoArea({
   onAudioExpand,
 }: CompactCallVideoAreaProps) {
   const pip = usePiP();
-  const showPiPButton = pip?.isSupported && currentParticipant;
+  const showPiPButton = pip?.isSupported && !!currentParticipant;
+
+  /**
+   * На десктопе в basic-режиме выносим Pin (и опционально PiP) в оверлей над плиткой.
+   * Это позволяет показывать Pin всегда, даже если PiP не поддерживается.
+   */
+  const showDesktopOverlay = !isMobile && compactViewMode === 'basic' && !!currentParticipant;
 
   const emptyState = (
     <div className="bg-gray-40 flex h-full w-full items-center justify-center text-gray-100">
@@ -113,7 +119,7 @@ export function CompactCallVideoArea({
             trackRef={currentParticipant}
             participant={currentParticipant.participant}
             className="h-full w-full"
-            isFocusToggleDisable
+            hidePinToggle={showDesktopOverlay}
           />
         ) : (
           emptyState
@@ -135,7 +141,6 @@ export function CompactCallVideoArea({
                     trackRef={trackRef}
                     participant={trackRef.participant}
                     className="h-full w-full [&_video]:object-cover"
-                    isFocusToggleDisable
                   />
                 </div>
               ))}
@@ -151,24 +156,46 @@ export function CompactCallVideoArea({
           trackRef={currentParticipant}
           participant={currentParticipant.participant}
           className="h-full w-full"
-          isFocusToggleDisable
+          hidePinToggle={showDesktopOverlay}
         />
       ) : (
         emptyState
       )}
 
-      {showPiPButton && compactViewMode !== 'audio' && (
+      {/* Оверлей с Pin (и опционально PiP) для десктопа в basic-режиме */}
+      {showDesktopOverlay && (
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+          <ParticipantPinToggle trackRef={currentParticipant} inline />
+          {showPiPButton && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => void pip!.openPiP()}
+                  className={tileOverlayButtonClassName}
+                  aria-label="Открыть в отдельном окне"
+                >
+                  <External className="fill-gray-100" style={{ width: 16, height: 16 }} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Открыть в отдельном окне</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      )}
+
+      {/* PiP в expanded-режиме (без оверлея с Pin) */}
+      {showPiPButton && compactViewMode === 'expanded' && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="none"
+            <button
+              type="button"
               onClick={() => void pip!.openPiP()}
-              className="bg-gray-10/80 hover:bg-gray-10 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0 text-gray-100"
+              className={cn(tileOverlayButtonClassName, 'absolute top-2 right-2 z-10')}
               aria-label="Открыть в отдельном окне"
             >
-              <External className="h-4 w-4" />
-            </Button>
+              <External className="fill-gray-100" style={{ width: 16, height: 16 }} />
+            </button>
           </TooltipTrigger>
           <TooltipContent>Открыть в отдельном окне</TooltipContent>
         </Tooltip>

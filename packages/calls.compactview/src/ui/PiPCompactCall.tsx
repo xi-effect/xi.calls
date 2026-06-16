@@ -144,6 +144,13 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
     }
   }, [totalParticipants, multiVisibleCount, multiScrollIndex]);
 
+  const pinnedTrack = useCallStore((s) => s.pinnedTrack);
+  useEffect(() => {
+    if (pinnedTrack) {
+      setMultiScrollIndex(0);
+    }
+  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
+
   const emptyState = (
     <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl text-gray-100">
       <span className="text-sm">Нет участников</span>
@@ -182,7 +189,6 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
                         trackRef={trackRef}
                         participant={trackRef.participant}
                         className="h-full w-full [&_video]:object-cover"
-                        isFocusToggleDisable
                       />
                     </div>
                   ))}
@@ -201,7 +207,6 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
                 trackRef={currentParticipant}
                 participant={currentParticipant.participant}
                 className="h-full w-full"
-                isFocusToggleDisable
               />
               {totalParticipants > 1 && (
                 <CompactNavigationControls

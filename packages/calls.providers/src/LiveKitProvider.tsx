@@ -1,11 +1,14 @@
 import { LiveKitRoom } from '@livekit/components-react';
 import { useCallStore } from '@xipkg/calls-store';
-import { useEffect, useRef } from 'react';
-import { Track } from 'livekit-client';
+import { useCallback, useEffect, useRef } from 'react';
+import { DisconnectReason, Track } from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
 import { useCallsSession } from './session/CallsSessionProvider';
 import { useCallsRuntimeConfig } from './CallsRuntimeConfigProvider';
+
+/** Даём SDK время на auto-reconnect после NegotiationError, прежде чем сбрасывать UI */
+const DISCONNECT_GRACE_MS = 5_000;
 
 type LiveKitProviderPropsT = {
   children: React.ReactNode;
@@ -22,26 +25,16 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
   const { isStarted } = useCallStore();
   const wasConnectedRef = useRef(false);
-  const reconnectTimeoutRef = useRef<number | null>(null);
+  const disconnectGraceTimeoutRef = useRef<number | null>(null);
 
-  const handleConnect = () => {
-    wasConnectedRef.current = true;
-    updateStore('connect', true);
-
-    const { activeClassroom } = useCallStore.getState();
-
-    if (activeClassroom && callId && activeClassroom !== callId) {
-      updateStore('activeBoardId', undefined);
-      updateStore('activeClassroom', undefined);
+  const clearPendingDisconnect = useCallback(() => {
+    if (disconnectGraceTimeoutRef.current) {
+      clearTimeout(disconnectGraceTimeoutRef.current);
+      disconnectGraceTimeoutRef.current = null;
     }
-  };
+  }, []);
 
-  const handleDisconnect = () => {
-    if (document.hidden && wasConnectedRef.current) {
-      console.log('Page hidden - will attempt to reconnect when visible');
-      return;
-    }
-
+  const finalizeDisconnect = useCallback(() => {
     wasConnectedRef.current = false;
     updateStore('connect', false);
     updateStore('isStarted', false);
@@ -59,7 +52,66 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     }
 
     console.log('Disconnected from LiveKit room - all interface states cleared');
-  };
+  }, [clearConferenceUiState, navigation, updateStore]);
+
+  const handleConnect = useCallback(() => {
+    clearPendingDisconnect();
+    wasConnectedRef.current = true;
+    updateStore('connect', true);
+
+    const { activeClassroom } = useCallStore.getState();
+
+    if (activeClassroom && callId && activeClassroom !== callId) {
+      updateStore('activeBoardId', undefined);
+      updateStore('activeClassroom', undefined);
+    }
+  }, [callId, clearPendingDisconnect, updateStore]);
+
+  const handleDisconnect = useCallback(
+    (reason?: DisconnectReason) => {
+      if (document.hidden && wasConnectedRef.current) {
+        console.log('Page hidden - will attempt to reconnect when visible');
+        return;
+      }
+
+      if (
+        room.state === 'reconnecting' ||
+        room.state === 'connecting' ||
+        room.state === 'connected'
+      ) {
+        console.log('LiveKit: disconnect ignored, room is recovering:', room.state, reason);
+        return;
+      }
+
+      clearPendingDisconnect();
+
+      console.warn('LiveKit: disconnected, scheduling UI teardown', { reason, state: room.state });
+
+      disconnectGraceTimeoutRef.current = window.setTimeout(() => {
+        disconnectGraceTimeoutRef.current = null;
+
+        if (
+          room.state === 'connected' ||
+          room.state === 'reconnecting' ||
+          room.state === 'connecting'
+        ) {
+          console.log('LiveKit: reconnected during grace period, session preserved');
+          return;
+        }
+
+        finalizeDisconnect();
+      }, DISCONNECT_GRACE_MS);
+    },
+    [clearPendingDisconnect, finalizeDisconnect, room],
+  );
+
+  const handleError = useCallback((error: Error) => {
+    if (error.name === 'NegotiationError' || error.message.includes('negotiation timed out')) {
+      console.warn('LiveKit: negotiation error, SDK will retry:', error);
+      return;
+    }
+    console.error('LiveKit room error:', error);
+  }, []);
 
   useEffect(() => {
     if (!token && callId && navigation.pathnameIncludes('/call/')) {
@@ -77,7 +129,6 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
         return;
       }
 
-      console.log('Restoring video subscriptions for all participants...');
       let restoredCount = 0;
 
       room.remoteParticipants.forEach((participant) => {
@@ -110,37 +161,22 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     };
 
     const handleReconnected = () => {
+      clearPendingDisconnect();
       console.log('LiveKit: Reconnected successfully');
       restoreVideoSubscriptions();
-    };
-
-    const handleConnectionStateChanged = (state: string) => {
-      console.log('LiveKit: Connection state changed to:', state);
-    };
-
-    const handleConnectionQualityChanged = (quality: string) => {
-      if (quality === 'poor') {
-        console.warn('LiveKit: Connection quality is poor');
-      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     room.on('reconnecting', handleReconnecting);
     room.on('reconnected', handleReconnected);
-    room.on('connectionStateChanged', handleConnectionStateChanged);
-    room.on('connectionQualityChanged', handleConnectionQualityChanged);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       room.off('reconnecting', handleReconnecting);
       room.off('reconnected', handleReconnected);
-      room.off('connectionStateChanged', handleConnectionStateChanged);
-      room.off('connectionQualityChanged', handleConnectionQualityChanged);
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
+      clearPendingDisconnect();
     };
-  }, [isStarted, connect, room, updateStore]);
+  }, [isStarted, connect, room, clearPendingDisconnect]);
 
   const lkToken = (isDevMode ? devToken : token) ?? '';
   const canConnect = Boolean(lkToken) && Boolean(connect);
@@ -149,16 +185,16 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     console.warn('No token available for LiveKit connection');
   }
 
-  // LiveKitRoom всегда монтируем с room — иначе useRoomContext / useLocalParticipant падают
-  // до подключения (демо, PreJoin, CompactView). connect включаем только при наличии токена.
   return (
     <LiveKitRoom
       room={room}
       token={lkToken}
       serverUrl={isDevMode ? serverUrlDev : serverUrl}
       connect={canConnect}
+      connectOptions={isDevMode ? { peerConnectionTimeout: 30_000 } : undefined}
       onConnected={handleConnect}
       onDisconnected={handleDisconnect}
+      onError={handleError}
       audio={audioEnabled || false}
       video={videoEnabled || false}
     >

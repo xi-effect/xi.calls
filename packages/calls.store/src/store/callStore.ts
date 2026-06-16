@@ -2,6 +2,7 @@
 import { LiveKitRoomProps } from '@livekit/components-react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { PinnedTrackT } from './pinnedTrack';
 
 type RaisedHandT = {
   participantId: string;
@@ -52,7 +53,13 @@ type useCallStoreT = {
   raisedHands: RaisedHandT[];
   isHandRaised: boolean;
 
+  /** Локально закреплённый участник (только для текущего пользователя) */
+  pinnedTrack: PinnedTrackT | null;
+
   updateStore: (type: keyof useCallStoreT, value: any) => void;
+  togglePinnedTrack: (track: PinnedTrackT) => void;
+  clearPinnedTrack: () => void;
+  isTrackPinned: (track: PinnedTrackT) => boolean;
   addRaisedHand: (hand: RaisedHandT) => void;
   removeRaisedHand: (participantId: string) => void;
   toggleHandRaised: () => void;
@@ -92,7 +99,25 @@ export const useCallStore = create<useCallStoreT>()(
       raisedHands: [],
       isHandRaised: false,
 
+      pinnedTrack: null,
+
       updateStore: (type: keyof useCallStoreT, value: any) => set({ [type]: value }),
+
+      togglePinnedTrack: (track: PinnedTrackT) =>
+        set((state) => {
+          const isSame =
+            state.pinnedTrack?.participantIdentity === track.participantIdentity &&
+            state.pinnedTrack?.source === track.source;
+          return { pinnedTrack: isSame ? null : track };
+        }),
+      clearPinnedTrack: () => set({ pinnedTrack: null }),
+      isTrackPinned: (track: PinnedTrackT) => {
+        const { pinnedTrack } = get();
+        return (
+          pinnedTrack?.participantIdentity === track.participantIdentity &&
+          pinnedTrack?.source === track.source
+        );
+      },
 
       // Поднятые руки
       addRaisedHand: (hand: RaisedHandT) =>

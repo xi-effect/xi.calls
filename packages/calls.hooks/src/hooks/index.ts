@@ -15,6 +15,7 @@ export { useVideoBlur } from './useVideoBlur';
 export { useEmptyItemContainerOfUser } from './useEmptyItemContainerOfUser';
 export { useParticipantJoinSync } from './useParticipantJoinSync';
 export { useSortedTracks } from './useSortedTracks';
+export { usePinnedTrackCleanup } from './usePinnedTrackCleanup';
 export { useNoiseCancellation } from './useNoiseCancellation';
 export { useParticipantSounds } from './useParticipantSounds';
 export { useUmamiActivityHeartbeat } from './useUmamiActivityHeartbeat';

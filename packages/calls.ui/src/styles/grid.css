@@ -92,7 +92,7 @@
 
 .lk-participant-tile .lk-focus-toggle-button {
   position: absolute;
-  background-color: var(--xi-gray-0) !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
   height: 24px;
   width: 24px;
   border-radius: var(--radius-lg) !important;
@@ -103,6 +103,7 @@
   justify-content: center;
   opacity: 0;
   padding: 0 !important;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* На десктопе кнопка фокуса показывается по hover */
@@ -117,4 +118,30 @@
   .lk-participant-tile .lk-focus-toggle-button {
     opacity: 0.8 !important;
   }
+}
+
+/* Кнопка закрепления участника */
+.lk-participant-tile .lk-pin-toggle-button {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* На десктопе кнопка закрепления показывается по hover */
+@media (min-width: 1025px) {
+  .lk-participant-tile:hover .lk-pin-toggle-button {
+    opacity: 0.8 !important;
+  }
+}
+
+/* На мобилке и планшетах кнопка закрепления всегда видна */
+@media (max-width: 1024px) {
+  .lk-participant-tile .lk-pin-toggle-button {
+    opacity: 0.8 !important;
+  }
+}
+
+/* Закреплённый участник — кнопка всегда видна */
+.lk-participant-tile .lk-pin-toggle-button[aria-pressed="true"] {
+  opacity: 1 !important;
 }

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Participant, Track } from 'livekit-client';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
-import { isTrackReference, isTrackReferencePinned } from '@livekit/components-core';
+import { isTrackReference } from '@livekit/components-core';
 import {
   AudioTrack,
   LockLockedIcon,
@@ -14,7 +14,6 @@ import {
   useEnsureParticipant,
   useFeatureContext,
   useIsEncrypted,
-  useMaybeLayoutContext,
   useMaybeTrackRefContext,
   useParticipantTile,
   useTrackMutedIndicator,
@@ -23,11 +22,12 @@ import {
 import { MicrophoneOff, RedLine } from '@xipkg/icons';
 import { VideoTrack } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
+import { ParticipantPinToggle } from '../shared/ParticipantPinToggle';
 import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
-import { useCallStore } from '@xipkg/calls-store';
+import { toPinnedTrack, useCallStore } from '@xipkg/calls-store';
 import { isLocal } from '@xipkg/calls-utils';
 import { cn } from '@xipkg/utils';
 import { useMedia } from '@xipkg/calls-utils';
@@ -72,17 +72,16 @@ export const TrackMutedIndicator = ({
   );
 };
 
-type FocusToggleDisablePropsT = {
-  isFocusToggleDisable?: boolean;
-};
-
 type FocusViewPropsT = {
   /** Плитка в фокусе (в FocusLayout). Для демонстрации экрана включает зум. */
   isFocusView?: boolean;
+  /** Показать кнопку перевода плитки на фокус-сцену (focus-сетки) */
+  showFocusToggle?: boolean;
+  /** Скрыть кнопку пина (рендерится снаружи плитки) */
+  hidePinToggle?: boolean;
 };
 
 type ParticipantTilePropsT = ParticipantTileProps &
-  FocusToggleDisablePropsT &
   FocusViewPropsT & {
     participant?: Participant;
     source?: Track.Source;
@@ -97,8 +96,9 @@ export const ParticipantTile = ({
   onParticipantClick,
   publication,
   disableSpeakingIndicator,
-  isFocusToggleDisable,
   isFocusView,
+  showFocusToggle,
+  hidePinToggle,
   ...htmlProps
 }: ParticipantTilePropsT) => {
   const maybeTrackRef = useMaybeTrackRefContext();
@@ -149,42 +149,19 @@ export const ParticipantTile = ({
     trackRef: trackReference,
   });
   const isEncrypted = useIsEncrypted(p);
-  const layoutContext = useMaybeLayoutContext();
+  const clearPinnedTrack = useCallStore((state) => state.clearPinnedTrack);
+  const isTrackPinned = useCallStore((state) => state.isTrackPinned);
 
   const autoManageSubscription = useFeatureContext()?.autoSubscription;
 
   const handleSubscribe = React.useCallback(
     (subscribed: boolean) => {
-      if (
-        trackReference.source &&
-        !subscribed &&
-        layoutContext?.pin.dispatch &&
-        isTrackReferencePinned(trackReference, layoutContext.pin.state)
-      ) {
-        layoutContext.pin.dispatch({ msg: 'clear_pin' });
+      if (trackReference.source && !subscribed && isTrackPinned(toPinnedTrack(trackReference))) {
+        clearPinnedTrack();
       }
     },
-    [trackReference, layoutContext],
+    [trackReference, clearPinnedTrack, isTrackPinned],
   );
-
-  const carouselType = useCallStore((state) => state.carouselType);
-  const updateStore = useCallStore((state) => state.updateStore);
-
-  const handleTileDoubleClick = React.useCallback(() => {
-    if (trackReference.source !== Track.Source.ScreenShare || !layoutContext?.pin.dispatch) return;
-    if (!isTrackReference(trackReference)) return;
-
-    const isPinned =
-      layoutContext.pin.state && isTrackReferencePinned(trackReference, layoutContext.pin.state);
-
-    if (carouselType === 'grid') {
-      updateStore('carouselType', 'horizontal');
-      layoutContext.pin.dispatch({ msg: 'set_pin', trackReference });
-    } else if (isPinned) {
-      updateStore('carouselType', 'grid');
-      layoutContext.pin.dispatch({ msg: 'clear_pin' });
-    }
-  }, [trackReference, carouselType, layoutContext, updateStore]);
 
   const getVideoClassName = () => {
     if (trackReference.source === Track.Source.ScreenShare) {
@@ -200,14 +177,6 @@ export const ParticipantTile = ({
       className="lk-participant-tile group relative overflow-hidden rounded-2xl"
       data-lk-source={trackReference.source}
       {...elementProps}
-      onDoubleClick={
-        trackReference.source === Track.Source.ScreenShare &&
-        (carouselType === 'grid' ||
-          (layoutContext?.pin.state &&
-            isTrackReferencePinned(trackReference, layoutContext.pin.state)))
-          ? handleTileDoubleClick
-          : elementProps?.onDoubleClick
-      }
     >
       <TrackRefContextIfNeeded trackRef={trackReference}>
         <ParticipantContextIfNeeded participant={trackReference.participant}>
@@ -336,7 +305,10 @@ export const ParticipantTile = ({
             </div>
           )}
 
-          {isFocusToggleDisable ? null : <FocusToggle trackRef={trackReference} />}
+          {showFocusToggle ? <FocusToggle trackRef={trackReference} /> : null}
+          {!hidePinToggle ? (
+            <ParticipantPinToggle trackRef={trackReference} withFocusToggle={showFocusToggle} />
+          ) : null}
         </ParticipantContextIfNeeded>
       </TrackRefContextIfNeeded>
     </div>

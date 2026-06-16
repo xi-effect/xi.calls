@@ -12,13 +12,23 @@ import {
 } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
 import { calcMaxTilesPerPage, CarouselContainer, GridLayout } from './VideoGridLayout';
-import { useCallStore } from '@xipkg/calls-store';
-import { useSortedTracks, useSize } from '@xipkg/calls-hooks';
+import { applyPinFirst, useCallStore } from '@xipkg/calls-store';
+import { usePinnedTrackCleanup, useSortedTracks, useSize } from '@xipkg/calls-hooks';
 import '../../styles/grid.css';
 
 const GRID_GAP = 8;
 
 const MIN_TILE_H = 200;
+
+function pickDefaultFocusTrack(
+  tracks: TrackReferenceOrPlaceholder[],
+): TrackReferenceOrPlaceholder | undefined {
+  const screenShare = tracks.find(
+    (track) => track.source === Track.Source.ScreenShare && track.publication?.isSubscribed,
+  );
+  if (screenShare) return screenShare;
+  return tracks.find((track) => track.source === Track.Source.Camera);
+}
 
 function useFirstPageSize(
   containerSize: { width: number; height: number },
@@ -51,6 +61,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   const hadScreenShareRef = React.useRef(false);
 
   const carouselType = useCallStore((state) => state.carouselType);
+  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
 
   const tracks = useTracks(
     [
@@ -79,12 +90,28 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
 
   const firstPageSize = useFirstPageSize(contentSize, effectiveCarouselType, tracks.length);
 
-  const sortedTracks = useSortedTracks(tracks, firstPageSize);
+  const baseSortedTracks = useSortedTracks(tracks, firstPageSize);
+  usePinnedTrackCleanup(tracks);
 
   const layoutContext = useCreateLayoutContext();
 
-  const focusTrack = usePinnedTracks(layoutContext)?.[0];
-  const carouselTracks = sortedTracks.filter((track) => !isEqualTrackRef(track, focusTrack));
+  const sortedTracks = React.useMemo(
+    () => applyPinFirst(baseSortedTracks, pinnedTrack),
+    [baseSortedTracks, pinnedTrack],
+  );
+
+  const focusTrackFromLayout = usePinnedTracks(layoutContext)?.[0];
+
+  const stageTrack = React.useMemo(
+    () => focusTrackFromLayout ?? pickDefaultFocusTrack(baseSortedTracks),
+    [focusTrackFromLayout, baseSortedTracks],
+  );
+
+  /** Список плиток карусели: без главной сцены, с учётом локального pin */
+  const carouselTracks = React.useMemo(() => {
+    const listTracks = baseSortedTracks.filter((track) => !isEqualTrackRef(track, stageTrack));
+    return applyPinFirst(listTracks, pinnedTrack);
+  }, [baseSortedTracks, stageTrack, pinnedTrack]);
 
   React.useEffect(() => {
     if (
@@ -106,17 +133,17 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
       layoutContext.pin.dispatch?.({ msg: 'clear_pin' });
       lastAutoFocusedScreenShareTrack.current = null;
     }
-    if (focusTrack && !isTrackReference(focusTrack)) {
+    if (focusTrackFromLayout && !isTrackReference(focusTrackFromLayout)) {
       const updatedFocusTrack = tracks.find(
         (tr) =>
-          tr.participant.identity === focusTrack.participant.identity &&
-          tr.source === focusTrack.source,
+          tr.participant.identity === focusTrackFromLayout.participant.identity &&
+          tr.source === focusTrackFromLayout.source,
       );
-      if (updatedFocusTrack !== focusTrack && isTrackReference(updatedFocusTrack)) {
+      if (updatedFocusTrack !== focusTrackFromLayout && isTrackReference(updatedFocusTrack)) {
         layoutContext.pin.dispatch?.({ msg: 'set_pin', trackReference: updatedFocusTrack });
       }
     }
-  }, [screenShareTracks, focusTrack, layoutContext.pin, tracks]);
+  }, [screenShareTracks, focusTrackFromLayout, layoutContext.pin, tracks]);
 
   React.useEffect(() => {
     if (!canUseFocusLayout && carouselType !== 'grid') {
@@ -153,7 +180,6 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
               <div className="h-full w-full min-w-0">
                 <GridLayout tracks={sortedTracks}>
                   <ParticipantTile
-                    isFocusToggleDisable
                     style={{
                       flexDirection: 'column',
                       maxWidth: '100%',
@@ -166,7 +192,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
               </div>
             ) : (
               <div className="h-full max-h-full min-h-0 w-full overflow-hidden">
-                <CarouselContainer focusTrack={focusTrack} carouselTracks={carouselTracks} />
+                <CarouselContainer stageTrack={stageTrack} carouselTracks={carouselTracks} />
               </div>
             )}
           </div>

@@ -33,8 +33,9 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
       stopLocalTrackOnUnpublish: false,
       // Включаем адаптивный стриминг для оптимизации качества
       adaptiveStream: false,
-      // Включаем dynacast для динамической подписки на треки
-      dynacast: true,
+      // Dynacast вызывает частые renegotiation при смене подписок — на локальном сервере
+      // это часто приводит к NegotiationError: negotiation timed out
+      dynacast: false,
       disconnectOnPageLeave: false,
     };
 
