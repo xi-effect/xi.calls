@@ -2,7 +2,7 @@
 import { LiveKitRoomProps } from '@livekit/components-react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { PinnedTrackT } from './pinnedTrack';
+import type { PinnedParticipantT } from './pinnedTrack';
 
 type RaisedHandT = {
   participantId: string;
@@ -53,13 +53,14 @@ type useCallStoreT = {
   raisedHands: RaisedHandT[];
   isHandRaised: boolean;
 
-  /** Локально закреплённый участник (только для текущего пользователя) */
-  pinnedTrack: PinnedTrackT | null;
+  /** Закреплённые участники по кабинетам (userId + source), порядок = приоритет */
+  pinnedByClassroom: Record<string, PinnedParticipantT[]>;
 
   updateStore: (type: keyof useCallStoreT, value: any) => void;
-  togglePinnedTrack: (track: PinnedTrackT) => void;
-  clearPinnedTrack: () => void;
-  isTrackPinned: (track: PinnedTrackT) => boolean;
+  togglePinnedParticipant: (pin: PinnedParticipantT, classroomId: string) => void;
+  removePinnedParticipant: (pin: PinnedParticipantT, classroomId: string) => void;
+  getPinsForClassroom: (classroomId: string) => PinnedParticipantT[];
+  isParticipantPinned: (pin: PinnedParticipantT, classroomId: string) => boolean;
   addRaisedHand: (hand: RaisedHandT) => void;
   removeRaisedHand: (participantId: string) => void;
   toggleHandRaised: () => void;
@@ -99,24 +100,51 @@ export const useCallStore = create<useCallStoreT>()(
       raisedHands: [],
       isHandRaised: false,
 
-      pinnedTrack: null,
+      pinnedByClassroom: {},
 
       updateStore: (type: keyof useCallStoreT, value: any) => set({ [type]: value }),
 
-      togglePinnedTrack: (track: PinnedTrackT) =>
+      togglePinnedParticipant: (pin: PinnedParticipantT, classroomId: string) =>
         set((state) => {
-          const isSame =
-            state.pinnedTrack?.participantIdentity === track.participantIdentity &&
-            state.pinnedTrack?.source === track.source;
-          return { pinnedTrack: isSame ? null : track };
+          const current = state.pinnedByClassroom[classroomId] ?? [];
+          const existingIndex = current.findIndex(
+            (item) => item.userId === pin.userId && item.source === pin.source,
+          );
+          const next = { ...state.pinnedByClassroom };
+
+          if (existingIndex >= 0) {
+            const updated = current.filter((_, index) => index !== existingIndex);
+            if (updated.length) {
+              next[classroomId] = updated;
+            } else {
+              delete next[classroomId];
+            }
+          } else {
+            next[classroomId] = [...current, pin];
+          }
+
+          return { pinnedByClassroom: next };
         }),
-      clearPinnedTrack: () => set({ pinnedTrack: null }),
-      isTrackPinned: (track: PinnedTrackT) => {
-        const { pinnedTrack } = get();
-        return (
-          pinnedTrack?.participantIdentity === track.participantIdentity &&
-          pinnedTrack?.source === track.source
-        );
+      removePinnedParticipant: (pin: PinnedParticipantT, classroomId: string) =>
+        set((state) => {
+          const current = state.pinnedByClassroom[classroomId];
+          if (!current?.length) return state;
+
+          const updated = current.filter(
+            (item) => !(item.userId === pin.userId && item.source === pin.source),
+          );
+          const next = { ...state.pinnedByClassroom };
+          if (updated.length) {
+            next[classroomId] = updated;
+          } else {
+            delete next[classroomId];
+          }
+          return { pinnedByClassroom: next };
+        }),
+      getPinsForClassroom: (classroomId: string) => get().pinnedByClassroom[classroomId] ?? [],
+      isParticipantPinned: (pin: PinnedParticipantT, classroomId: string) => {
+        const pins = get().pinnedByClassroom[classroomId] ?? [];
+        return pins.some((item) => item.userId === pin.userId && item.source === pin.source);
       },
 
       // Поднятые руки
@@ -150,7 +178,7 @@ export const useCallStore = create<useCallStoreT>()(
     }),
     {
       name: 'call-store',
-      version: 4,
+      version: 5,
       migrate: (persisted, version) => {
         const state = persisted as Record<string, unknown>;
         if (version < 2) {
@@ -168,6 +196,13 @@ export const useCallStore = create<useCallStoreT>()(
           state.compactViewMode =
             mode === 'basic' || mode === 'expanded' || mode === 'audio' ? mode : 'basic';
         }
+        if (version < 5) {
+          state.pinnedByClassroom =
+            typeof state.pinnedByClassroom === 'object' && state.pinnedByClassroom !== null
+              ? state.pinnedByClassroom
+              : {};
+          delete state.pinnedTrack;
+        }
         return state as useCallStoreT;
       },
       partialize: (state) => ({
@@ -181,6 +216,7 @@ export const useCallStore = create<useCallStoreT>()(
         preferredFocusLayout: state.preferredFocusLayout,
         activeCorner: state.activeCorner,
         compactViewMode: state.compactViewMode,
+        pinnedByClassroom: state.pinnedByClassroom,
       }),
     },
   ),

@@ -2,7 +2,8 @@ import React from 'react';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { useMaybeTrackRefContext } from '@livekit/components-react';
 import { Pin, Pinned } from '@xipkg/icons';
-import { toPinnedTrack, useCallStore } from '@xipkg/calls-store';
+import { toPinnedParticipant, useCallStore } from '@xipkg/calls-store';
+import { useCurrentClassroomId } from '@xipkg/calls-hooks';
 import { cn } from '@xipkg/utils';
 
 /** Базовые стили оверлей-кнопки на плитке (для inline-использования, без absolute) */
@@ -35,17 +36,19 @@ export const ParticipantPinToggle = ({
 }: ParticipantPinTogglePropsT) => {
   const trackRefFromContext = useMaybeTrackRefContext();
   const trackReference = trackRef ?? trackRefFromContext;
+  const classroomId = useCurrentClassroomId();
 
-  const togglePinnedTrack = useCallStore((state) => state.togglePinnedTrack);
-  const isPinned = useCallStore((state) =>
-    trackReference ? state.isTrackPinned(toPinnedTrack(trackReference)) : false,
-  );
+  const togglePinnedParticipant = useCallStore((state) => state.togglePinnedParticipant);
+  const isParticipantPinned = useCallStore((state) => state.isParticipantPinned);
 
-  if (!trackReference) return null;
+  if (!trackReference || !classroomId) return null;
+
+  const pin = toPinnedParticipant(trackReference);
+  const isPinned = isParticipantPinned(pin, classroomId);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    togglePinnedTrack(toPinnedTrack(trackReference));
+    togglePinnedParticipant(pin, classroomId);
     onClick?.(event);
   };
 

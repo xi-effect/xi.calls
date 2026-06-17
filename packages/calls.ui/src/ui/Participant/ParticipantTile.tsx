@@ -27,10 +27,8 @@ import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
-import { toPinnedTrack, useCallStore } from '@xipkg/calls-store';
-import { isLocal } from '@xipkg/calls-utils';
 import { cn } from '@xipkg/utils';
-import { useMedia } from '@xipkg/calls-utils';
+import { isLocal, useMedia } from '@xipkg/calls-utils';
 
 type TrackRefContextIfNeededPropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
@@ -149,19 +147,8 @@ export const ParticipantTile = ({
     trackRef: trackReference,
   });
   const isEncrypted = useIsEncrypted(p);
-  const clearPinnedTrack = useCallStore((state) => state.clearPinnedTrack);
-  const isTrackPinned = useCallStore((state) => state.isTrackPinned);
 
   const autoManageSubscription = useFeatureContext()?.autoSubscription;
-
-  const handleSubscribe = React.useCallback(
-    (subscribed: boolean) => {
-      if (trackReference.source && !subscribed && isTrackPinned(toPinnedTrack(trackReference))) {
-        clearPinnedTrack();
-      }
-    },
-    [trackReference, clearPinnedTrack, isTrackPinned],
-  );
 
   const getVideoClassName = () => {
     if (trackReference.source === Track.Source.ScreenShare) {
@@ -246,7 +233,6 @@ export const ParticipantTile = ({
                             backgroundColor: '#000',
                           }}
                           trackRef={trackReference}
-                          onSubscriptionStatusChanged={handleSubscribe}
                           manageSubscription={autoManageSubscription}
                         />
                       </div>
@@ -264,10 +250,7 @@ export const ParticipantTile = ({
                   (!trackReference.publication?.isSubscribed ||
                     trackReference.publication?.kind !== 'video' ||
                     trackReference.publication?.track?.isMuted) && (
-                    <AudioTrack
-                      trackRef={trackReference}
-                      onSubscriptionStatusChanged={handleSubscribe}
-                    />
+                    <AudioTrack trackRef={trackReference} />
                   )}
                 <div className="lk-participant-metadata absolute right-2 bottom-2 left-2 z-10 flex items-center justify-between gap-2">
                   <div>

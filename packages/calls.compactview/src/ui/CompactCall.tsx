@@ -8,6 +8,7 @@ import {
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
+import { useClassroomPins } from '@xipkg/calls-hooks';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useModeSync } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
@@ -134,12 +135,13 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     }
   }, [totalParticipants, multiVisibleCount, multiScrollIndex]);
 
-  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
+  const { pins } = useClassroomPins();
+
   useEffect(() => {
-    if (pinnedTrack) {
+    if (pins.length > 0) {
       setMultiScrollIndex(0);
     }
-  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
+  }, [pins.map((pin) => `${pin.userId}:${pin.source}`).join(',')]);
 
   const handleBackToBoard = useCallback(() => {
     if (!activeBoardId || !activeClassroom) return;

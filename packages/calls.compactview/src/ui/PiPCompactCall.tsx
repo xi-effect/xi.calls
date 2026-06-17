@@ -10,6 +10,7 @@ import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
+import { useClassroomPins } from '@xipkg/calls-hooks';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
@@ -144,12 +145,13 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
     }
   }, [totalParticipants, multiVisibleCount, multiScrollIndex]);
 
-  const pinnedTrack = useCallStore((s) => s.pinnedTrack);
+  const { pins } = useClassroomPins();
+
   useEffect(() => {
-    if (pinnedTrack) {
+    if (pins.length > 0) {
       setMultiScrollIndex(0);
     }
-  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
+  }, [pins.map((pin) => `${pin.userId}:${pin.source}`).join(',')]);
 
   const emptyState = (
     <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl text-gray-100">

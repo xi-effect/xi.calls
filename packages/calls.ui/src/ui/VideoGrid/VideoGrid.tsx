@@ -12,8 +12,8 @@ import {
 } from '@livekit/components-react';
 import { ParticipantTile } from '../Participant';
 import { calcMaxTilesPerPage, CarouselContainer, GridLayout } from './VideoGridLayout';
-import { applyPinFirst, useCallStore } from '@xipkg/calls-store';
-import { usePinnedTrackCleanup, useSortedTracks, useSize } from '@xipkg/calls-hooks';
+import { applyPinsFirst, useCallStore } from '@xipkg/calls-store';
+import { useClassroomPins, useSortedTracks, useSize } from '@xipkg/calls-hooks';
 import '../../styles/grid.css';
 
 const GRID_GAP = 8;
@@ -61,7 +61,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   const hadScreenShareRef = React.useRef(false);
 
   const carouselType = useCallStore((state) => state.carouselType);
-  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
+  const { pins } = useClassroomPins();
 
   const tracks = useTracks(
     [
@@ -91,13 +91,12 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   const firstPageSize = useFirstPageSize(contentSize, effectiveCarouselType, tracks.length);
 
   const baseSortedTracks = useSortedTracks(tracks, firstPageSize);
-  usePinnedTrackCleanup(tracks);
 
   const layoutContext = useCreateLayoutContext();
 
   const sortedTracks = React.useMemo(
-    () => applyPinFirst(baseSortedTracks, pinnedTrack),
-    [baseSortedTracks, pinnedTrack],
+    () => applyPinsFirst(baseSortedTracks, pins),
+    [baseSortedTracks, pins],
   );
 
   const focusTrackFromLayout = usePinnedTracks(layoutContext)?.[0];
@@ -110,8 +109,8 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   /** Список плиток карусели: без главной сцены, с учётом локального pin */
   const carouselTracks = React.useMemo(() => {
     const listTracks = baseSortedTracks.filter((track) => !isEqualTrackRef(track, stageTrack));
-    return applyPinFirst(listTracks, pinnedTrack);
-  }, [baseSortedTracks, stageTrack, pinnedTrack]);
+    return applyPinsFirst(listTracks, pins);
+  }, [baseSortedTracks, stageTrack, pins]);
 
   React.useEffect(() => {
     if (

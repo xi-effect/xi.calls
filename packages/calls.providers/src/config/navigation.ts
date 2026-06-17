@@ -14,7 +14,7 @@ export type CallsNavigationT = {
   getCallId(): string | undefined;
   navigateToCall(classroomId: string, options?: { replace?: boolean }): void;
   navigateToClassroom(classroomId: string): void;
-  navigateToClassroomOverview(classroomId: string): void;
+  navigateToClassroomOverview(classroomId: string, options?: { backgroundCall?: boolean }): void;
   navigateToClassroomBoard(
     classroomId: string,
     boardId: string,

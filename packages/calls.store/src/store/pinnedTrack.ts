@@ -1,44 +1,87 @@
 import { Track } from 'livekit-client';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 
-export type PinnedTrackT = {
-  participantIdentity: string;
+/** Стабильный идентификатор участника для закрепления в рамках кабинета */
+export type PinnedParticipantT = {
+  userId: string;
   source: Track.Source;
 };
 
-export function matchesPinnedTrack(
-  track: TrackReferenceOrPlaceholder,
-  pinned: PinnedTrackT,
-): boolean {
-  return (
-    track.participant.identity === pinned.participantIdentity && track.source === pinned.source
-  );
+/** @deprecated Используйте PinnedParticipantT */
+export type PinnedTrackT = PinnedParticipantT;
+
+export function getParticipantUserId(participant: { identity: string; metadata?: string }): string {
+  if (participant.metadata) {
+    try {
+      const meta = JSON.parse(participant.metadata) as {
+        user_id?: string | number;
+        id?: string | number;
+      };
+      if (meta?.user_id != null) return String(meta.user_id);
+      if (meta?.id != null) return String(meta.id);
+    } catch {
+      /* metadata is not JSON */
+    }
+  }
+  return participant.identity;
 }
 
-export function findPinnedTrackRef(
-  tracks: TrackReferenceOrPlaceholder[],
-  pinned: PinnedTrackT | null,
-): TrackReferenceOrPlaceholder | undefined {
-  if (!pinned) return undefined;
-  return tracks.find((track) => matchesPinnedTrack(track, pinned));
-}
-
-export function toPinnedTrack(track: TrackReferenceOrPlaceholder): PinnedTrackT {
+export function toPinnedParticipant(track: TrackReferenceOrPlaceholder): PinnedParticipantT {
   return {
-    participantIdentity: track.participant.identity,
+    userId: getParticipantUserId(track.participant),
     source: track.source ?? Track.Source.Camera,
   };
 }
 
-/** Перемещает закреплённый трек на первое место в переданном списке */
+/** @deprecated Используйте toPinnedParticipant */
+export const toPinnedTrack = toPinnedParticipant;
+
+export function matchesPinnedParticipant(
+  track: TrackReferenceOrPlaceholder,
+  pinned: PinnedParticipantT,
+): boolean {
+  return (
+    getParticipantUserId(track.participant) === pinned.userId && track.source === pinned.source
+  );
+}
+
+/** @deprecated Используйте matchesPinnedParticipant */
+export const matchesPinnedTrack = matchesPinnedParticipant;
+
+export function findPinnedTrackRef(
+  tracks: TrackReferenceOrPlaceholder[],
+  pinned: PinnedParticipantT,
+): TrackReferenceOrPlaceholder | undefined {
+  return tracks.find((track) => matchesPinnedParticipant(track, pinned));
+}
+
+/** Перемещает закреплённых участников в начало списка (порядок pin сохраняется) */
+export function applyPinsFirst(
+  tracks: TrackReferenceOrPlaceholder[],
+  pins: PinnedParticipantT[],
+): TrackReferenceOrPlaceholder[] {
+  if (!pins.length) return tracks;
+
+  const pinnedRefs: TrackReferenceOrPlaceholder[] = [];
+  const seen = new Set<TrackReferenceOrPlaceholder>();
+
+  for (const pin of pins) {
+    const ref = findPinnedTrackRef(tracks, pin);
+    if (ref && !seen.has(ref)) {
+      pinnedRefs.push(ref);
+      seen.add(ref);
+    }
+  }
+
+  if (!pinnedRefs.length) return tracks;
+  return [...pinnedRefs, ...tracks.filter((track) => !seen.has(track))];
+}
+
 export function applyPinFirst(
   tracks: TrackReferenceOrPlaceholder[],
-  pinned: PinnedTrackT | null,
+  pinned: PinnedParticipantT | null,
 ): TrackReferenceOrPlaceholder[] {
-  if (!pinned) return tracks;
-  const pinnedRef = findPinnedTrackRef(tracks, pinned);
-  if (!pinnedRef) return tracks;
-  return [pinnedRef, ...tracks.filter((track) => track !== pinnedRef)];
+  return applyPinsFirst(tracks, pinned ? [pinned] : []);
 }
 
 /** Участник для главной плитки focus-сетки (без учёта локального pin) */

@@ -14,6 +14,7 @@ import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useCallBackNavigation } from '@xipkg/calls-hooks';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { useMedia } from '@xipkg/calls-utils';
 import { Settings } from './Settings';
@@ -22,6 +23,7 @@ export const UpBar = () => {
   const isMobile = useMedia('(max-width: 720px)');
   const navigation = useCallsNavigation();
   const callId = navigation.getCallId();
+  const { leaveToClassroom } = useCallBackNavigation();
   const { auth, room, appConfig } = useCalls();
   const { data: classroom } = room.useGetClassroom(Number(callId));
   const carouselType = useCallStore((state) => state.carouselType);
@@ -106,11 +108,7 @@ export const UpBar = () => {
                 if (focusMode) {
                   setFocusMode(false);
                 }
-                if (callId) {
-                  navigation.navigateToClassroomOverview(callId);
-                }
-                // Ставим mode после смены маршрута, иначе эффект в Call.tsx видит «страница звонка + compact» и сбрасывает в full
-                setTimeout(() => updateStore('mode', 'compact'), 0);
+                leaveToClassroom();
               }}
               type="button"
               variant="none"

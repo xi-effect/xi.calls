@@ -6,9 +6,12 @@ import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert
 import { InfoCircle } from '@xipkg/icons';
 import { MediaDeviceMenu } from './MediaDeviceMenu';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { UseNoiseCancellationResult, usePersistentUserChoices } from '@xipkg/calls-hooks';
+import {
+  UseNoiseCancellationResult,
+  useCallBackNavigation,
+  usePersistentUserChoices,
+} from '@xipkg/calls-hooks';
 import { useCallStore, usePermissionsStore } from '@xipkg/calls-store';
-import { useRoom } from '@xipkg/calls-providers';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 import { NoiseCancellationSettings } from '@xipkg/calls-ui';
 
@@ -30,7 +33,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
   } = usePersistentUserChoices();
 
   const { updateStore, token, isConnecting } = useCallStore();
-  const { room } = useRoom();
+  const { hasActiveCallSession, returnToFullCall } = useCallBackNavigation();
   const cameraPermission = usePermissionsStore((s) => s.cameraPermission);
   const microphonePermission = usePermissionsStore((s) => s.microphonePermission);
 
@@ -44,16 +47,6 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
   const handleJoin = async () => {
     if (!token) {
       console.error('No token available for joining the call');
-      return;
-    }
-
-    // Проверяем, не подключены ли уже
-    if (room.state === 'connected') {
-      console.log('Already connected to room, just updating store...');
-      // Если уже подключены, просто обновляем store
-      updateStore('connect', true);
-      updateStore('isStarted', true);
-      updateStore('isConnecting', false);
       return;
     }
 
@@ -201,8 +194,16 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
             </div>
           )}
         </div>
-        <Button onClick={() => handleJoin()} className="w-full" disabled={isConnecting}>
-          {isConnecting ? 'Подключение...' : 'Присоединиться'}
+        <Button
+          onClick={() => (hasActiveCallSession ? returnToFullCall() : handleJoin())}
+          className="w-full"
+          disabled={isConnecting && !hasActiveCallSession}
+        >
+          {hasActiveCallSession
+            ? 'Вернуться в звонок'
+            : isConnecting
+              ? 'Подключение...'
+              : 'Присоединиться'}
         </Button>
       </div>
       <Alert className="h-full w-full max-w-[1720px]" variant="brand">

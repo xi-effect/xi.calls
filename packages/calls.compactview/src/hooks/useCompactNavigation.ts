@@ -1,31 +1,28 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Track } from 'livekit-client';
 import { useTracks } from '@livekit/components-react';
-import { applyPinFirst, useCallStore } from '@xipkg/calls-store';
-import { usePinnedTrackCleanup, useScreenShareCleanup, useSortedTracks } from '@xipkg/calls-hooks';
+import { applyPinsFirst } from '@xipkg/calls-store';
+import { useClassroomPins, useScreenShareCleanup, useSortedTracks } from '@xipkg/calls-hooks';
 
 export const useCompactNavigation = () => {
   const [currentParticipantIndex, setCurrentParticipantIndex] = useState(0);
 
-  // Получаем треки через useTracks (как в VideoGrid) для автоматического обновления
   const participants = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
     {
-      onlySubscribed: false, // Получаем все треки, включая неподписанные для корректного подсчета участников
+      onlySubscribed: false,
     },
   );
 
-  // Автоматическое удаление треков демонстрации экрана при их завершении
   useScreenShareCleanup(participants);
-  usePinnedTrackCleanup(participants);
 
   const baseSorted = useSortedTracks(participants, 1);
-  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
+  const { pins } = useClassroomPins();
 
-  const sorted = useMemo(() => applyPinFirst(baseSorted, pinnedTrack), [baseSorted, pinnedTrack]);
+  const sorted = useMemo(() => applyPinsFirst(baseSorted, pins), [baseSorted, pins]);
 
   const currentParticipant = sorted[currentParticipantIndex] || null;
   const totalParticipants = sorted.length;
@@ -51,22 +48,19 @@ export const useCompactNavigation = () => {
     }
   };
 
-  // Сброс индекса при изменении количества участников
   useEffect(() => {
     if (currentParticipantIndex >= totalParticipants && totalParticipants > 0) {
       setCurrentParticipantIndex(Math.max(0, totalParticipants - 1));
     }
   }, [totalParticipants, currentParticipantIndex]);
 
-  // При закреплении показываем закреплённого участника первым
+  const pinsKey = pins.map((pin) => `${pin.userId}:${pin.source}`).join(',');
+
   useEffect(() => {
-    if (pinnedTrack) {
+    if (pins.length > 0) {
       setCurrentParticipantIndex(0);
     }
-  }, [pinnedTrack?.participantIdentity, pinnedTrack?.source]);
-
-  // useTracks автоматически обновляется при изменениях треков,
-  // поэтому дополнительные обработчики событий не нужны
+  }, [pinsKey, pins.length]);
 
   return {
     currentParticipant,

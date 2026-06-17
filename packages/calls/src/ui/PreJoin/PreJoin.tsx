@@ -1,4 +1,3 @@
-import { ScrollArea } from '@xipkg/scrollarea';
 import { Header, UserTile, MediaDevices } from './components';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
@@ -175,9 +174,12 @@ export const PreJoin = () => {
   });
 
   return (
-    <>
-      <ScrollArea className="h-full min-h-0 w-full">
-        <div className="bg-gray-5 min-h-full p-5">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div
+        className="calls-prejoin-scroll h-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
+        <div className="bg-gray-5 p-5 pb-8">
           <Header />
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <UserTile audioTrack={audioTrack} videoTrack={videoTrack} />
@@ -188,7 +190,7 @@ export const PreJoin = () => {
             />
           </div>
         </div>
-      </ScrollArea>
-    </>
+      </div>
+    </div>
   );
 };

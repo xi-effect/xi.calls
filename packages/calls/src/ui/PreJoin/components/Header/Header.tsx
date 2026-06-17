@@ -1,13 +1,12 @@
 import { Button } from '@xipkg/button';
 import { ArrowLeft } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
-import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useCalls } from '@xipkg/calls-providers';
+import { useCallBackNavigation } from '@xipkg/calls-hooks';
 
 /* eslint-disable no-irregular-whitespace */
 export const Header = () => {
-  const navigation = useCallsNavigation();
-  const callId = navigation.getCallId();
-
+  const { callId, leaveToClassroom } = useCallBackNavigation();
   const { room } = useCalls();
   const { data: classroom } = room.useGetClassroom(Number(callId));
 
@@ -17,11 +16,7 @@ export const Header = () => {
         <Tooltip delayDuration={1000}>
           <TooltipTrigger asChild>
             <Button
-              onClick={() => {
-                if (callId) {
-                  navigation.navigateToClassroom(callId);
-                }
-              }}
+              onClick={leaveToClassroom}
               type="button"
               variant="none"
               className="flex size-[40px] min-h-[40xp] min-w-[40px] items-center justify-center rounded-[12px] p-0"
@@ -33,9 +28,11 @@ export const Header = () => {
             Вернуться в кабинет
           </TooltipContent>
         </Tooltip>
-        <h1 className="text-xl-base font-semibold text-gray-100">Присоединиться к занятию</h1>
+        <h1 className="text-s-base sm:text-xl-base font-semibold text-gray-100">
+          Присоединиться к занятию
+        </h1>
       </div>
-      <p className="text-s-base text-gray-60 pt-0 pl-12 align-baseline sm:pt-2 sm:pl-0">
+      <p className="text-xs-base sm:text-s-base text-gray-60 pt-0 pl-12 align-baseline sm:pt-2 sm:pl-0">
         {classroom?.name}
       </p>
     </div>

@@ -1,41 +1,57 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Track } from 'livekit-client';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
-import { findPinnedTrackRef, useCallStore } from '@xipkg/calls-store';
+import { findPinnedTrackRef, toPinnedParticipant, useCallStore } from '@xipkg/calls-store';
+import { useClassroomPins } from './useClassroomPins';
 
 /**
- * Снимает закрепление при завершении демонстрации экрана
+ * Снимает pin демонстрации экрана из сохранённых pin кабинета при её завершении.
+ * Обычные camera-pin между созвонами сохраняются.
  */
 export const useScreenShareCleanup = (tracks: TrackReferenceOrPlaceholder[]) => {
-  const pinnedTrack = useCallStore((state) => state.pinnedTrack);
-  const clearPinnedTrack = useCallStore((state) => state.clearPinnedTrack);
+  const { classroomId, pins } = useClassroomPins();
+  const removePinnedParticipant = useCallStore((state) => state.removePinnedParticipant);
+
+  const screenSharePins = useMemo(
+    () => pins.filter((pin) => pin.source === Track.Source.ScreenShare),
+    [pins],
+  );
+
+  const screenSharePinsKey = screenSharePins.map((pin) => `${pin.userId}:${pin.source}`).join(',');
 
   useEffect(() => {
-    if (!pinnedTrack || pinnedTrack.source !== Track.Source.ScreenShare) return;
+    if (!classroomId || !screenSharePins.length) return;
 
-    const pinnedRef = findPinnedTrackRef(tracks, pinnedTrack);
-    const isActive =
-      pinnedRef?.publication?.isSubscribed &&
-      pinnedRef.publication.source === Track.Source.ScreenShare;
+    screenSharePins.forEach((pin) => {
+      const pinnedRef = findPinnedTrackRef(tracks, pin);
+      const isActive =
+        pinnedRef?.publication?.isSubscribed &&
+        pinnedRef.publication.source === Track.Source.ScreenShare;
 
-    if (!isActive) {
-      clearPinnedTrack();
-    }
-  }, [tracks, pinnedTrack, clearPinnedTrack]);
-
-  useEffect(() => {
-    const handleTrackUnpublished = (source: Track.Source, isSubscribed: boolean) => {
-      if (source !== Track.Source.ScreenShare || isSubscribed) return;
-      if (pinnedTrack?.source === Track.Source.ScreenShare) {
-        clearPinnedTrack();
+      if (!isActive) {
+        removePinnedParticipant(pin, classroomId);
       }
+    });
+  }, [tracks, classroomId, screenSharePins, screenSharePinsKey, removePinnedParticipant]);
+
+  useEffect(() => {
+    if (!classroomId) return;
+
+    const handleTrackUnpublished = (track: TrackReferenceOrPlaceholder) => {
+      if (
+        track.publication?.source !== Track.Source.ScreenShare ||
+        track.publication.isSubscribed
+      ) {
+        return;
+      }
+      removePinnedParticipant(toPinnedParticipant(track), classroomId);
     };
 
     const unsubscribedHandlers = tracks.flatMap((track) => {
       const publication = track.publication;
       if (!publication || publication.source !== Track.Source.ScreenShare) return [];
 
-      const handler = () => handleTrackUnpublished(publication.source, publication.isSubscribed);
+      const handler = () => handleTrackUnpublished(track);
       publication.on('unsubscribed', handler);
       return [{ publication, handler }];
     });
@@ -45,5 +61,5 @@ export const useScreenShareCleanup = (tracks: TrackReferenceOrPlaceholder[]) => 
         publication.off('unsubscribed', handler);
       });
     };
-  }, [tracks, pinnedTrack, clearPinnedTrack]);
+  }, [tracks, classroomId, removePinnedParticipant]);
 };

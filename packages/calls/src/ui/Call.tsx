@@ -38,13 +38,13 @@ export const Call = () => {
           : undefined
       }
     >
-      <div className="flex h-full w-full flex-col">
+      <div className="flex h-full min-h-0 w-full flex-col">
         {isStarted ? (
           <div id="videoConferenceContainer" className="bg-gray-5 flex h-full min-h-0 flex-col">
             <ActiveRoom />
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
             <PreJoin />
           </div>
         )}
