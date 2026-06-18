@@ -73,6 +73,18 @@ export function CompactCallVideoArea({
    */
   const showDesktopOverlay = !isMobile && compactViewMode === 'basic' && !!currentParticipant;
 
+  /** В expanded-режиме Pin первой плитки и PiP в одном оверлее — иначе кнопки накладываются */
+  const firstMultiParticipant = multiVisibleParticipants[0] ?? null;
+  const showExpandedOverlay =
+    !isMobile && compactViewMode === 'expanded' && !!firstMultiParticipant;
+
+  const overlayTrackRef = showDesktopOverlay
+    ? currentParticipant
+    : showExpandedOverlay
+      ? firstMultiParticipant
+      : null;
+  const showPinPiPOverlay = !!overlayTrackRef;
+
   const emptyState = (
     <div className="bg-gray-40 flex h-full w-full items-center justify-center text-gray-100">
       <span className="text-sm">Нет участников</span>
@@ -131,7 +143,7 @@ export function CompactCallVideoArea({
         >
           {multiVisibleParticipants.length === 0
             ? emptyState
-            : multiVisibleParticipants.map((trackRef) => (
+            : multiVisibleParticipants.map((trackRef, index) => (
                 <div
                   key={`${trackRef.participant.identity}-${trackRef.source}`}
                   className="aspect-video w-full shrink-0 overflow-hidden rounded-xl"
@@ -141,6 +153,7 @@ export function CompactCallVideoArea({
                     trackRef={trackRef}
                     participant={trackRef.participant}
                     className="h-full w-full [&_video]:object-cover"
+                    hidePinToggle={showExpandedOverlay && index === 0}
                   />
                 </div>
               ))}
@@ -162,10 +175,10 @@ export function CompactCallVideoArea({
         emptyState
       )}
 
-      {/* Оверлей с Pin (и опционально PiP) для десктопа в basic-режиме */}
-      {showDesktopOverlay && (
+      {/* Оверлей с Pin (и опционально PiP) для basic и expanded на десктопе */}
+      {showPinPiPOverlay && (
         <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
-          <ParticipantPinToggle trackRef={currentParticipant} inline />
+          <ParticipantPinToggle trackRef={overlayTrackRef} inline />
           {showPiPButton && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -182,23 +195,6 @@ export function CompactCallVideoArea({
             </Tooltip>
           )}
         </div>
-      )}
-
-      {/* PiP в expanded-режиме (без оверлея с Pin) */}
-      {showPiPButton && compactViewMode === 'expanded' && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              onClick={() => void pip!.openPiP()}
-              className={cn(tileOverlayButtonClassName, 'absolute top-2 right-2 z-10')}
-              aria-label="Открыть в отдельном окне"
-            >
-              <External className="fill-gray-100" style={{ width: 16, height: 16 }} />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Открыть в отдельном окне</TooltipContent>
-        </Tooltip>
       )}
 
       {isMobile && (
