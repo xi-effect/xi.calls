@@ -217,31 +217,31 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-chat':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.0.21
@@ -326,25 +326,25 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.0.21
@@ -420,31 +420,31 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-chat':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.0.21
@@ -553,19 +553,19 @@ importers:
   packages/calls.hooks:
     dependencies:
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       livekit-client:
         specifier: 2.19.1
@@ -626,10 +626,10 @@ importers:
   packages/calls.providers:
     dependencies:
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       react:
         specifier: '19'
@@ -687,19 +687,19 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.0.21
@@ -760,7 +760,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       react:
         specifier: '19'
@@ -869,22 +869,22 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/react@19.2.15)(react@19.2.6)
       '@xipkg/calls-config':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.2
+        specifier: ^0.1.4
         version: link:../calls.utils
       '@xipkg/checkbox':
         specifier: 5.0.5

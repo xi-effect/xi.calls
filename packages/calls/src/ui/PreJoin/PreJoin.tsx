@@ -174,12 +174,12 @@ export const PreJoin = () => {
   });
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+    <div className="bg-gray-5 flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <div
-        className="calls-prejoin-scroll h-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain"
+        className="calls-prejoin-scroll h-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain pb-[var(--calls-layout-bottom-offset,0px)] max-[960px]:h-dvh max-[960px]:max-h-dvh max-[960px]:flex-none"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        <div className="bg-gray-5 p-5 pb-8">
+        <div className="min-h-full p-5 pb-8">
           <Header />
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <UserTile audioTrack={audioTrack} videoTrack={videoTrack} />
