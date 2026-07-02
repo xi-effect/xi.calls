@@ -1,17 +1,15 @@
-import { Track, LocalVideoTrack } from 'livekit-client';
+import { Track } from 'livekit-client';
 import { supportsScreenSharing } from '@livekit/components-core';
 import { useRoomContext, useTrackToggle } from '@livekit/components-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { TrackToggle } from '../shared';
 
 export const ScreenShareButton = ({ className }: { className?: string }) => {
-  const [isScreenShareEnabled, setIsScreenShareEnabled] = useState(false);
-
   const browserSupportsScreenSharing = supportsScreenSharing();
   const room = useRoomContext();
 
-  const { toggle, track, enabled } = useTrackToggle({
+  const { toggle, enabled } = useTrackToggle({
     source: Track.Source.ScreenShare,
     captureOptions: { audio: true, selfBrowserSurface: 'include' },
   });
@@ -28,16 +26,11 @@ export const ScreenShareButton = ({ className }: { className?: string }) => {
   }, [room.localParticipant]);
 
   const toggleScreenShare = useCallback(() => {
-    closeAllScreenShareTracks();
-    if (!isScreenShareEnabled) {
-      setIsScreenShareEnabled(true);
-      toggle();
-    } else {
-      setIsScreenShareEnabled(false);
-
-      toggle();
+    if (enabled) {
+      closeAllScreenShareTracks();
     }
-  }, [closeAllScreenShareTracks, isScreenShareEnabled, toggle]);
+    toggle();
+  }, [closeAllScreenShareTracks, enabled, toggle]);
 
   return (
     <>
@@ -48,14 +41,13 @@ export const ScreenShareButton = ({ className }: { className?: string }) => {
               <TrackToggle
                 className={className}
                 source={Track.Source.ScreenShare}
-                screenShareTrack={track?.track as LocalVideoTrack}
                 screenShareEnabled={enabled}
                 onChange={toggleScreenShare}
               />
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" align="center">
-            {isScreenShareEnabled ? 'Остановить показ экрана' : 'Поделиться экраном'}
+            {enabled ? 'Остановить показ экрана' : 'Поделиться экраном'}
           </TooltipContent>
         </Tooltip>
       )}

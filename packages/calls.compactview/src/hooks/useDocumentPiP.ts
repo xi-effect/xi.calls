@@ -20,8 +20,23 @@ declare global {
 
   // setMicrophoneActive / setCameraActive есть в Chrome 93+, в lib.dom.d.ts пока нет
   interface MediaSession {
-    setMicrophoneActive(active: boolean): void;
-    setCameraActive(active: boolean): void;
+    setMicrophoneActive(active: boolean): Promise<void> | void;
+    setCameraActive(active: boolean): Promise<void> | void;
+  }
+}
+
+function setMediaSessionCaptureState(
+  setActive: ((active: boolean) => Promise<void> | void) | undefined,
+  active: boolean,
+) {
+  if (!setActive) return;
+  try {
+    const result = setActive(active);
+    result?.catch(() => {
+      // Chrome отклоняет активацию без user gesture — ожидаемо вне обработчика клика
+    });
+  } catch {
+    // ignore
   }
 }
 
@@ -81,16 +96,20 @@ export function useDocumentPiP({
   // Chrome для авто-PiP при видеозвонках требует setCameraActive / setMicrophoneActive
   useEffect(() => {
     if (!enabled) return;
-    try {
-      navigator.mediaSession.setMicrophoneActive(microphoneActive);
-    } catch {
-      // ignore
-    }
-    try {
-      navigator.mediaSession.setCameraActive(cameraActive);
-    } catch {
-      // ignore
-    }
+
+    const mediaSession = navigator.mediaSession as MediaSession;
+    setMediaSessionCaptureState(
+      'setMicrophoneActive' in mediaSession
+        ? mediaSession.setMicrophoneActive.bind(mediaSession)
+        : undefined,
+      microphoneActive,
+    );
+    setMediaSessionCaptureState(
+      'setCameraActive' in mediaSession
+        ? mediaSession.setCameraActive.bind(mediaSession)
+        : undefined,
+      cameraActive,
+    );
   }, [enabled, microphoneActive, cameraActive]);
 
   const openPiP = useCallback(

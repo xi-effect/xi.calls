@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-providers",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "type": "module",
   "exports": {
     ".": {
@@ -17,8 +17,8 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@xipkg/calls-types": "^0.1.4",
-    "@xipkg/calls-store": "^0.1.4"
+    "@xipkg/calls-types": "^0.1.6",
+    "@xipkg/calls-store": "^0.1.6"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

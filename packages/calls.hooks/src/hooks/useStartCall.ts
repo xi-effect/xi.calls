@@ -39,6 +39,8 @@ export const useStartCall = () => {
           console.error('Ошибка при реактивировании комнаты:', error);
           throw error;
         }
+      } else {
+        throw error;
       }
     }
   };
