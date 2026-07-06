@@ -16,6 +16,7 @@ import {
   useNoiseCancellation,
 } from '@xipkg/calls-hooks';
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
+import { usePermissionsStore } from '@xipkg/calls-store';
 
 export const PreJoin = () => {
   const {
@@ -57,8 +58,20 @@ export const PreJoin = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         if (!cancelled) stream.getTracks().forEach((t) => t.stop());
-      } catch {
-        // Отказ или ошибка — состояние обработает useWatchPermissions и UI (перечёркнутые контролы)
+      } catch (error) {
+        if (cancelled) return;
+        // Permissions API не везде поддерживает 'camera'/'microphone' (см. useWatchPermissions)
+        // либо ещё не успел отработать — при явном отказе синхронизируем store сразу,
+        // чтобы индикация и подсказки в UI не оставались в устаревшем/неопределённом состоянии.
+        const name = (error as DOMException)?.name;
+        if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+          usePermissionsStore.setState((state) => ({
+            cameraPermission:
+              state.cameraPermission === 'granted' ? state.cameraPermission : 'denied',
+            microphonePermission:
+              state.microphonePermission === 'granted' ? state.microphonePermission : 'denied',
+          }));
+        }
       }
     };
     request();

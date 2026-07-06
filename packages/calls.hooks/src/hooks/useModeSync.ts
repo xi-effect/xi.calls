@@ -23,9 +23,13 @@ const parseRoomMetadata = (metadata: string | undefined): RoomMetadataPayloadT |
   }
 };
 
-export const useModeSync = () => {
+/**
+ * Общая логика вычисления mode/board из метаданных комнаты + функция рассылки изменений.
+ * Вынесена отдельно, чтобы `useSyncModeToOthers` могла переиспользовать `syncModeToOthers`,
+ * не регистрируя второй раз слушатель `RoomEvent.RoomMetadataChanged` (см. ниже).
+ */
+const useModeSyncCore = () => {
   const navigation = useCallsNavigation();
-  const { room } = useRoom();
   const { conferenceMetadata } = useCalls();
   const updateStore = useCallStore((state) => state.updateStore);
 
@@ -89,28 +93,6 @@ export const useModeSync = () => {
     [updateStore, navigation, classroomIdFromRoute],
   );
 
-  const applyRoomMetadataRef = useRef(applyRoomMetadata);
-  applyRoomMetadataRef.current = applyRoomMetadata;
-
-  useEffect(() => {
-    if (!room) return;
-
-    const handleRoomMetadataChanged = (metadata: string | undefined) => {
-      applyRoomMetadataRef.current(metadata);
-    };
-
-    room.on(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
-
-    if (room.metadata && initialMetadataAppliedForRoomRef.current !== room) {
-      initialMetadataAppliedForRoomRef.current = room;
-      applyRoomMetadataRef.current(room.metadata);
-    }
-
-    return () => {
-      room.off(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
-    };
-  }, [room]);
-
   const syncModeToOthers = useCallback(
     (mode: 'compact' | 'full', boardId?: string, classroom?: string) => {
       try {
@@ -149,6 +131,55 @@ export const useModeSync = () => {
   );
 
   return {
+    applyRoomMetadata,
     syncModeToOthers,
   };
+};
+
+/**
+ * Полная синхронизация режима: слушает `RoomEvent.RoomMetadataChanged` и применяет
+ * изменения (mode/board/навигация), плюс отдаёт `syncModeToOthers` для рассылки своих
+ * изменений. Должен монтироваться ОДИН раз на приложение — уже сделано в `ModeSyncProvider`.
+ * Компонентам, которым нужен только `syncModeToOthers` (например кнопки "на доску" /
+ * выбор материала), следует использовать `useSyncModeToOthers`, а не этот хук: повторная
+ * регистрация слушателя метаданных приводит к тому, что каждое изменение обрабатывается
+ * несколько раз (лишние updateStore/навигации), что усиливает гонки при переключении
+ * в compact-режим при нескольких участниках.
+ */
+export const useModeSync = () => {
+  const { room } = useRoom();
+  const { applyRoomMetadata, syncModeToOthers } = useModeSyncCore();
+
+  const applyRoomMetadataRef = useRef(applyRoomMetadata);
+  applyRoomMetadataRef.current = applyRoomMetadata;
+
+  useEffect(() => {
+    if (!room) return;
+
+    const handleRoomMetadataChanged = (metadata: string | undefined) => {
+      applyRoomMetadataRef.current(metadata);
+    };
+
+    room.on(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
+
+    if (room.metadata && initialMetadataAppliedForRoomRef.current !== room) {
+      initialMetadataAppliedForRoomRef.current = room;
+      applyRoomMetadataRef.current(room.metadata);
+    }
+
+    return () => {
+      room.off(RoomEvent.RoomMetadataChanged, handleRoomMetadataChanged);
+    };
+  }, [room]);
+
+  return {
+    syncModeToOthers,
+  };
+};
+
+/** Только рассылка своего изменения режима другим участникам, без повторной подписки
+ * на события комнаты (см. комментарий к `useModeSync` выше). */
+export const useSyncModeToOthers = () => {
+  const { syncModeToOthers } = useModeSyncCore();
+  return syncModeToOthers;
 };

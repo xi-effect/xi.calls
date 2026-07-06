@@ -11,7 +11,6 @@ import {
 } from '@dnd-kit/core';
 import { useCallsNavigation } from '@xipkg/calls-providers';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
-import { RoomAudioRenderer } from '@livekit/components-react';
 import { CompactCall } from './CompactCall';
 import { Chat, useChatStore } from '@xipkg/calls-chat';
 import { PermissionsDialog } from '@xipkg/calls-ui';
@@ -182,8 +181,6 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
           {children}
         </>
       )}
-
-      <RoomAudioRenderer />
     </div>
   );
 

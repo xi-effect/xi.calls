@@ -1,7 +1,7 @@
 export { useSize } from './useSize';
 export { useInitUserDevices } from './useInitUserDevices';
 export { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
-export { useModeSync } from './useModeSync';
+export { useModeSync, useSyncModeToOthers } from './useModeSync';
 export { usePersistentUserChoices } from './usePersistentUserChoices';
 export { useResolveInitiallyDefaultDeviceId } from './useResolveInitiallyDefaultDeviceId';
 export { useCannotUseDevice } from './useCannotUseDevice';
@@ -21,4 +21,5 @@ export { useCurrentClassroomId } from './useCurrentClassroomId';
 export { useNoiseCancellation } from './useNoiseCancellation';
 export { useParticipantSounds } from './useParticipantSounds';
 export { useUmamiActivityHeartbeat } from './useUmamiActivityHeartbeat';
+export { useVisualViewportHeight } from './useVisualViewportHeight';
 export type { UseNoiseCancellationResult } from './useNoiseCancellation';

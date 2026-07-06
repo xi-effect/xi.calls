@@ -6,6 +6,7 @@ export {
   useLiveKitDataChannel,
   useLiveKitDataChannelListener,
   useModeSync,
+  useSyncModeToOthers,
   useParticipantJoinSync,
   usePersistentUserChoices,
   useResponsiveGrid,
@@ -24,6 +25,7 @@ export {
   useNoiseCancellation,
   useParticipantSounds,
   useUmamiActivityHeartbeat,
+  useVisualViewportHeight,
   ModeSyncProvider,
   type UseNoiseCancellationResult,
 } from './src';

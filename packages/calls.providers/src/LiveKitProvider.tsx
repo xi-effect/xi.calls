@@ -1,4 +1,4 @@
-import { LiveKitRoom } from '@livekit/components-react';
+import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { useCallStore } from '@xipkg/calls-store';
 import { useCallback, useEffect, useRef } from 'react';
 import { DisconnectReason, Track } from 'livekit-client';
@@ -64,8 +64,11 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     if (activeClassroom && callId && activeClassroom !== callId) {
       updateStore('activeBoardId', undefined);
       updateStore('activeClassroom', undefined);
+      // Переход в другой звонок в рамках одного SPA-сеанса (без полного disconnect/reload) —
+      // сбрасываем UI-состояние предыдущего звонка (в т.ч. чат), чтобы оно не «утекало» в новый.
+      clearConferenceUiState();
     }
-  }, [callId, clearPendingDisconnect, updateStore]);
+  }, [callId, clearConferenceUiState, clearPendingDisconnect, updateStore]);
 
   const handleDisconnect = useCallback(
     (reason?: DisconnectReason) => {
@@ -84,6 +87,21 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       }
 
       clearPendingDisconnect();
+
+      // Пользователь сам нажал «завершить звонок» — `DisconnectButton` синхронно
+      // выставляет `connect=false` ещё до того, как реально придёт событие
+      // отключения комнаты (см. `packages/calls.ui/src/ui/Bottom/DisconnectButton.tsx`).
+      // Реконнект в этом случае SDK не предпринимает, поэтому ждать grace-период
+      // незачем — раньше это давало заметный лаг: интерфейс (в т.ч. CompactCall)
+      // не скрывался и URL не менялся, пока не истекали все 5 секунд таймера.
+      const isIntentionalDisconnect =
+        !useCallStore.getState().connect || reason === DisconnectReason.CLIENT_INITIATED;
+
+      if (isIntentionalDisconnect) {
+        console.log('LiveKit: intentional disconnect, tearing down UI immediately', { reason });
+        finalizeDisconnect();
+        return;
+      }
 
       console.warn('LiveKit: disconnected, scheduling UI teardown', { reason, state: room.state });
 
@@ -198,6 +216,15 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       audio={audioEnabled || false}
       video={videoEnabled || false}
     >
+      {/*
+       * Единственный рендерер удалённого аудио на весь звонок.
+       * Раньше он монтировался отдельно в full-режиме (VideoGrid) и в compact-режиме
+       * (CompactView), поэтому при переключении между режимами и при входе/выходе из PiP
+       * скрытые <audio> элементы пересоздавались, а LiveKit заново строил WebAudio-цепочку
+       * (GainNode с ramp) — отсюда был слышен резкий скачок громкости/тембра.
+       * LiveKitProvider не размонтируется при смене режимов, поэтому звук остаётся стабильным.
+       */}
+      <RoomAudioRenderer />
       {children}
     </LiveKitRoom>
   );

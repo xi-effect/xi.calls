@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-store",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "type": "module",
   "exports": {
     ".": {
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "zustand": "5.0.3",
-    "@xipkg/calls-types": "^0.1.6"
+    "@xipkg/calls-types": "^0.1.7"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.73.3",

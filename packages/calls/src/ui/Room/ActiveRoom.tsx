@@ -3,7 +3,7 @@ import { LocalVideoTrack } from 'livekit-client';
 import { Chat } from '@xipkg/calls-chat';
 import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
-import { useVideoBlur, useParticipantJoinSync, useParticipantSounds } from '@xipkg/calls-hooks';
+import { useVideoBlur } from '@xipkg/calls-hooks';
 import { useHandFocus } from '@xipkg/calls-risehand';
 import { BottomBar } from '../Bottom/BottomBar';
 import '@xipkg/calls-ui/video-security.css';
@@ -12,9 +12,11 @@ import '@xipkg/calls-ui/grid.css';
 export const ActiveRoom = () => {
   // Автоматический фокус на участниках с поднятыми руками
   useHandFocus();
-  // Синхронизация состояния при подключении новых участников
-  useParticipantJoinSync();
-  useParticipantSounds();
+  // useParticipantJoinSync/useParticipantSounds уже монтируются один раз в CompactView,
+  // который является обязательной обёрткой над Call (см. docs/migrations). Раньше они
+  // дублировались и здесь, из-за чего на full-режиме параллельно работали два независимых
+  // экземпляра синхронизации — двойные data-channel рассылки при смене режима/участников
+  // усиливали "шторм" сообщений в момент перехода на доску.
   // Получаем видео трек для применения блюра
   const { cameraTrack } = useLocalParticipant();
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;

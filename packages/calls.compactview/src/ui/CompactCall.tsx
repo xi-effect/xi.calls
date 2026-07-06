@@ -10,7 +10,7 @@ import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useClassroomPins } from '@xipkg/calls-hooks';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
-import { useVideoBlur, useModeSync } from '@xipkg/calls-hooks';
+import { useVideoBlur, useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { usePhoneLayout } from '@xipkg/calls-utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
@@ -87,7 +87,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     | import('livekit-client').LocalAudioTrack
     | undefined;
 
-  const { syncModeToOthers } = useModeSync();
+  const syncModeToOthers = useSyncModeToOthers();
   const activeBoardId = useCallStore((state) => state.activeBoardId);
   const activeClassroom = useCallStore((state) => state.activeClassroom);
   const { room } = useRoom();

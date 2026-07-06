@@ -14,7 +14,7 @@ import { Checkbox } from '@xipkg/checkbox';
 import { useState } from 'react';
 import { Close, Search } from '@xipkg/icons';
 import { useCallStore } from '@xipkg/calls-store';
-import { useModeSync } from '@xipkg/calls-hooks';
+import { useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { useMedia } from '@xipkg/calls-utils';
 
@@ -31,7 +31,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   const callId = navigation.getCallId();
   const activeClassroom = useCallStore((state) => state.activeClassroom);
   const updateStore = useCallStore((state) => state.updateStore);
-  const { syncModeToOthers } = useModeSync();
+  const syncModeToOthers = useSyncModeToOthers();
   const { auth, room } = useCalls();
 
   const classroomId = callId ?? activeClassroom;

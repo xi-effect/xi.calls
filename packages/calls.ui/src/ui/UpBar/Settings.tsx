@@ -27,7 +27,7 @@ import {
   openPermissionsDialog,
 } from '@xipkg/calls-store';
 import { useRoom, useCallsNavigation, useCallsRuntimeConfig } from '@xipkg/calls-providers';
-import { useNoiseCancellation } from '@xipkg/calls-hooks';
+import { useNoiseCancellation, useCannotUseDevice } from '@xipkg/calls-hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
 import { Button } from '@xipkg/button';
 
@@ -121,8 +121,13 @@ export const Settings = ({ children }: SettingsPropsT) => {
   const cameraPermission = usePermissionsStore((s) => s.cameraPermission);
   const microphonePermission = usePermissionsStore((s) => s.microphonePermission);
 
-  const isCameraGranted = cameraPermission === 'granted';
-  const isMicrophoneGranted = microphonePermission === 'granted';
+  // Единая с TrackToggle логика блокировки: если Permissions API недоступен
+  // ('unavailable') или права ещё не запрошены ('undefined'), не блокируем
+  // управление устройствами намертво — реальный результат покажет getUserMedia.
+  const isCameraBlocked = useCannotUseDevice('videoinput');
+  const isMicrophoneBlocked = useCannotUseDevice('audioinput');
+  const isCameraGranted = !isCameraBlocked;
+  const isMicrophoneGranted = !isMicrophoneBlocked;
 
   // Ключи для перемонтирования селекторов при смене разрешения (обновление списка устройств)
   const videoSelectorKey = `videoinput-${cameraPermission}`;

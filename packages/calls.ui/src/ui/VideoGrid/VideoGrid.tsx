@@ -4,7 +4,6 @@ import { isEqualTrackRef, isTrackReference, isWeb, log } from '@livekit/componen
 import { RoomEvent, Track } from 'livekit-client';
 import {
   LayoutContextProvider,
-  RoomAudioRenderer,
   VideoConferenceProps,
   useCreateLayoutContext,
   usePinnedTracks,
@@ -197,7 +196,6 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
           </div>
         </LayoutContextProvider>
       )}
-      <RoomAudioRenderer />
     </div>
   );
 };
