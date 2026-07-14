@@ -6,9 +6,10 @@ import { useUserChoicesStore } from '@xipkg/calls-store';
 export function useVideoBlur(videoTrack: LocalVideoTrack | null | undefined) {
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);
   const processorRef = useRef<ReturnType<typeof BackgroundProcessor> | null>(null);
-  const isProcessingRef = useRef(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!videoTrack || !supportsBackgroundProcessors()) {
       // Останавливаем процессор, если трек или поддержка отсутствуют
       if (processorRef.current && videoTrack) {
@@ -20,50 +21,51 @@ export function useVideoBlur(videoTrack: LocalVideoTrack | null | undefined) {
 
     const applyBlur = async () => {
       // Предотвращаем параллельные вызовы
-      if (isProcessingRef.current) {
-        return;
-      }
-
-      isProcessingRef.current = true;
 
       try {
         // Сначала останавливаем старый процессор, если он есть
         if (processorRef.current) {
           await videoTrack.stopProcessor();
+          if (cancelled) return;
           processorRef.current = null;
         }
 
         if (blurEnabled) {
-          // Создаем новый процессор только если блюр включен
           const processor = BackgroundProcessor({
             mode: 'background-blur',
             blurRadius: 25,
           } as Parameters<typeof BackgroundProcessor>[0]);
 
-          processorRef.current = processor;
           await videoTrack.setProcessor(processor);
+          if (cancelled) {
+            // Пока ждали setProcessor, эффект уже "ушёл" — откатываем,
+            // чтобы не оставить процессор, который никто не запрашивал.
+            await videoTrack.stopProcessor().catch(console.error);
+            return;
+          }
+          processorRef.current = processor;
         } else {
           // Если блюр выключен, убеждаемся, что процессор остановлен
           await videoTrack.stopProcessor();
+          if (cancelled) return;
           processorRef.current = null;
         }
       } catch (error) {
         console.error('Возникла ошибка, связанная с размытием фона:', error);
-        processorRef.current = null;
-      } finally {
-        isProcessingRef.current = false;
+        if (!cancelled) {
+          processorRef.current = null;
+        }
       }
     };
 
     applyBlur();
 
     return () => {
-      // Cleanup: останавливаем процессор при размонтировании или изменении зависимостей
+      cancelled = true;
       if (videoTrack && processorRef.current) {
         videoTrack.stopProcessor().catch(console.error);
         processorRef.current = null;
       }
-      isProcessingRef.current = false;
     };
   }, [videoTrack, blurEnabled]);
 }
