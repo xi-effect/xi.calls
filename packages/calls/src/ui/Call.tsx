@@ -16,6 +16,10 @@ export const Call = () => {
   // «съедает» низ экрана), из-за чего BottomBar внизу колонки уезжает за пределы
   // видимого — см. useVisualViewportHeight. На платформах без этого бага (десктоп,
   // Android) значение совпадает с обычной высотой контейнера, поведение не меняется.
+  //
+  // Хост (xi.tutor) на мобилке рисует fixed MobileBottomBar (64px) и выставляет
+  // --calls-layout-bottom-offset; без вычета этого offset BottomBar конференции
+  // оказывается под navbar. В focusMode / без navbar переменная = 0px.
   const viewportHeight = useVisualViewportHeight();
 
   useInitUserDevices();
@@ -52,7 +56,11 @@ export const Call = () => {
       className={'h-full'}
       style={
         {
-          ...(viewportHeight ? { height: viewportHeight } : undefined),
+          ...(viewportHeight
+            ? {
+                height: `calc(${viewportHeight}px - var(--calls-layout-bottom-offset, 0px))`,
+              }
+            : undefined),
           ...(focusMode
             ? {
                 '--header-height': '0px',
