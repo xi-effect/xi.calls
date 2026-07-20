@@ -681,7 +681,7 @@ importers:
         specifier: ^8.22.0
         version: 8.60.0(eslint@9.39.4)(typescript@5.7.3)
 
-  packages/calls.risehand:
+  packages/calls.riseHand:
     dependencies:
       '@xipkg/button':
         specifier: 4.1.0

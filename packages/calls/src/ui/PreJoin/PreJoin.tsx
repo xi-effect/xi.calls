@@ -18,6 +18,8 @@ import {
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { usePermissionsStore } from '@xipkg/calls-store';
 
+const CAMERA_RESOLUTION = { width: 1280, height: 720 };
+
 export const PreJoin = () => {
   const {
     userChoices: { audioEnabled, videoEnabled, audioDeviceId, videoDeviceId },
@@ -53,11 +55,21 @@ export const PreJoin = () => {
   // При входе в PreJoin запрашиваем разрешения — браузер покажет диалог при первом заходе.
   // Если пользователь отклонит или ещё не ответил, useWatchPermissions обновит store и покажем состояние «нет прав» на контролах.
   useEffect(() => {
+    if (typeof navigator.permissions?.query !== 'function') return;
+
     let cancelled = false;
-    const request = async () => {
+
+    const checkPermissions = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (!cancelled) stream.getTracks().forEach((t) => t.stop());
+        const [cam, mic] = await Promise.all([
+          navigator.permissions.query({ name: 'camera' as PermissionName }),
+          navigator.permissions.query({ name: 'microphone' as PermissionName }),
+        ]);
+        if (cancelled) return;
+        usePermissionsStore.setState({
+          cameraPermission: cam.state === 'prompt' ? undefined : cam.state,
+          microphonePermission: mic.state === 'prompt' ? undefined : mic.state,
+        });
       } catch (error) {
         if (cancelled) return;
         // Permissions API не везде поддерживает 'camera'/'microphone' (см. useWatchPermissions)
@@ -74,7 +86,8 @@ export const PreJoin = () => {
         }
       }
     };
-    request();
+    checkPermissions();
+
     return () => {
       cancelled = true;
     };
@@ -92,6 +105,7 @@ export const PreJoin = () => {
       video: !!initialUserChoices.current &&
         initialUserChoices.current?.videoEnabled && {
           deviceId: initialUserChoices.current.videoDeviceId,
+          resolution: CAMERA_RESOLUTION,
         },
     },
     onError,
@@ -117,6 +131,7 @@ export const PreJoin = () => {
       try {
         const track = await createLocalVideoTrack({
           deviceId: { exact: videoDeviceId },
+          resolution: CAMERA_RESOLUTION,
         });
         setDynamicVideoTrack(track);
       } catch (error) {
