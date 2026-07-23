@@ -52,7 +52,9 @@ const DroppableCorner = ({ id, className }: { id: string; className: string }) =
     <div
       ref={setNodeRef}
       className={`absolute z-100 size-1/3 ${className} pointer-events-none transition-all duration-200 ${
-        isDragging ? 'bg-brand-0/20 ring-brand-20 pointer-events-auto rounded-lg ring-2' : ''
+        isDragging
+          ? 'bg-status-info-background/20 ring-border-selected pointer-events-auto rounded-lg ring-2'
+          : ''
       }`}
     />
   );

@@ -35,7 +35,7 @@ export function GridPaginationControls({
           type="button"
           disabled={!canPrev}
           onClick={onPrev}
-          className="bg-gray-10/80 hover:bg-gray-10 z-10 flex items-center justify-center rounded-full fill-gray-100 p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="sr-only">Предыдущая страница</span>
@@ -48,7 +48,7 @@ export function GridPaginationControls({
           type="button"
           disabled={!canNext}
           onClick={onNext}
-          className="bg-gray-10/80 hover:bg-gray-10 z-10 flex items-center justify-center rounded-full fill-gray-100 p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowRight className="h-4 w-4" />
           <span className="sr-only">Следующая страница</span>
@@ -57,14 +57,16 @@ export function GridPaginationControls({
 
       {/* Индикатор страниц внизу */}
       <div className="pointer-events-auto absolute bottom-4 left-1/2 -translate-x-1/2">
-        <div className="bg-gray-10/80 flex gap-2 rounded-full px-3 py-1">
+        <div className="bg-background-subtle/80 flex gap-2 rounded-full px-3 py-1">
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index}
               type="button"
               onClick={() => onGoToPage?.(index + 1)}
               className={`h-2 w-2 rounded-full transition-colors ${
-                index === currentPage - 1 ? 'bg-gray-100' : 'bg-gray-100/50 hover:bg-gray-100/75'
+                index === currentPage - 1
+                  ? 'bg-background-canvas'
+                  : 'bg-background-canvas/50 hover:bg-background-canvas/75'
               }`}
               aria-label={`Страница ${index + 1}`}
             />

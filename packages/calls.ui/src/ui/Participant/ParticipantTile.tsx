@@ -62,8 +62,8 @@ export const TrackMutedIndicator = ({
     <div data-lk-muted={isMuted}>
       {(props.children ?? isMuted) ? (
         <div className="relative w-3">
-          <MicrophoneOff className="absolute h-4 w-4 fill-gray-100" />
-          <RedLine className="fill-red-80 absolute h-4 w-4" />
+          <MicrophoneOff className="fill-icon-primary absolute h-4 w-4" />
+          <RedLine className="fill-icon-danger absolute h-4 w-4" />
         </div>
       ) : null}
     </div>
@@ -202,7 +202,7 @@ export const ParticipantTile = ({
                     </div>
                   ) : (
                     <div
-                      className="lk-participant-placeholder bg-gray-40 aspect-video h-full w-full rounded-lg"
+                      className="lk-participant-placeholder bg-background-subtle aspect-video h-full w-full rounded-lg"
                       aria-hidden
                     />
                   );
@@ -255,7 +255,7 @@ export const ParticipantTile = ({
                 <div className="lk-participant-metadata absolute right-2 bottom-2 left-2 z-10 flex items-center justify-between gap-2">
                   <div>
                     {trackReference.source === Track.Source.Camera ? (
-                      <div className="bg-gray-0/80 flex h-6 gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
+                      <div className="bg-background-surface/80 flex h-6 gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         {isEncrypted && <LockLockedIcon />}
                         <TrackMutedIndicator
                           trackRef={{
@@ -268,7 +268,7 @@ export const ParticipantTile = ({
                         <ParticipantName participant={trackReference.participant} />
                       </div>
                     ) : (
-                      <div className="bg-gray-0/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
+                      <div className="bg-background-surface/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
                         <ParticipantName participant={trackReference.participant}>
                           Демонстрация&nbsp;

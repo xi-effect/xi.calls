@@ -67,9 +67,9 @@ const DeviceSelector = ({
       value={currentDeviceId || undefined}
       disabled={disabled || !hasDevices}
     >
-      <SelectTrigger className="w-full text-gray-100">
+      <SelectTrigger className="text-text-primary w-full">
         <div className="flex items-center gap-2">
-          <span className="shrink-0 fill-gray-100 [&_svg]:fill-gray-100">{icon}</span>
+          <span className="fill-icon-primary [&_svg]:fill-icon-primary shrink-0">{icon}</span>
           <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
         </div>
       </SelectTrigger>
@@ -77,7 +77,7 @@ const DeviceSelector = ({
         {devices?.map((device) => (
           <SelectItem
             key={device.deviceId}
-            className="h-auto text-gray-100"
+            className="text-text-primary h-auto"
             value={device.deviceId}
           >
             {device.label || `Устройство ${device.deviceId.slice(0, 8)}`}
@@ -219,11 +219,11 @@ export const Settings = ({ children }: SettingsPropsT) => {
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="bg-gray-0 w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 text-gray-100 shadow-2xl">
+      <SheetContent className="bg-background-surface text-text-primary w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 shadow-2xl">
         <SheetHeader className="mb-6 flex h-10 flex-row items-center justify-between space-y-0">
-          <SheetTitle className="text-gray-100">Настройки</SheetTitle>
-          <SheetClose className="hover:bg-gray-5 mt-0 rounded-md bg-transparent p-1">
-            <Close className="fill-gray-100" />
+          <SheetTitle className="text-text-primary">Настройки</SheetTitle>
+          <SheetClose className="hover:bg-background-page mt-0 rounded-md bg-transparent p-1">
+            <Close className="fill-icon-primary" />
           </SheetClose>
         </SheetHeader>
 
@@ -231,7 +231,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
           {/* Камера */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="font-medium text-gray-100">Камера</Label>
+              <Label className="text-text-primary font-medium">Камера</Label>
               <Toggle
                 checked={isCameraEnabled}
                 onCheckedChange={handleCameraToggle}
@@ -256,7 +256,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
           {/* Микрофон */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="font-medium text-gray-100">Микрофон</Label>
+              <Label className="text-text-primary font-medium">Микрофон</Label>
               <Toggle
                 checked={isMicrophoneEnabled}
                 onCheckedChange={handleMicrophoneToggle}
@@ -286,7 +286,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
 
           {/* Динамики (список устройств вывода может зависеть от разрешения микрофона в части браузеров) */}
           <div className="space-y-3">
-            <Label className="font-medium text-gray-100">Динамики</Label>
+            <Label className="text-text-primary font-medium">Динамики</Label>
             <DeviceSelector
               key={audioOutputSelectorKey}
               kind="audiooutput"
@@ -301,14 +301,14 @@ export const Settings = ({ children }: SettingsPropsT) => {
           {isBlurSupported && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="font-medium text-gray-100">Размытие фона</Label>
+                <Label className="text-text-primary font-medium">Размытие фона</Label>
                 <Toggle checked={blurEnabled} onCheckedChange={handleBlurToggle} />
               </div>
             </div>
           )}
 
           {/* Кнопка для перехода к настройкам звуков */}
-          <div className="border-gray-10 border-t pt-6">
+          <div className="border-border-default border-t pt-6">
             <Button
               type="button"
               variant="ghost"

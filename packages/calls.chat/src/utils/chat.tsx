@@ -10,7 +10,7 @@ export const parseLinks = (message: string) => {
           href={messagePart}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-brand-80 hover:text-brand-100 cursor-pointer underline"
+          className="text-text-link hover:text-text-link cursor-pointer underline"
           onClick={(e) => e.stopPropagation()}
           data-umami-event="outbound-link-click"
           data-umami-event-url={messagePart}

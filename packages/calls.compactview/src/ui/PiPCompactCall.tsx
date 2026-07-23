@@ -154,13 +154,13 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
   }, [pins.map((pin) => `${pin.userId}:${pin.source}`).join(',')]);
 
   const emptyState = (
-    <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl text-gray-100">
+    <div className="bg-background-subtle text-text-primary flex h-full w-full items-center justify-center rounded-2xl">
       <span className="text-sm">Нет участников</span>
     </div>
   );
 
   const barCn = cn(
-    'bg-gray-0 border-gray-20 flex items-center justify-center rounded-2xl border p-0.5',
+    'bg-background-surface border-border-default flex items-center justify-center rounded-2xl border p-0.5',
   );
 
   return (
@@ -255,7 +255,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
                 size="icon"
                 variant="none"
                 onClick={() => setViewMode(getNextCompactViewMode(compactViewMode))}
-                className="hover:bg-gray-5 h-[28px] w-[28px] rounded-xl p-0 text-gray-100"
+                className="hover:bg-background-page text-text-primary h-[28px] w-[28px] rounded-xl p-0"
                 aria-label={viewModeToggleMeta.label}
               >
                 <ViewModeIcon className="h-6 w-6" />

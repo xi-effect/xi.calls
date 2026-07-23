@@ -149,7 +149,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-gray-30 bg-gray-0 flex flex-col justify-between rounded-2xl border p-5 text-gray-100">
+      <div className="border-border-control bg-background-surface text-text-primary flex flex-col justify-between rounded-2xl border p-5">
         <div>
           <div className="mb-8">
             <h2 className="text-m-base mb-1 font-sans font-medium">Камера</h2>
@@ -183,7 +183,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           {isBlurSupported && (
             <div className="my-4">
               <div className="flex items-center justify-between">
-                <Label className="font-medium text-gray-100">Размытие фона</Label>
+                <Label className="text-text-primary font-medium">Размытие фона</Label>
                 <Toggle checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
             </div>
@@ -208,7 +208,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
       </div>
       <Alert className="h-full w-full max-w-[1720px]" variant="brand">
         <AlertIcon>
-          <InfoCircle className="fill-brand-100" />
+          <InfoCircle className="fill-icon-brand" />
         </AlertIcon>
         <AlertContainer className="h-full">
           <AlertDescription>

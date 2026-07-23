@@ -65,7 +65,7 @@ export function CompactCallBottomBar({
   const ViewModeIcon = viewModeToggleMeta.Icon;
 
   const barCn = cn(
-    'bg-gray-0 border-gray-20 flex items-center justify-center rounded-2xl border p-1',
+    'bg-background-surface border-border-default flex items-center justify-center rounded-2xl border p-1',
     withOutShadows ? '' : 'shadow-lg',
   );
 
@@ -91,7 +91,7 @@ export function CompactCallBottomBar({
                 size="icon"
                 variant="none"
                 onClick={onViewModeToggle}
-                className="hover:bg-gray-5 h-8 w-8 rounded-xl p-0 text-gray-100"
+                className="hover:bg-background-page text-text-primary h-8 w-8 rounded-xl p-0"
                 aria-label={viewModeToggleMeta.label}
               >
                 <ViewModeIcon className="h-6 w-6" />
@@ -113,7 +113,7 @@ export function CompactCallBottomBar({
                 onClick={onBackToBoard}
                 aria-label="На доску"
               >
-                <WhiteBoard className="fill-brand-0 h-6 w-6" />
+                <WhiteBoard className="fill-action-primary-text h-6 w-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Обратно на доску</TooltipContent>
@@ -136,27 +136,27 @@ export function CompactCallBottomBar({
                   <Button
                     size="icon"
                     variant="none"
-                    className="hover:bg-gray-5 relative m-0 h-8 w-8 rounded-xl p-0 text-gray-100"
+                    className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
                   >
-                    <Maximize className="fill-gray-100" />
+                    <Maximize className="fill-icon-primary" />
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
               <TooltipContent>Вернуться в конференцию</TooltipContent>
             </Tooltip>
             <DropdownMenuContent side="top" align="end" className="z-1000 min-w-[200px]">
-              <DropdownMenuLabel className="text-gray-60 text-sm">
+              <DropdownMenuLabel className="text-text-secondary text-sm">
                 Вернуть в конференцию
               </DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onMaximize(false)}
-                className="text-gray-80 cursor-pointer text-sm"
+                className="text-text-primary cursor-pointer text-sm"
               >
                 Только меня
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onMaximize(true)}
-                className="text-gray-80 cursor-pointer text-sm"
+                className="text-text-primary cursor-pointer text-sm"
               >
                 Всех участников
               </DropdownMenuItem>
@@ -169,9 +169,9 @@ export function CompactCallBottomBar({
                 size="icon"
                 variant="none"
                 onClick={() => onMaximize(false)}
-                className="hover:bg-gray-5 relative m-0 h-8 w-8 rounded-xl p-0 text-gray-100"
+                className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
               >
-                <Maximize className="fill-gray-100" />
+                <Maximize className="fill-icon-primary" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Вернуться в конференцию</TooltipContent>

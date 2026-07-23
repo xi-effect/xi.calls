@@ -21,18 +21,18 @@ export const Header = () => {
               variant="none"
               className="flex size-[40px] min-h-[40xp] min-w-[40px] items-center justify-center rounded-[12px] p-0"
             >
-              <ArrowLeft className="fill-gray-100" />
+              <ArrowLeft className="fill-icon-primary" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="start">
             Вернуться в кабинет
           </TooltipContent>
         </Tooltip>
-        <h1 className="text-s-base sm:text-xl-base font-semibold text-gray-100">
+        <h1 className="text-s-base sm:text-xl-base text-text-primary font-semibold">
           Присоединиться к занятию
         </h1>
       </div>
-      <p className="text-xs-base sm:text-s-base text-gray-60 pt-0 pl-12 align-baseline sm:pt-2 sm:pl-0">
+      <p className="text-xs-base sm:text-s-base text-text-secondary pt-0 pl-12 align-baseline sm:pt-2 sm:pl-0">
         {classroom?.name}
       </p>
     </div>

@@ -22,12 +22,12 @@ export const DisconnectButton = ({ className }: { className?: string }) => {
       disabled={buttonProps.disabled}
       onClick={handleDisconnect}
       className={cn(
-        'bg-gray-0 hover:bg-red-0 flex h-10 w-10 flex-row items-center justify-center rounded-[16px] p-0',
+        'bg-background-surface hover:bg-status-error-background flex h-10 w-10 flex-row items-center justify-center rounded-[16px] p-0',
         className,
       )}
       data-umami-event="call-disconnect"
     >
-      <Endcall className="fill-red-100" />
+      <Endcall className="fill-icon-danger" />
     </Button>
   );
 };

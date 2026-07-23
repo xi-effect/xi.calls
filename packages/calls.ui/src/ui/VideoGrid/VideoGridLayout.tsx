@@ -217,8 +217,8 @@ export const CarouselContainer = ({ stageTrack, carouselTracks }: CarouselContai
   const focusElement = useMemo(() => {
     if (!stageTrack) {
       return (
-        <div className="bg-gray-40 flex h-full w-full items-center justify-center rounded-2xl">
-          <span className="text-lg text-gray-100">Нет участников для отображения</span>
+        <div className="bg-background-subtle flex h-full w-full items-center justify-center rounded-2xl">
+          <span className="text-text-primary text-lg">Нет участников для отображения</span>
         </div>
       );
     }

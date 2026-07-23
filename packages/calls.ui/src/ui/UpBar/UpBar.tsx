@@ -74,12 +74,12 @@ export const UpBar = () => {
 
   const getViewIcon = () => {
     if (carouselType === 'horizontal') {
-      return <Speaker className="fill-gray-100" />;
+      return <Speaker className="fill-icon-primary" />;
     }
     if (carouselType === 'vertical') {
-      return <SpeakerHorizontal className="fill-gray-100" />;
+      return <SpeakerHorizontal className="fill-icon-primary" />;
     }
-    return <Grid className="fill-gray-100" />;
+    return <Grid className="fill-icon-primary" />;
   };
 
   const onCopyLink = () => {
@@ -99,7 +99,7 @@ export const UpBar = () => {
 
   return (
     <div className="flex w-full flex-row items-end justify-between px-4 pt-4 pb-1">
-      <div className="bg-gray-0 border-gray-10 flex h-12 flex-row items-center gap-2 rounded-[16px] border pr-3 pl-1">
+      <div className="bg-background-surface border-border-default flex h-12 flex-row items-center gap-2 rounded-[16px] border pr-3 pl-1">
         <Tooltip delayDuration={1000}>
           <TooltipTrigger asChild>
             <Button
@@ -115,7 +115,7 @@ export const UpBar = () => {
               className="flex size-[40px] items-center justify-center rounded-[12px] p-0"
               data-umami-event="call-back-button"
             >
-              <ArrowLeft className="fill-gray-100" />
+              <ArrowLeft className="fill-icon-primary" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="start">
@@ -123,11 +123,11 @@ export const UpBar = () => {
           </TooltipContent>
         </Tooltip>
 
-        <span className="text-m-base sm:text-xl-base md:text-2xl-base max-w-[50vw] min-w-0 self-center truncate font-semibold text-gray-100">
+        <span className="text-m-base sm:text-xl-base md:text-2xl-base text-text-primary max-w-[50vw] min-w-0 self-center truncate font-semibold">
           {classroom?.name}
         </span>
       </div>
-      <div className="bg-gray-0 border-gray-10 flex h-12 flex-row items-center gap-2 rounded-[16px] border p-1">
+      <div className="bg-background-surface border-border-default flex h-12 flex-row items-center gap-2 rounded-[16px] border p-1">
         <Tooltip delayDuration={1000}>
           <TooltipTrigger asChild>
             <Button
@@ -140,7 +140,7 @@ export const UpBar = () => {
               data-umami-event-layout={carouselType}
             >
               {getViewIcon()}
-              <span className="text-gray-100">Вид</span>
+              <span className="text-text-primary">Вид</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
@@ -160,7 +160,7 @@ export const UpBar = () => {
                 className="hidden h-10 w-10 flex-row items-center justify-center rounded-[12px] p-0 md:flex"
                 data-umami-event="call-copy-link"
               >
-                <LinkIcon className="fill-gray-100" />
+                <LinkIcon className="fill-icon-primary" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="end">
@@ -176,7 +176,7 @@ export const UpBar = () => {
             className="flex h-10 w-10 flex-row items-center justify-center rounded-[12px] p-0"
             data-umami-event="call-settings-button"
           >
-            <SettingsIcon className="fill-gray-100" />
+            <SettingsIcon className="fill-icon-primary" />
           </Button>
         </Settings>
       </div>

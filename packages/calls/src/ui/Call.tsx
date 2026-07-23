@@ -72,7 +72,10 @@ export const Call = () => {
     >
       <div className="flex h-full min-h-0 w-full flex-col">
         {isStarted ? (
-          <div id="videoConferenceContainer" className="bg-gray-5 flex h-full min-h-0 flex-col">
+          <div
+            id="videoConferenceContainer"
+            className="bg-background-page flex h-full min-h-0 flex-col"
+          >
             <ActiveRoom />
           </div>
         ) : (

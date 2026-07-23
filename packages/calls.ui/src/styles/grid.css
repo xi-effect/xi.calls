@@ -142,6 +142,6 @@
 }
 
 /* Закреплённый участник — кнопка всегда видна */
-.lk-participant-tile .lk-pin-toggle-button[aria-pressed="true"] {
+.lk-participant-tile .lk-pin-toggle-button[aria-pressed='true'] {
   opacity: 1 !important;
 }

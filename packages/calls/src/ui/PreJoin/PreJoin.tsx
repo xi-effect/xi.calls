@@ -187,7 +187,7 @@ export const PreJoin = () => {
   });
 
   return (
-    <div className="bg-gray-5 flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+    <div className="bg-background-page flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <div
         className="calls-prejoin-scroll h-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain pb-[var(--calls-layout-bottom-offset,0px)] max-[960px]:h-dvh max-[960px]:max-h-dvh max-[960px]:flex-none"
         style={{ WebkitOverflowScrolling: 'touch' }}

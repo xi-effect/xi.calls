@@ -25,7 +25,7 @@ export function CompactMultiViewControls({
           <button
             type="button"
             onClick={onPrev}
-            className="bg-gray-10/80 hover:bg-gray-10 flex items-center justify-center rounded-full fill-gray-100 p-2"
+            className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary flex items-center justify-center rounded-full p-2"
             aria-label="Листать вверх"
           >
             <ArrowUp className="h-4 w-4 fill-inherit" />
@@ -38,7 +38,7 @@ export function CompactMultiViewControls({
           <button
             type="button"
             onClick={onNext}
-            className="bg-gray-10/80 hover:bg-gray-10 flex items-center justify-center rounded-full fill-gray-100 p-2"
+            className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary flex items-center justify-center rounded-full p-2"
             aria-label="Листать вниз"
           >
             <ArrowUp className="h-4 w-4 rotate-180 fill-inherit" />

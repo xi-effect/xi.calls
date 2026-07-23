@@ -94,33 +94,35 @@ export const PermissionsDialog = () => {
     <Modal open={isPermissionDialogOpen} onOpenChange={closePermissionsDialog}>
       <ModalContent>
         <ModalCloseButton>
-          <Close className="fill-gray-80" />
+          <Close className="fill-icon-primary" />
         </ModalCloseButton>
-        <ModalHeader className="border-gray-20 border-b">
-          <ModalTitle className="text-xl font-semibold text-gray-100">
+        <ModalHeader className="border-border-default border-b">
+          <ModalTitle className="text-text-primary text-xl font-semibold">
             Доступ к камере и микрофону
           </ModalTitle>
         </ModalHeader>
 
         <div className="flex flex-col gap-8 p-6">
           <section className="leading-relaxed">
-            <p className="text-m-base text-gray-100">
+            <p className="text-m-base text-text-primary">
               Для видеозвонков сайту нужен доступ к{' '}
-              <strong className="font-semibold text-gray-100">камере</strong> и{' '}
-              <strong className="font-semibold text-gray-100">микрофону</strong>: тогда другие
+              <strong className="text-text-primary font-semibold">камере</strong> и{' '}
+              <strong className="text-text-primary font-semibold">микрофону</strong>: тогда другие
               участники смогут видеть и слышать вас. Разрешения запрашиваются только для работы
               звонка — камеру или микрофон можно отключить в любой момент в интерфейсе звонка.
             </p>
           </section>
 
           <section>
-            <h3 className="text-m-base mb-1 font-semibold text-gray-100">Как выдать разрешение</h3>
-            <p className="text-s-base text-gray-60 mb-4">{instructions.title}</p>
-            <ol className="text-s-base list-decimal space-y-3 pl-5 text-gray-100">
+            <h3 className="text-m-base text-text-primary mb-1 font-semibold">
+              Как выдать разрешение
+            </h3>
+            <p className="text-s-base text-text-secondary mb-4">{instructions.title}</p>
+            <ol className="text-s-base text-text-primary list-decimal space-y-3 pl-5">
               {instructions.steps.map((step, index) => (
                 <li key={index} className="flex items-start gap-2 pl-1">
                   {index === 0 && currentBrowser === 'chrome' && (
-                    <Settings className="text-gray-60 mt-0.5 h-4 w-4 shrink-0" />
+                    <Settings className="text-text-secondary mt-0.5 h-4 w-4 shrink-0" />
                   )}
                   <span className="leading-relaxed">{step}</span>
                 </li>
@@ -130,54 +132,54 @@ export const PermissionsDialog = () => {
               href={instructions.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-s-base text-brand-100 decoration-brand-100/50 hover:text-brand-80 hover:decoration-brand-80 mt-4 inline-flex items-center gap-1 font-medium underline underline-offset-2 transition-colors"
+              className="text-s-base text-text-link decoration-text-link/50 hover:text-text-link hover:decoration-text-link mt-4 inline-flex items-center gap-1 font-medium underline underline-offset-2 transition-colors"
             >
               {instructions.linkLabel}
               <span aria-hidden>→</span>
             </a>
           </section>
 
-          <section className="border-gray-10 bg-gray-5 rounded-xl border p-4">
-            <p className="text-s-base mb-2 font-semibold text-gray-100">Другие браузеры</p>
-            <p className="text-s-base text-gray-60 flex flex-wrap items-center gap-x-1 gap-y-1">
+          <section className="border-border-default bg-background-page rounded-xl border p-4">
+            <p className="text-s-base text-text-primary mb-2 font-semibold">Другие браузеры</p>
+            <p className="text-s-base text-text-secondary flex flex-wrap items-center gap-x-1 gap-y-1">
               <a
                 href={BROWSER_HELP_LINKS.chrome}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-100 decoration-brand-100/50 hover:text-brand-80 underline underline-offset-2 transition-colors"
+                className="text-text-link decoration-text-link/50 hover:text-text-link underline underline-offset-2 transition-colors"
               >
                 Chrome
               </a>
-              <span className="text-gray-40" aria-hidden>
+              <span className="text-text-disabled" aria-hidden>
                 ·
               </span>
               <a
                 href={BROWSER_HELP_LINKS.edge}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-100 decoration-brand-100/50 hover:text-brand-80 underline underline-offset-2 transition-colors"
+                className="text-text-link decoration-text-link/50 hover:text-text-link underline underline-offset-2 transition-colors"
               >
                 Edge / Windows
               </a>
-              <span className="text-gray-40" aria-hidden>
+              <span className="text-text-disabled" aria-hidden>
                 ·
               </span>
               <a
                 href={BROWSER_HELP_LINKS.firefox}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-100 decoration-brand-100/50 hover:text-brand-80 underline underline-offset-2 transition-colors"
+                className="text-text-link decoration-text-link/50 hover:text-text-link underline underline-offset-2 transition-colors"
               >
                 Firefox
               </a>
-              <span className="text-gray-40" aria-hidden>
+              <span className="text-text-disabled" aria-hidden>
                 ·
               </span>
               <a
                 href={BROWSER_HELP_LINKS.safari}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-100 decoration-brand-100/50 hover:text-brand-80 underline underline-offset-2 transition-colors"
+                className="text-text-link decoration-text-link/50 hover:text-text-link underline underline-offset-2 transition-colors"
               >
                 Safari
               </a>
@@ -185,7 +187,7 @@ export const PermissionsDialog = () => {
           </section>
         </div>
 
-        <ModalFooter className="border-gray-20 flex border-t">
+        <ModalFooter className="border-border-default flex border-t">
           <Button type="button" variant="ghost" onClick={closePermissionsDialog}>
             Закрыть
           </Button>

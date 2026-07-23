@@ -18,14 +18,14 @@ export const RaisedHandIndicator = ({
 
   if (compact) {
     return (
-      <div className="bg-brand-100 text-brand-0 flex h-6 w-6 items-center justify-center rounded-lg">
+      <div className="bg-action-primary-background-pressed text-text-on-accent flex h-6 w-6 items-center justify-center rounded-lg">
         <Hand className="h-6 w-6" />
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-0/80 text-brand-0 flex h-8 w-8 items-center justify-center rounded-2xl">
+    <div className="bg-background-surface/80 text-text-on-accent flex h-8 w-8 items-center justify-center rounded-2xl">
       <Hand className="h-6 w-6" />
     </div>
   );

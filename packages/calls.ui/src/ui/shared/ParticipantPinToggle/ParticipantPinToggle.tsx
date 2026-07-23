@@ -8,7 +8,7 @@ import { cn } from '@xipkg/utils';
 
 /** Базовые стили оверлей-кнопки на плитке (для inline-использования, без absolute) */
 export const tileOverlayButtonClassName =
-  'rounded-lg box-border flex h-6 w-6 min-h-6 min-w-6 shrink-0 cursor-pointer appearance-none items-center justify-center border-none bg-gray-0/80 p-0 text-gray-100 opacity-80';
+  'rounded-lg box-border flex h-6 w-6 min-h-6 min-w-6 shrink-0 cursor-pointer appearance-none items-center justify-center border-none bg-background-surface/80 p-0 text-text-primary opacity-80';
 
 /**
  * Стили кнопки — как у FocusToggle (absolute внутри плитки).
@@ -16,7 +16,7 @@ export const tileOverlayButtonClassName =
  * аналогично lk-focus-toggle-button (Tailwind group-hover не работает в этом контексте).
  */
 const pinToggleClassName =
-  'lk-pin-toggle-button rounded-lg absolute top-2 z-10 box-border flex h-6 w-6 min-h-6 min-w-6 cursor-pointer appearance-none items-center justify-center border-none bg-gray-0/80 p-0 transition-opacity';
+  'lk-pin-toggle-button rounded-lg absolute top-2 z-10 box-border flex h-6 w-6 min-h-6 min-w-6 cursor-pointer appearance-none items-center justify-center border-none bg-background-surface/80 p-0 transition-opacity';
 
 export type ParticipantPinTogglePropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
@@ -68,9 +68,9 @@ export const ParticipantPinToggle = ({
       {...props}
     >
       {isPinned ? (
-        <Pinned className="fill-brand-80" style={{ width: 16, height: 16 }} />
+        <Pinned className="fill-icon-brand" style={{ width: 16, height: 16 }} />
       ) : (
-        <Pin className="fill-gray-100" style={{ width: 16, height: 16 }} />
+        <Pin className="fill-icon-primary" style={{ width: 16, height: 16 }} />
       )}
     </button>
   );

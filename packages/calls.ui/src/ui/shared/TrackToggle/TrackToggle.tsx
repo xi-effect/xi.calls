@@ -96,27 +96,27 @@ export const TrackToggle = ({
     switch (source) {
       case Track.Source.Microphone:
         return iconEnabled ? (
-          <Microphone className="fill-green-100" />
+          <Microphone className="fill-status-success-text" />
         ) : (
           <div className="relative flex items-center justify-center">
             <MicrophoneOff className="absolute" />
-            <RedLine className="fill-red-80 absolute" />
+            <RedLine className="fill-icon-danger absolute" />
           </div>
         );
       case Track.Source.Camera:
         return iconEnabled ? (
-          <Conference className="fill-green-100" />
+          <Conference className="fill-status-success-text" />
         ) : (
           <div className="relative flex items-center justify-center">
             <CameraOff className="absolute" />
-            <RedLine className="fill-red-80 absolute" />
+            <RedLine className="fill-icon-danger absolute" />
           </div>
         );
       case Track.Source.ScreenShare:
         return enabled ? (
-          <Screenshare className="fill-green-100" />
+          <Screenshare className="fill-status-success-text" />
         ) : (
-          <Screenshare className="fill-gray-100" />
+          <Screenshare className="fill-icon-primary" />
         );
       default:
         return null;
@@ -129,7 +129,7 @@ export const TrackToggle = ({
 
   const errorIndicator = permissionBlocked ? (
     <span
-      className="bg-red-80 text-xxs-base-size absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded leading-none font-bold text-white"
+      className="bg-status-error-accent text-xxs-base-size absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded leading-none font-bold text-white"
       aria-hidden
     >
       !
@@ -145,7 +145,7 @@ export const TrackToggle = ({
   );
 
   const permissionBlockedStyles = permissionBlocked
-    ? 'bg-red-0 border-2 border-red-80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] hover:bg-red-20'
+    ? 'bg-status-error-background border-2 border-border-error shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] hover:bg-status-error-background'
     : '';
 
   if (source === Track.Source.Microphone) {
@@ -155,7 +155,7 @@ export const TrackToggle = ({
         onClick={handleClick}
         className={cn(
           'relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors',
-          !permissionBlocked && 'bg-gray-0 hover:bg-gray-5',
+          !permissionBlocked && 'bg-background-surface hover:bg-background-page',
           permissionBlockedStyles,
           className,
         )}
@@ -187,8 +187,10 @@ export const TrackToggle = ({
       onClick={handleClick}
       className={cn(
         'relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors',
-        !permissionBlocked && 'bg-gray-0 hover:bg-gray-5',
-        !permissionBlocked && iconEnabled && 'bg-green-0 hover:bg-green-20',
+        !permissionBlocked && 'bg-background-surface hover:bg-background-page',
+        !permissionBlocked &&
+          iconEnabled &&
+          'bg-status-success-background hover:bg-status-success-background',
         permissionBlockedStyles,
         className,
       )}
