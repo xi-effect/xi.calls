@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-types",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "type": "module",
   "exports": {
     ".": {
@@ -22,7 +22,7 @@
     "common.eslint": "*",
     "common.typescript": "*",
     "@types/node": "^20.3.1",
-    "@types/react": "^19.0.2",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.0.2",
     "@xipkg/eslint": "4.6.0",
     "@xipkg/typescript": "0.2.0",
@@ -31,7 +31,7 @@
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.22.0"
+    "typescript-eslint": "^8.65.0"
   },
   "description": "Shared TypeScript types for xi.effect calls",
   "author": "xi.effect",

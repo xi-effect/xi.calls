@@ -22,9 +22,7 @@ type CompactCallVideoAreaProps = {
   compactViewMode: CompactViewModeT;
   currentParticipant: TrackReferenceOrPlaceholder | null;
   currentAudioTrack:
-    | import('livekit-client').RemoteAudioTrack
-    | import('livekit-client').LocalAudioTrack
-    | null;
+    import('livekit-client').RemoteAudioTrack | import('livekit-client').LocalAudioTrack | null;
   totalParticipants: number;
   canGoPrev: boolean;
   canGoNext: boolean;
