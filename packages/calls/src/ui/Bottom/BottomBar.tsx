@@ -93,7 +93,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
       <div className="flex w-full flex-row justify-between p-4 pt-1">
         <div />
         <div className="flex flex-row gap-4">
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
+          <div className="bg-background-surface border-border-default flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
             <DevicesBar
               microTrack={microphoneTrack?.track as LocalAudioTrack}
               microEnabled={isMicrophoneEnabled}
@@ -112,7 +112,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               className="relative"
             />
           </div>
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-background-surface border-border-default flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
             <ScreenShareButton />
             {isTutor && <WhiteBoardButton />}
             <ChatButton />
@@ -127,11 +127,11 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                   size="m"
                   variant="default"
                   onClick={handleBackToBoard}
-                  className="bg-brand-100 hover:bg-brand-80 absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl px-2"
+                  className="bg-action-primary-background-pressed hover:bg-action-primary-background-default absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl px-2"
                   data-umami-event="call-back-to-board"
                 >
-                  <WhiteBoard className="fill-brand-0 h-5 w-5" />
-                  <span className="text-brand-0 ml-2">К доске</span>
+                  <WhiteBoard className="fill-action-primary-text h-5 w-5" />
+                  <span className="text-text-on-accent ml-2">К доске</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" align="center">
@@ -139,7 +139,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
               </TooltipContent>
             </Tooltip>
           )}
-          <div className="bg-gray-0 border-gray-10 flex h-[48px] w-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+          <div className="bg-background-surface border-border-default flex h-[48px] w-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
             <DisconnectButton />
           </div>
         </div>

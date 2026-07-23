@@ -76,8 +76,8 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   const chatContent = (
     <>
       {/* Заголовок */}
-      <div className="border-gray-20 flex items-center justify-between pr-3">
-        <h3 className="text-lg font-medium text-gray-100">Чат</h3>
+      <div className="border-border-default flex items-center justify-between pr-3">
+        <h3 className="text-text-primary text-lg font-medium">Чат</h3>
         <Button size="icon" variant="none" onClick={closeChat}>
           <Close className="h-6 w-6" aria-label="Закрыть чат" />
         </Button>
@@ -87,7 +87,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
       <ScrollArea className="min-h-0 flex-1 py-2 pr-3">
         <div className="space-y-4">
           {chatMessages.length === 0 ? (
-            <div className="text-gray-60 text-center">
+            <div className="text-text-secondary text-center">
               <p>Начните общение в чате</p>
             </div>
           ) : (
@@ -98,8 +98,8 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                   key={message.id}
                   className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="flex max-w-[90%] flex-col gap-1 rounded-lg text-gray-100 select-text">
-                    <div className="flex flex-row items-center gap-1 text-xs font-medium text-gray-100">
+                  <div className="text-text-primary flex max-w-[90%] flex-col gap-1 rounded-lg select-text">
+                    <div className="text-text-primary flex flex-row items-center gap-1 text-xs font-medium">
                       {!isOwnMessage && (
                         <UserProfile
                           size="s"
@@ -109,7 +109,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                         />
                       )}
                       <div
-                        className={`text-xs-base ${isOwnMessage ? 'text-brand-20 ml-auto' : 'text-gray-60'}`}
+                        className={`text-xs-base ${isOwnMessage ? 'text-text-disabled ml-auto' : 'text-text-secondary'}`}
                       >
                         {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
                           hour: '2-digit',
@@ -120,7 +120,9 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                     <div
                       className={cn(
                         'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap select-text',
-                        isOwnMessage ? 'bg-brand-20' : 'bg-gray-5',
+                        isOwnMessage
+                          ? 'bg-action-primary-background-disabled'
+                          : 'bg-background-page',
                       )}
                     >
                       {parseLinks(message.text)}
@@ -136,7 +138,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
 
       {/* Поле ввода */}
       <div className="flex items-end gap-2 pr-3">
-        <div className="border-gray-20 flex max-h-40 w-full flex-1 items-center rounded-xl border pl-4">
+        <div className="border-border-default flex max-h-40 w-full flex-1 items-center rounded-xl border pl-4">
           <Textarea
             ref={textareaRef}
             value={messageText}
@@ -155,8 +157,8 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
             >
               <Send
                 className={cn(
-                  'fill-brand-0 group-hover:fill-brand-0 h-6 w-6',
-                  !messageText.trim() && 'fill-gray-60',
+                  'fill-action-primary-text group-hover:fill-action-primary-text h-6 w-6',
+                  !messageText.trim() && 'fill-icon-secondary',
                 )}
               />
             </Button>
@@ -170,7 +172,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
     return (
       <Modal open={isChatOpen} onOpenChange={(open) => !open && closeChat()}>
         <ModalContent
-          className="border-gray-20 bg-gray-0 flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1"
+          className="border-border-default bg-background-surface flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1"
           aria-describedby={undefined}
         >
           <ModalTitle className="sr-only">Чат</ModalTitle>
@@ -184,7 +186,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
     return (
       <div
         className={cn(
-          'border-gray-20 bg-gray-0 fixed z-100 flex min-h-0 w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
+          'border-border-default bg-background-surface fixed z-100 flex min-h-0 w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
           compactPositionClassName,
         )}
       >
@@ -194,7 +196,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   }
 
   return (
-    <div className="bg-gray-0 border-gray-0 sm:border-gray-20 fixed flex h-full min-h-0 w-full max-w-none min-w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-[328px]">
+    <div className="bg-background-surface border-border-default sm:border-border-default fixed flex h-full min-h-0 w-full max-w-none min-w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 sm:relative sm:max-w-[328px]">
       {chatContent}
     </div>
   );

@@ -38,7 +38,7 @@ export function NoiseCancellationSettings({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="font-medium text-gray-100">Шумоподавление</Label>
+        <Label className="text-text-primary font-medium">Шумоподавление</Label>
         <Toggle
           checked={nc.isEnabled}
           onCheckedChange={nc.setEnabled}
@@ -48,14 +48,14 @@ export function NoiseCancellationSettings({
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-gray-80 text-sm">Режим</Label>
+        <Label className="text-text-primary text-sm">Режим</Label>
         <Select
           value={selectValue}
           onValueChange={(value) => nc.setMode(value as NoiseCancellationMode)}
           disabled={nc.isApplying || !nc.isEnabled}
           data-umami-event="noise_cancellation_mode_select"
         >
-          <SelectTrigger className="w-full text-gray-100">
+          <SelectTrigger className="text-text-primary w-full">
             <SelectValue placeholder="Стандартное">
               {MODE_LABELS[selectValue as NoiseCancellationMode]}
             </SelectValue>
@@ -71,7 +71,7 @@ export function NoiseCancellationSettings({
                   key={mode}
                   value={mode}
                   disabled={disabled}
-                  className="h-auto text-gray-100"
+                  className="text-text-primary h-auto"
                 >
                   {MODE_LABELS[mode]}
                   {mode === 'krisp' && (isKrispDisabled || isUnsupported) && ' (недоступно)'}
@@ -81,11 +81,11 @@ export function NoiseCancellationSettings({
           </SelectContent>
         </Select>
       </div>
-      <p className="text-gray-60 text-xs">
+      <p className="text-text-secondary text-xs">
         Усиленное шумоподавление может быть недоступно в некоторых браузерах.
       </p>
       {nc.lastError && (
-        <p className="text-red-90 text-sm" role="alert">
+        <p className="text-text-danger text-sm" role="alert">
           {nc.lastError}
         </p>
       )}

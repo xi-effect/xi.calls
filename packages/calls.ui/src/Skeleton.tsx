@@ -15,7 +15,7 @@ export const Skeleton = ({
   height,
   lines = 1,
 }: SkeletonProps) => {
-  const baseClasses = 'animate-pulse bg-gray-10';
+  const baseClasses = 'animate-pulse bg-background-subtle';
 
   const getVariantClasses = () => {
     switch (variant) {

@@ -33,7 +33,7 @@ export const ActiveRoom = () => {
         <UpBar />
       </div>
       <div className="flex min-h-0 flex-1 items-stretch justify-center gap-4 overflow-hidden sm:px-4">
-        <div className="flex min-h-0 w-full min-w-0 flex-1 justify-center text-center text-gray-100">
+        <div className="text-text-primary flex min-h-0 w-full min-w-0 flex-1 justify-center text-center">
           <VideoGrid />
         </div>
         <Chat />

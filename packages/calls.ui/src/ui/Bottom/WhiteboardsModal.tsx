@@ -120,24 +120,24 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
       <ModalContent
         className={
           isMobile
-            ? 'flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl text-gray-100'
-            : 'w-[680px] text-gray-100'
+            ? 'text-text-primary flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl'
+            : 'text-text-primary w-[680px]'
         }
         aria-describedby={undefined}
       >
         <ModalCloseButton>
-          <Close className="fill-gray-80" />
+          <Close className="fill-icon-primary" />
         </ModalCloseButton>
-        <ModalHeader className="border-gray-20 shrink-0 border-b">
-          <ModalTitle className="text-m-base sm:text-l-base text-gray-100">
+        <ModalHeader className="border-border-default shrink-0 border-b">
+          <ModalTitle className="text-m-base sm:text-l-base text-text-primary">
             Доска для совместной работы
           </ModalTitle>
           <Input
-            before={<Search className="fill-gray-60" />}
+            before={<Search className="fill-icon-secondary" />}
             placeholder="Поиск"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="placeholder:text-gray-60 min-h-10 text-gray-100"
+            className="placeholder:text-text-secondary text-text-primary min-h-10"
           />
         </ModalHeader>
 
@@ -146,11 +146,11 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         >
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-gray-60">Загрузка досок...</p>
+              <p className="text-text-secondary">Загрузка досок...</p>
             </div>
           ) : isError ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-red-80">Ошибка загрузки досок</p>
+              <p className="text-text-danger">Ошибка загрузки досок</p>
             </div>
           ) : (
             <ScrollArea className={`h-full w-full ${isMobile ? 'max-h-[50dvh]' : 'max-h-[400px]'}`}>
@@ -158,8 +158,10 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                 {filteredWhiteboards.map((board) => (
                   <div
                     key={board.id}
-                    className={`hover:bg-gray-5 border-gray-20 flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
-                      selectedBoardId === board.id ? 'border-brand-100 bg-brand-0' : ''
+                    className={`hover:bg-background-page border-border-default flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
+                      selectedBoardId === board.id
+                        ? 'border-border-focus bg-status-info-background'
+                        : ''
                     }`}
                     onClick={() => handleBoardSelect(board.id)}
                   >
@@ -168,10 +170,10 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                         variant="default"
                         className={
                           board.student_access_mode === 'read_write'
-                            ? 'text-s-base bg-gray-10 text-gray-80 px-2 py-1 font-medium'
+                            ? 'text-s-base bg-background-subtle text-text-primary px-2 py-1 font-medium'
                             : board.student_access_mode === 'read_only'
-                              ? 'text-s-base bg-cyan-20 px-2 py-1 font-medium text-cyan-100'
-                              : 'text-s-base bg-violet-20 px-2 py-1 font-medium text-violet-100'
+                              ? 'text-s-base bg-tag-cyan-background text-tag-cyan-accent px-2 py-1 font-medium'
+                              : 'text-s-base bg-tag-violet-background text-tag-violet-accent px-2 py-1 font-medium'
                         }
                       >
                         {board.student_access_mode === 'read_write'
@@ -181,17 +183,17 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                             : 'черновик'}
                       </Badge>
                     )}
-                    <h3 className="text-m-base text-gray-100">{board.name}</h3>
-                    <p className="text-xs-base text-gray-60">
+                    <h3 className="text-m-base text-text-primary">{board.name}</h3>
+                    <p className="text-xs-base text-text-secondary">
                       Изменено: {new Date(board.updated_at).toLocaleDateString()}
                     </p>
                   </div>
                 ))}
                 <div
-                  className="bg-brand-0 group flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
+                  className="bg-status-info-background group flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
                   onClick={handleCreateNewBoard}
                 >
-                  <h3 className="text-s-base text-brand-100 group-hover:text-brand-80">
+                  <h3 className="text-s-base text-text-link group-hover:text-text-link">
                     {addClassroomMaterials.isPending ? 'Создание...' : 'Создать новую'}
                   </h3>
                 </div>
@@ -200,7 +202,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
           )}
         </div>
 
-        <ModalFooter className="border-gray-20 flex shrink-0 flex-col gap-4 border-t">
+        <ModalFooter className="border-border-default flex shrink-0 flex-col gap-4 border-t">
           <div className="flex items-start gap-2">
             <Checkbox
               id="collaborative-mode"
@@ -210,7 +212,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
             />
             <label
               htmlFor="collaborative-mode"
-              className="text-s-base cursor-pointer text-gray-100"
+              className="text-s-base text-text-primary cursor-pointer"
             >
               {isMobile ? (
                 'Открыть доску в режиме совместной работы для всех участников звонка'

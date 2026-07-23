@@ -85,7 +85,7 @@ export const CallsOnboarding = () => {
 
           // Создаем корень для рендеринга компонента
           const root = createRoot(customCloseButton);
-          root.render(<Close size="s" className="fill-gray-60 h-4 w-4" />);
+          root.render(<Close size="s" className="fill-icon-secondary h-4 w-4" />);
 
           defaultCloseButton.replaceWith(customCloseButton);
           customCloseButton.addEventListener('click', () => {

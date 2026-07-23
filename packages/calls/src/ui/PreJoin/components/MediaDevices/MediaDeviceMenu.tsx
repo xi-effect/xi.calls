@@ -103,7 +103,7 @@ export const MediaDeviceMenu = ({
   }
 
   return (
-    <div className={`${warnDisable ? 'border-orange-80 rounded-lg border-2' : null}`}>
+    <div className={`${warnDisable ? 'border-tag-orange-accent rounded-lg border-2' : null}`}>
       <Select
         onValueChange={(value) => handleActiveChange(value, kind)}
         defaultValue={devices?.length > 0 ? initialSelection : undefined}
@@ -112,15 +112,17 @@ export const MediaDeviceMenu = ({
         }
       >
         <SelectTrigger
-          className="flex w-full flex-row text-gray-100"
+          className="text-text-primary flex w-full flex-row"
           before={
             <div>
               {kind === 'videoinput' && (
-                <Conference width={14} className="shrink-0 fill-gray-100" />
+                <Conference width={14} className="fill-icon-primary shrink-0" />
               )}
-              {kind === 'audiooutput' && <SoundTwo width={14} className="shrink-0 fill-gray-100" />}
+              {kind === 'audiooutput' && (
+                <SoundTwo width={14} className="fill-icon-primary shrink-0" />
+              )}
               {!(kind === 'videoinput' || kind === 'audiooutput') && (
-                <Microphone width={14} className="shrink-0 fill-gray-100" />
+                <Microphone width={14} className="fill-icon-primary shrink-0" />
               )}
             </div>
           }

@@ -12,16 +12,16 @@ export const RaiseHandButton = ({ className }: { className?: string }) => {
       variant="none"
       onClick={toggleHand}
       className={cn(
-        'bg-gray-0 hover:bg-gray-5 relative m-0 rounded-xl p-0 text-gray-100',
+        'bg-background-surface hover:bg-background-page text-text-primary relative m-0 rounded-xl p-0',
         !className && 'h-10 w-10',
-        isHandRaised && 'text-brand-100',
+        isHandRaised && 'text-text-link',
         className,
       )}
       data-umami-event="call-raise-hand"
       data-umami-event-state={isHandRaised ? 'lower' : 'raise'}
       disabled={isPending}
     >
-      <Hand className={cn('h-6 w-6', isHandRaised ? 'fill-brand-100' : 'fill-gray-100')} />
+      <Hand className={cn('h-6 w-6', isHandRaised ? 'fill-icon-brand' : 'fill-icon-primary')} />
     </Button>
   );
 };

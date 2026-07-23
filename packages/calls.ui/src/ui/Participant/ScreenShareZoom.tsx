@@ -291,7 +291,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
           size="icon"
           variant="none"
           onClick={handleZoomIn}
-          className="bg-gray-0/80 hover:bg-gray-0 absolute right-2 bottom-2 z-20 h-8 w-8 rounded-lg backdrop-blur"
+          className="bg-background-surface/80 hover:bg-background-surface absolute right-2 bottom-2 z-20 h-8 w-8 rounded-lg backdrop-blur"
           aria-label="Приблизить"
         >
           <ZoomIn className="h-4 w-4" />
@@ -300,9 +300,9 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
 
       {/* Панель зума: fixed в правом нижнем углу экрана, чтобы не «уезжала» при положении плитки слева */}
       {showPanel && (
-        <div className="bg-gray-0/80 fixed right-1 bottom-1 z-20 w-[260px] rounded-xl p-1 shadow-lg backdrop-blur">
+        <div className="bg-background-surface/80 fixed right-1 bottom-1 z-20 w-[260px] rounded-xl p-1 shadow-lg backdrop-blur">
           {/* Миниатюра с областью просмотра */}
-          <div className="bg-gray-20 relative mb-2 overflow-hidden rounded-lg">
+          <div className="bg-action-secondary-background-pressed relative mb-2 overflow-hidden rounded-lg">
             {isTrackReference(trackRef) && trackRef.publication?.track && (
               <div
                 className="relative flex items-center justify-center"
@@ -320,7 +320,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
                 {viewportRect && (
                   <div
                     aria-label="Область просмотра, перетащите для перемещения"
-                    className="border-brand-80 bg-brand-80/30 absolute cursor-grab rounded border-2 active:cursor-grabbing"
+                    className="border-border-focus bg-action-primary-background-default/30 absolute cursor-grab rounded border-2 active:cursor-grabbing"
                     style={{
                       left: `${viewportRect.left}%`,
                       top: `${viewportRect.top}%`,
@@ -348,7 +348,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
               aria-label="Уменьшить"
             >
-              <ZoomOut className="text-gray-80 h-4 w-4 group-hover:text-gray-100 group-focus:text-gray-100 group-active:text-gray-100" />
+              <ZoomOut className="text-text-primary group-hover:text-text-primary group-focus:text-text-primary group-active:text-text-primary h-4 w-4" />
             </Button>
             <Slider
               className="flex-1"
@@ -367,7 +367,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
               aria-label="Увеличить"
             >
-              <ZoomIn className="text-gray-80 h-4 w-4 group-hover:text-gray-100 group-focus:text-gray-100 group-active:text-gray-100" />
+              <ZoomIn className="text-text-primary group-hover:text-text-primary group-focus:text-text-primary group-active:text-text-primary h-4 w-4" />
             </Button>
           </div>
         </div>

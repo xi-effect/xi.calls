@@ -30,11 +30,11 @@ const NavigationButton = ({ onClick, disabled, orientation, direction }: Navigat
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="z-30 bg-transparent fill-gray-100 p-0 text-center hover:opacity-100 disabled:hidden disabled:cursor-not-allowed"
+      className="fill-icon-primary z-30 bg-transparent p-0 text-center hover:opacity-100 disabled:hidden disabled:cursor-not-allowed"
     >
       <div
         data-disabled={disabled}
-        className="data-[disabled=false]:bg-gray-10/80 hover:bg-gray-10 flex items-center justify-center rounded-full p-2"
+        className="data-[disabled=false]:bg-background-subtle/80 hover:bg-background-subtle flex items-center justify-center rounded-full p-2"
       >
         <ArrowUp className={`${getRotation()} fill-inherit`} />
       </div>

@@ -20,11 +20,13 @@ export const ParticipantName = ({ participant, children }: ParticipantNamePropsT
 
   // Если есть participant, но нет displayName, показываем загрузку
   if (participant && !displayName) {
-    return <span className="bg-gray-10 h-[16px] w-full min-w-[64px] animate-pulse rounded-[4px]" />;
+    return (
+      <span className="bg-background-subtle h-[16px] w-full min-w-[64px] animate-pulse rounded-[4px]" />
+    );
   }
 
   return (
-    <span className="text-xs-base-size leading-[16px] text-gray-100">
+    <span className="text-xs-base-size text-text-primary leading-[16px]">
       {children}
       {displayName || 'Unknown'}
     </span>

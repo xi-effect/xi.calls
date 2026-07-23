@@ -27,12 +27,12 @@ export function CompactCallCollapsedBar({
   return (
     <div
       className={cn(
-        'bg-gray-20 flex items-center gap-2 rounded-2xl px-2 py-2 shadow-lg',
+        'bg-action-secondary-background-pressed flex items-center gap-2 rounded-2xl px-2 py-2 shadow-lg',
         className,
       )}
     >
       {/* Тот же блок, что и в плитке участника ВКС: микрофон + имя */}
-      <div className="bg-gray-0/80 flex h-6 max-w-[45%] min-w-0 shrink gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
+      <div className="bg-background-surface/80 flex h-6 max-w-[45%] min-w-0 shrink gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
         {participant ? (
           <>
             <TrackMutedIndicator
@@ -50,10 +50,12 @@ export function CompactCallCollapsedBar({
         ) : (
           <>
             <div className="relative w-3 shrink-0">
-              <MicrophoneOff className="absolute h-4 w-4 fill-gray-100" />
-              <RedLine className="fill-red-80 absolute h-4 w-4" />
+              <MicrophoneOff className="fill-icon-primary absolute h-4 w-4" />
+              <RedLine className="fill-icon-danger absolute h-4 w-4" />
             </div>
-            <span className="text-xs-base-size leading-[16px] text-gray-100">Нет участников</span>
+            <span className="text-xs-base-size text-text-primary leading-[16px]">
+              Нет участников
+            </span>
           </>
         )}
       </div>
@@ -64,23 +66,23 @@ export function CompactCallCollapsedBar({
             {bars.map((h, i) => (
               <div
                 key={i}
-                className="bg-brand-80 w-0.5 min-w-[2px] rounded-full transition-all duration-75"
+                className="bg-action-primary-background-default w-0.5 min-w-[2px] rounded-full transition-all duration-75"
                 style={{ height: `${Math.min(100, Math.max(20, h * 150))}%` }}
               />
             ))}
           </div>
         ) : (
-          <div className="bg-brand-60 h-2 w-12 rounded-full" />
+          <div className="bg-action-primary-background-default h-2 w-12 rounded-full" />
         )}
       </div>
       <Button
         size="icon"
         variant="none"
         onClick={onExpand}
-        className="bg-brand-100 hover:bg-brand-100/80 text-brand-0 h-8 w-8 shrink-0 rounded-xl p-0"
+        className="bg-action-primary-background-pressed hover:bg-action-primary-background-pressed/80 text-text-on-accent h-8 w-8 shrink-0 rounded-xl p-0"
         aria-label="Развернуть"
       >
-        <ChevronBottom className="fill-brand-0 h-4 w-4" />
+        <ChevronBottom className="fill-action-primary-text h-4 w-4" />
       </Button>
     </div>
   );

@@ -86,7 +86,7 @@ export function CompactCallVideoArea({
   const showPinPiPOverlay = !!overlayTrackRef;
 
   const emptyState = (
-    <div className="bg-gray-40 flex h-full w-full items-center justify-center text-gray-100">
+    <div className="bg-background-subtle text-text-primary flex h-full w-full items-center justify-center">
       <span className="text-sm">Нет участников</span>
     </div>
   );
@@ -188,7 +188,7 @@ export function CompactCallVideoArea({
                   className={tileOverlayButtonClassName}
                   aria-label="Открыть в отдельном окне"
                 >
-                  <External className="fill-gray-100" style={{ width: 16, height: 16 }} />
+                  <External className="fill-icon-primary" style={{ width: 16, height: 16 }} />
                 </button>
               </TooltipTrigger>
               <TooltipContent>Открыть в отдельном окне</TooltipContent>
@@ -202,10 +202,10 @@ export function CompactCallVideoArea({
           size="icon"
           variant="none"
           onClick={() => onCollapsedChange(true)}
-          className="bg-brand-100 hover:bg-brand-100/80 text-brand-0 absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0"
+          className="bg-action-primary-background-pressed hover:bg-action-primary-background-pressed/80 text-text-on-accent absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0"
           aria-label="Свернуть"
         >
-          <ChevronUp className="fill-brand-0 h-4 w-4" />
+          <ChevronUp className="fill-action-primary-text h-4 w-4" />
         </Button>
       )}
 

@@ -17,7 +17,7 @@ export type FocusTogglePropsT = {
 
 /** Стили кнопки фокуса — Tailwind; в хосте нужен scan @xipkg/calls-ui (см. xi-tutor-local-link.md). */
 const focusToggleClassName =
-  'rounded-lg absolute top-2 right-2 z-10 box-border flex h-6 w-6 min-h-6 min-w-6 cursor-pointer appearance-none items-center justify-center border-none bg-gray-0/80 p-0 opacity-80 transition-opacity lg:opacity-0 lg:group-hover:opacity-80';
+  'rounded-lg absolute top-2 right-2 z-10 box-border flex h-6 w-6 min-h-6 min-w-6 cursor-pointer appearance-none items-center justify-center border-none bg-background-surface/80 p-0 opacity-80 transition-opacity lg:opacity-0 lg:group-hover:opacity-80';
 
 export const FocusToggle = ({ trackRef, ...props }: FocusTogglePropsT) => {
   const trackRefFromContext = useMaybeTrackRefContext();
@@ -40,7 +40,7 @@ export const FocusToggle = ({ trackRef, ...props }: FocusTogglePropsT) => {
           <button type="button" className={cn(focusToggleClassName, className)} {...buttonProps}>
             {props.children
               ? props.children
-              : !inFocus && <FocusToggleIcon className="fill-gray-100" />}
+              : !inFocus && <FocusToggleIcon className="fill-icon-primary" />}
           </button>
         );
       }}
