@@ -1,7 +1,7 @@
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { useCallStore } from '@xipkg/calls-store';
 import { useCallback, useEffect, useRef } from 'react';
-import { DisconnectReason, Track } from 'livekit-client';
+import { DisconnectReason, Track, type RemoteTrackPublication } from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
 import { useCallsSession } from './session/CallsSessionProvider';
@@ -142,6 +142,11 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       return;
     }
 
+    const isSubscribableVideo = (publication: RemoteTrackPublication) =>
+      (publication.source === Track.Source.Camera ||
+        publication.source === Track.Source.ScreenShare) &&
+      publication.isEnabled;
+
     const restoreVideoSubscriptions = () => {
       if (room.state !== 'connected') {
         return;
@@ -151,12 +156,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
       room.remoteParticipants.forEach((participant) => {
         participant.videoTrackPublications.forEach((publication) => {
-          if (
-            (publication.source === Track.Source.Camera ||
-              publication.source === Track.Source.ScreenShare) &&
-            !publication.isSubscribed &&
-            publication.isEnabled
-          ) {
+          if (isSubscribableVideo(publication) && !publication.isSubscribed) {
             publication.setSubscribed(true);
             restoredCount++;
           }
@@ -166,6 +166,47 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       if (restoredCount > 0) {
         console.log(`Restored ${restoredCount} video subscriptions`);
       }
+    };
+
+    // На самохостящемся сервере renegotiation при подписке иногда падает по
+    // таймауту (см. комментарий про dynacast/NegotiationError в RoomProvider).
+    // Если это происходит в момент публикации трека, publication.isSubscribed
+    // так и остаётся false навсегда — раньше ресабскрайб случался только по
+    // reconnect/visibilitychange, поэтому демонстрация экрана, включённая
+    // посреди уже активного звонка, могла у собеседника не появиться никогда.
+    // Подстраховываемся повторными попытками подписки после каждой публикации.
+    const RETRY_DELAYS_MS = [1500, 4000, 8000];
+    const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>();
+
+    const scheduleTimeout = (fn: () => void, delay: number) => {
+      const timeoutId = setTimeout(() => {
+        pendingTimeouts.delete(timeoutId);
+        fn();
+      }, delay);
+      pendingTimeouts.add(timeoutId);
+      return timeoutId;
+    };
+
+    const scheduleSubscriptionRetries = (publication: RemoteTrackPublication) => {
+      RETRY_DELAYS_MS.forEach((delay) => {
+        scheduleTimeout(() => {
+          if (room.state !== 'connected') return;
+          if (!isSubscribableVideo(publication) || publication.isSubscribed) return;
+
+          console.warn(
+            `LiveKit: track ${publication.trackSid} (${publication.source}) is still not subscribed after publish, retrying subscribe`,
+          );
+          publication.setSubscribed(true);
+        }, delay);
+      });
+    };
+
+    const handleTrackPublished = (publication: RemoteTrackPublication) => {
+      if (publication.kind !== Track.Kind.Video || !isSubscribableVideo(publication)) {
+        return;
+      }
+
+      scheduleSubscriptionRetries(publication);
     };
 
     const handleVisibilityChange = () => {
@@ -187,11 +228,19 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     room.on('reconnecting', handleReconnecting);
     room.on('reconnected', handleReconnected);
+    room.on('trackPublished', handleTrackPublished);
+
+    // Страхуемся и на случай, если экран уже демонстрировался в момент нашего
+    // подключения, а первичная авто-подписка молча не удалась.
+    scheduleTimeout(restoreVideoSubscriptions, 3000);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       room.off('reconnecting', handleReconnecting);
       room.off('reconnected', handleReconnected);
+      room.off('trackPublished', handleTrackPublished);
+      pendingTimeouts.forEach(clearTimeout);
+      pendingTimeouts.clear();
       clearPendingDisconnect();
     };
   }, [isStarted, connect, room, clearPendingDisconnect]);

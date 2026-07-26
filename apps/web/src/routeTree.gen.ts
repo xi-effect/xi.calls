@@ -9,31 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
-import { Route as AboutRouteImport } from './pages/about'
 import { Route as IndexRouteImport } from './pages/index'
-import { Route as CallCallIdRouteImport } from './pages/call/$callId'
+import { Route as AboutRouteImport } from './pages/about'
 import { Route as BoardBoardIdRouteImport } from './pages/board/$boardId'
+import { Route as CallCallIdRouteImport } from './pages/call/$callId'
 import { Route as ClassroomsClassroomIdIndexRouteImport } from './pages/classrooms/$classroomId/index'
 import { Route as ClassroomsClassroomIdBoardsBoardIdRouteImport } from './pages/classrooms/$classroomId/boards/$boardId'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CallCallIdRoute = CallCallIdRouteImport.update({
-  id: '/call/$callId',
-  path: '/call/$callId',
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoardBoardIdRoute = BoardBoardIdRouteImport.update({
   id: '/board/$boardId',
   path: '/board/$boardId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallCallIdRoute = CallCallIdRouteImport.update({
+  id: '/call/$callId',
+  path: '/call/$callId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClassroomsClassroomIdIndexRoute =
@@ -112,13 +112,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -126,11 +119,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/call/$callId': {
-      id: '/call/$callId'
-      path: '/call/$callId'
-      fullPath: '/call/$callId'
-      preLoaderRoute: typeof CallCallIdRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/board/$boardId': {
@@ -138,6 +131,13 @@ declare module '@tanstack/react-router' {
       path: '/board/$boardId'
       fullPath: '/board/$boardId'
       preLoaderRoute: typeof BoardBoardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/call/$callId': {
+      id: '/call/$callId'
+      path: '/call/$callId'
+      fullPath: '/call/$callId'
+      preLoaderRoute: typeof CallCallIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/classrooms/$classroomId/': {
