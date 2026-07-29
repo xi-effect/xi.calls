@@ -19,6 +19,7 @@ PACKAGES=(
   packages/calls.ui
   packages/calls.chat
   packages/calls.risehand
+  packages/calls.reactions
   packages/calls.compactview
   packages/calls
 )

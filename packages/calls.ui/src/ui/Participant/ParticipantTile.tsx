@@ -26,6 +26,7 @@ import { ParticipantPinToggle } from '../shared/ParticipantPinToggle';
 import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
+import { ReactionIndicator } from '../shared/ReactionIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
 import { cn } from '@xipkg/utils';
 import { isLocal, useMedia } from '@xipkg/calls-utils';
@@ -183,21 +184,35 @@ export const ParticipantTile = ({
                     !trackReference.publication?.track?.isMuted;
                   const showAvatar =
                     !isScreenShare && trackReference.source === Track.Source.Camera && !hasVideo;
+                  const displayName =
+                    trackReference.participant.name ||
+                    trackReference.participant.identity ||
+                    identity ||
+                    '?';
+                  // Инициалы видны на тёмном фоне; loading-fallback с bg-background-subtle сливается с плиткой
+                  const initials =
+                    displayName
+                      .replace(/[_-]+/g, ' ')
+                      .split(/\s+/)
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((part) => part[0]?.toUpperCase() ?? '')
+                      .join('') || '?';
+
                   return showAvatar ? (
                     <div
                       style={{
                         borderRadius: '8px',
                         height: '100%',
-                        backgroundColor: 'var(--color-gray-40)',
                       }}
-                      className="lk-participant-placeholder flex aspect-video h-full w-full items-center justify-center"
+                      className="lk-participant-placeholder bg-background-subtle flex aspect-video h-full w-full items-center justify-center"
                     >
                       <Avatar size="xxl">
                         <AvatarImage
                           src={`https://api.sovlium.ru/files/users/${identity}/avatar.webp`}
-                          alt="user avatar"
+                          alt={displayName}
                         />
-                        <AvatarFallback size="xxl" loading />
+                        <AvatarFallback size="xxl">{initials}</AvatarFallback>
                       </Avatar>
                     </div>
                   ) : (
@@ -281,10 +296,12 @@ export const ParticipantTile = ({
             )}
           </div>
 
-          {/* Индикатор поднятой руки в верхнем правом углу - скрываем для ScreenShare */}
+          {/* Индикатор поднятой руки и метка последней реакции в верхнем левом углу (в ряд) -
+              скрываем для ScreenShare. Верхний правый угол занят ParticipantPinToggle. */}
           {trackReference.source !== Track.Source.ScreenShare && (
-            <div className="absolute top-2 left-2 z-10">
+            <div className="absolute top-2 left-2 z-10 flex flex-row items-center gap-1">
               <RaisedHandIndicator participant={trackReference.participant} />
+              <ReactionIndicator participant={trackReference.participant} />
             </div>
           )}
 

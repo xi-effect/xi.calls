@@ -71,7 +71,7 @@ Workflow `front-production.yml` при пуше в `main`:
 1. Определяет изменённые `packages/calls*` через path filter
 2. `pnpm install --frozen-lockfile`
 3. `turbo run build --filter='./packages/calls...'` — полный граф зависимостей
-4. Публикует **только изменённые** пакеты **последовательно** (types → config → … → calls) через `npm publish --provenance`
+4. Публикует **только изменённые** пакеты **последовательно** (types → config → … → risehand → reactions → compactview → calls) через `npm publish --provenance`
 
 Trusted publishing: workflow `front-production.yml`, environment `xi-production`. Настройте на [npmjs.com](https://www.npmjs.com/) для каждого пакета.
 

@@ -51,7 +51,8 @@
   transform: translateZ(0); /* Активируем аппаратное ускорение */
   overflow: hidden;
   border-radius: 16px;
-  background: var(--xi-gray-0);
+  /* Семантический фон: в dark не даёт белого «ободка» вокруг видео */
+  background: var(--xi-background-subtle);
   border: 2px solid transparent;
 }
 
@@ -80,7 +81,7 @@
 }
 
 .compact-call-container .lk-participant-tile {
-  border: 2px solid var(--xi-gray-20);
+  border: 2px solid var(--xi-border-default);
 }
 
 /* Индикаторы состояния для адаптивной сетки */
@@ -92,7 +93,9 @@
 
 .lk-participant-tile .lk-focus-toggle-button {
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.8) !important;
+  /* Семантический surface + лёгкий blur — читаемо и в light, и в dark */
+  background-color: color-mix(in srgb, var(--xi-background-surface) 88%, transparent) !important;
+  color: var(--xi-icon-primary);
   height: 24px;
   width: 24px;
   border-radius: var(--radius-lg) !important;
@@ -104,6 +107,7 @@
   opacity: 0;
   padding: 0 !important;
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  backdrop-filter: blur(6px);
 }
 
 /* На десктопе кнопка фокуса показывается по hover */
@@ -122,9 +126,11 @@
 
 /* Кнопка закрепления участника */
 .lk-participant-tile .lk-pin-toggle-button {
-  background-color: rgba(255, 255, 255, 0.8) !important;
+  background-color: color-mix(in srgb, var(--xi-background-surface) 88%, transparent) !important;
+  color: var(--xi-icon-primary);
   opacity: 0;
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  backdrop-filter: blur(6px);
 }
 
 /* На десктопе кнопка закрепления показывается по hover */

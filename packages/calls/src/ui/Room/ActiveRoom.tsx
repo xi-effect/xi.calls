@@ -5,6 +5,7 @@ import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
 import { useVideoBlur } from '@xipkg/calls-hooks';
 import { useHandFocus } from '@xipkg/calls-risehand';
+import { ReactionsOverlay } from '@xipkg/calls-reactions';
 import { BottomBar } from '../Bottom/BottomBar';
 import '@xipkg/calls-ui/video-security.css';
 import '@xipkg/calls-ui/grid.css';
@@ -33,8 +34,9 @@ export const ActiveRoom = () => {
         <UpBar />
       </div>
       <div className="flex min-h-0 flex-1 items-stretch justify-center gap-4 overflow-hidden sm:px-4">
-        <div className="text-text-primary flex min-h-0 w-full min-w-0 flex-1 justify-center text-center">
+        <div className="text-text-primary relative flex min-h-0 w-full min-w-0 flex-1 justify-center">
           <VideoGrid />
+          <ReactionsOverlay />
         </div>
         <Chat />
       </div>
