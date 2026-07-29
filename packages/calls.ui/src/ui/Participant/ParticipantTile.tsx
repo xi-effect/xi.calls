@@ -205,7 +205,7 @@ export const ParticipantTile = ({
                         borderRadius: '8px',
                         height: '100%',
                       }}
-                      className="lk-participant-placeholder bg-background-subtle flex aspect-video h-full w-full items-center justify-center"
+                      className="lk-participant-placeholder bg-gray-20 dark:bg-background-subtle flex aspect-video h-full w-full items-center justify-center"
                     >
                       <Avatar size="xxl">
                         <AvatarImage
@@ -217,7 +217,7 @@ export const ParticipantTile = ({
                     </div>
                   ) : (
                     <div
-                      className="lk-participant-placeholder bg-background-subtle aspect-video h-full w-full rounded-lg"
+                      className="lk-participant-placeholder bg-gray-20 dark:bg-background-subtle aspect-video h-full w-full rounded-lg"
                       aria-hidden
                     />
                   );

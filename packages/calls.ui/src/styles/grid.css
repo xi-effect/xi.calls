@@ -51,9 +51,20 @@
   transform: translateZ(0); /* Активируем аппаратное ускорение */
   overflow: hidden;
   border-radius: 16px;
-  /* Семантический фон: в dark не даёт белого «ободка» вокруг видео */
+  /* Семантический фон + бордер как у BottomBar / карточек */
   background: var(--xi-background-subtle);
-  border: 2px solid transparent;
+  border: 2px solid var(--xi-border-default);
+}
+
+/* Светлая тема: фон чуть темнее page, чтобы плитка не сливалась с белым */
+html:not([data-theme='dark']) .lk-participant-tile,
+:root:not([data-theme='dark']) .lk-participant-tile {
+  background: var(--xi-gray-20);
+}
+
+html:not([data-theme='dark']) .lk-participant-tile .lk-participant-placeholder,
+:root:not([data-theme='dark']) .lk-participant-tile .lk-participant-placeholder {
+  background: var(--xi-gray-20);
 }
 
 /* Превью в горизонтальном focus: заполняют ячейку карусели без aspect-video и contain */
@@ -78,10 +89,6 @@
 .horizontal-focus-thumbs,
 .focus-stage-area {
   box-sizing: border-box;
-}
-
-.compact-call-container .lk-participant-tile {
-  border: 2px solid var(--xi-border-default);
 }
 
 /* Индикаторы состояния для адаптивной сетки */
