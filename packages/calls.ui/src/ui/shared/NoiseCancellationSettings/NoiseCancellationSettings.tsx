@@ -4,12 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { UseNoiseCancellationResult } from '@xipkg/calls-hooks';
 import type { NoiseCancellationMode } from '@xipkg/calls-types';
 import { NOISE_CANCELLATION_MODES } from '@xipkg/calls-types';
-
-const MODE_LABELS: Record<NoiseCancellationMode, string> = {
-  off: 'Выключено',
-  webrtc: 'Стандартное',
-  krisp: 'Усиленное',
-};
+import { useTranslation } from 'react-i18next';
 
 type NoiseCancellationSettingsProps = {
   nc: UseNoiseCancellationResult;
@@ -21,6 +16,14 @@ export function NoiseCancellationSettings({
   nc,
   hideOffOption = false,
 }: NoiseCancellationSettingsProps) {
+  const { t } = useTranslation('calls');
+
+  const modeLabels: Record<NoiseCancellationMode, string> = {
+    off: t('noiseCancellation.mode.off'),
+    webrtc: t('noiseCancellation.mode.webrtc'),
+    krisp: t('noiseCancellation.mode.krisp'),
+  };
+
   const options = hideOffOption
     ? (NOISE_CANCELLATION_MODES.filter(
         (m) => m !== 'off' && (m !== 'krisp' || nc.allowKrisp),
@@ -38,7 +41,7 @@ export function NoiseCancellationSettings({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="text-text-primary font-medium">Шумоподавление</Label>
+        <Label className="text-text-primary font-medium">{t('noiseCancellation.title')}</Label>
         <Toggle
           checked={nc.isEnabled}
           onCheckedChange={nc.setEnabled}
@@ -48,7 +51,7 @@ export function NoiseCancellationSettings({
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-text-primary text-sm">Режим</Label>
+        <Label className="text-text-primary text-sm">{t('noiseCancellation.modeLabel')}</Label>
         <Select
           value={selectValue}
           onValueChange={(value) => nc.setMode(value as NoiseCancellationMode)}
@@ -56,8 +59,8 @@ export function NoiseCancellationSettings({
           data-umami-event="noise_cancellation_mode_select"
         >
           <SelectTrigger className="text-text-primary w-full">
-            <SelectValue placeholder="Стандартное">
-              {MODE_LABELS[selectValue as NoiseCancellationMode]}
+            <SelectValue placeholder={t('noiseCancellation.mode.webrtc')}>
+              {modeLabels[selectValue as NoiseCancellationMode]}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -73,17 +76,17 @@ export function NoiseCancellationSettings({
                   disabled={disabled}
                   className="text-text-primary h-auto"
                 >
-                  {MODE_LABELS[mode]}
-                  {mode === 'krisp' && (isKrispDisabled || isUnsupported) && ' (недоступно)'}
+                  {modeLabels[mode]}
+                  {mode === 'krisp' &&
+                    (isKrispDisabled || isUnsupported) &&
+                    t('noiseCancellation.unavailableSuffix')}
                 </SelectItem>
               );
             })}
           </SelectContent>
         </Select>
       </div>
-      <p className="text-text-secondary text-xs">
-        Усиленное шумоподавление может быть недоступно в некоторых браузерах.
-      </p>
+      <p className="text-text-secondary text-xs">{t('noiseCancellation.krispHint')}</p>
       {nc.lastError && (
         <p className="text-text-danger text-sm" role="alert">
           {nc.lastError}

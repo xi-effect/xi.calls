@@ -4,12 +4,14 @@ import { Close } from '@xipkg/icons';
 import { useCallStore } from '@xipkg/calls-store';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { driver, type DriveStep } from 'driver.js';
+import { useTranslation } from 'react-i18next';
 import 'driver.js/dist/driver.css';
 import '../../styles/driver.css';
 
 const ONBOARDING_STORAGE_KEY = 'calls_onboarding_completed';
 
 export const CallsOnboarding = () => {
+  const { t } = useTranslation('calls');
   const isStarted = useCallStore((state) => state.isStarted);
   const hasStartedOnboarding = useRef(false);
 
@@ -30,8 +32,7 @@ export const CallsOnboarding = () => {
         {
           element: `#${ONBOARDING_IDS.WHITEBOARD_BUTTON}`,
           popover: {
-            description:
-              'Пишите или рисуйте на онлайн-доске во время видеозвонка. Подготовьте доску заранее или создайте чистую',
+            description: t('onboarding.whiteboard'),
             side: 'top' as const,
             align: 'center' as const,
           },
@@ -39,8 +40,7 @@ export const CallsOnboarding = () => {
         {
           element: `#${ONBOARDING_IDS.LINK_BUTTON}`,
           popover: {
-            description:
-              'Скопируйте ссылку на конференцию и отправьте ученикам. Присоединиться могут только участники этого кабинета.',
+            description: t('onboarding.link'),
             side: 'bottom' as const,
             align: 'end' as const,
           },
@@ -48,7 +48,7 @@ export const CallsOnboarding = () => {
         {
           element: `#${ONBOARDING_IDS.SETTINGS_BUTTON}`,
           popover: {
-            description: 'Настройте аудио и видео устройства, а также другие параметры конференции',
+            description: t('onboarding.settings'),
             side: 'bottom' as const,
             align: 'end' as const,
           },
@@ -56,8 +56,7 @@ export const CallsOnboarding = () => {
         {
           element: `#${ONBOARDING_IDS.BACK_BUTTON}`,
           popover: {
-            description:
-              'Можно перемещаться по платформе в любой момент, не прерывая звонок. Нажмите на стрелку или любой пункт меню, а конференция продолжится в компактном режиме',
+            description: t('onboarding.back'),
             side: 'bottom' as const,
             align: 'start' as const,
           },
@@ -92,10 +91,14 @@ export const CallsOnboarding = () => {
             driverObj.destroy();
           });
         },
-        nextBtnText: 'Продолжить',
-        prevBtnText: 'Назад',
-        doneBtnText: 'Завершить',
-        progressText: '{{current}} из {{total}}',
+        nextBtnText: t('onboarding.next'),
+        prevBtnText: t('onboarding.prev'),
+        doneBtnText: t('onboarding.done'),
+        // driver.js сам подставляет {{current}}/{{total}} — оставляем плейсхолдеры как есть
+        progressText: t('onboarding.progress', {
+          current: '{{current}}',
+          total: '{{total}}',
+        }),
         onDestroyed: () => {
           // Сохраняем флаг завершения онбординга в localStorage
           localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
@@ -140,7 +143,7 @@ export const CallsOnboarding = () => {
         clearTimeout(onboardingTimeoutId);
       }
     };
-  }, [isStarted]);
+  }, [isStarted, t]);
 
   return null;
 };

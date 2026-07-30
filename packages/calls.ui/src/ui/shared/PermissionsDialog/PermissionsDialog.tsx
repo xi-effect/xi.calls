@@ -12,6 +12,7 @@ import { usePermissionsStore, closePermissionsDialog } from '@xipkg/calls-store'
 import { useWatchPermissions } from '@xipkg/calls-hooks';
 import { isSafari, isFireFox } from '@xipkg/calls-utils';
 import { Settings, Close } from '@xipkg/icons';
+import { Trans, useTranslation } from 'react-i18next';
 
 /** Ссылки на официальные инструкции по выдаче прав в браузерах */
 const BROWSER_HELP_LINKS = {
@@ -23,58 +24,13 @@ const BROWSER_HELP_LINKS = {
 
 type BrowserKey = keyof typeof BROWSER_HELP_LINKS;
 
-const BROWSER_INSTRUCTIONS: Record<
-  BrowserKey,
-  { title: string; steps: string[]; link: string; linkLabel: string }
-> = {
-  chrome: {
-    title: 'Chrome и другие браузеры на базе Chromium (Edge, Brave и др.)',
-    steps: [
-      'Нажмите на значок замка или настроек слева от адресной строки.',
-      'Найдите пункты «Камера» и «Микрофон».',
-      'Выберите «Разрешить» для этого сайта и обновите страницу при необходимости.',
-    ],
-    link: BROWSER_HELP_LINKS.chrome,
-    linkLabel: 'Инструкция Google Chrome',
-  },
-  edge: {
-    title: 'Microsoft Edge',
-    steps: [
-      'Нажмите на значок замка или настроек слева от адресной строки.',
-      'В разделе разрешений установите «Разрешить» для камеры и микрофона.',
-      'При необходимости проверьте настройки Windows: Параметры → Конфиденциальность → Камера и Микрофон.',
-    ],
-    link: BROWSER_HELP_LINKS.edge,
-    linkLabel: 'Камера и микрофон в Windows',
-  },
-  firefox: {
-    title: 'Firefox',
-    steps: [
-      'Нажмите на иконку щита или замка слева от адресной строки.',
-      'Откройте «Подробнее» → вкладка «Разрешения».',
-      'Включите доступ для «Использовать камеру» и «Использовать микрофон».',
-    ],
-    link: BROWSER_HELP_LINKS.firefox,
-    linkLabel: 'Инструкция Mozilla Firefox',
-  },
-  safari: {
-    title: 'Safari',
-    steps: [
-      'Нажмите на иконку «aA» или названия сайта в адресной строке.',
-      'Выберите «Настройки для этого веб-сайта».',
-      'Для «Камера» и «Микрофон» выберите «Разрешить».',
-    ],
-    link: BROWSER_HELP_LINKS.safari,
-    linkLabel: 'Настройки сайтов в Safari',
-  },
-};
-
 /**
  * Модальное окно: объяснение прав на камеру и микрофон и инструкции по браузерам.
  * Singleton: useWatchPermissions выполняется один раз в приложении.
  */
 export const PermissionsDialog = () => {
   useWatchPermissions();
+  const { t, i18n } = useTranslation('calls');
 
   const isPermissionDialogOpen = usePermissionsStore((s) => s.isPermissionDialogOpen);
 
@@ -84,7 +40,19 @@ export const PermissionsDialog = () => {
     return 'chrome'; // Chrome, Edge и остальные Chromium-based
   }, []);
 
-  const instructions = useMemo(() => BROWSER_INSTRUCTIONS[currentBrowser], [currentBrowser]);
+  const instructions = useMemo(() => {
+    const key = currentBrowser;
+    return {
+      title: t(`permissions.browsers.${key}.title`),
+      steps: [
+        t(`permissions.browsers.${key}.step1`),
+        t(`permissions.browsers.${key}.step2`),
+        t(`permissions.browsers.${key}.step3`),
+      ],
+      link: BROWSER_HELP_LINKS[key],
+      linkLabel: t(`permissions.browsers.${key}.link`),
+    };
+  }, [currentBrowser, t, i18n.language]);
 
   if (!isPermissionDialogOpen) {
     return null;
@@ -98,24 +66,27 @@ export const PermissionsDialog = () => {
         </ModalCloseButton>
         <ModalHeader className="border-border-default border-b">
           <ModalTitle className="text-text-primary text-xl font-semibold">
-            Доступ к камере и микрофону
+            {t('permissions.title')}
           </ModalTitle>
         </ModalHeader>
 
         <div className="flex flex-col gap-8 p-6">
           <section className="leading-relaxed">
             <p className="text-m-base text-text-primary">
-              Для видеозвонков сайту нужен доступ к{' '}
-              <strong className="text-text-primary font-semibold">камере</strong> и{' '}
-              <strong className="text-text-primary font-semibold">микрофону</strong>: тогда другие
-              участники смогут видеть и слышать вас. Разрешения запрашиваются только для работы
-              звонка — камеру или микрофон можно отключить в любой момент в интерфейсе звонка.
+              <Trans
+                i18nKey="permissions.description"
+                ns="calls"
+                components={{
+                  camera: <strong className="text-text-primary font-semibold" />,
+                  mic: <strong className="text-text-primary font-semibold" />,
+                }}
+              />
             </p>
           </section>
 
           <section>
             <h3 className="text-m-base text-text-primary mb-1 font-semibold">
-              Как выдать разрешение
+              {t('permissions.howTo')}
             </h3>
             <p className="text-s-base text-text-secondary mb-4">{instructions.title}</p>
             <ol className="text-s-base text-text-primary list-decimal space-y-3 pl-5">
@@ -140,7 +111,9 @@ export const PermissionsDialog = () => {
           </section>
 
           <section className="border-border-default bg-background-page rounded-xl border p-4">
-            <p className="text-s-base text-text-primary mb-2 font-semibold">Другие браузеры</p>
+            <p className="text-s-base text-text-primary mb-2 font-semibold">
+              {t('permissions.otherBrowsers')}
+            </p>
             <p className="text-s-base text-text-secondary flex flex-wrap items-center gap-x-1 gap-y-1">
               <a
                 href={BROWSER_HELP_LINKS.chrome}
@@ -189,7 +162,7 @@ export const PermissionsDialog = () => {
 
         <ModalFooter className="border-border-default flex border-t">
           <Button type="button" variant="ghost" onClick={closePermissionsDialog}>
-            Закрыть
+            {t('permissions.close')}
           </Button>
         </ModalFooter>
       </ModalContent>

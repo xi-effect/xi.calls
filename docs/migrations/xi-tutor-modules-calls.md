@@ -367,6 +367,18 @@ useFeaturesStore.getState().setFeatures({
 
 Если `VITE_LIVEKIT_DEV_MODE=true`, положите dev-токен в store (см. `apps/web/src/calls/CallsDemoShell.tsx`, компонент `CallsDemoInit`).
 
+## i18n (локали ВКС)
+
+Строки UI ВКС лежат в `@xipkg/calls` (namespace `calls`):
+
+```ts
+import { callsEn, callsRu } from '@xipkg/calls/locales';
+```
+
+В `apps/xi.web/src/config/i18n.ts` добавьте импорт и namespace `calls` (как у `board`). UI-пакеты используют `useTranslation('calls')` и **не** импортируют JSON напрямую — хост регистрирует ресурсы.
+
+PeerDeps UI-пакетов: `i18next@24.2.2`, `react-i18next@15.4.1` (уже есть в xi.tutor).
+
 ## Локальная разработка (link + HMR)
 
 Подключение через `link:../../xi.calls/packages/...` и настройка Vite — см. **[xi-tutor-local-link.md](./xi-tutor-local-link.md)** (вариант A, готовое ТЗ для Cursor в xi.tutor).
@@ -377,12 +389,13 @@ useFeaturesStore.getState().setFeatures({
 - [ ] Создать `useCallsDeps`, `createCallsRuntimeConfig`, `useTanstackCallsNavigation`, `callsSession`
 - [ ] Создать `CallsShell` и подключить в layout маршрутов с ВКС
 - [ ] Подключить CSS: `@livekit/components-styles`, `@xipkg/calls-ui/styles.css` (обязательно, иначе нет grid)
+- [ ] Зарегистрировать локали: `import { callsEn, callsRu } from '@xipkg/calls/locales'` → namespace `calls` в i18n
 - [ ] Обновить `index.ts` — re-export из npm-пакетов
 - [ ] Заменить ручную обёртку `RoomProvider`/`LiveKitProvider` на `CallsShell`
 - [ ] Удалить legacy `src/ui`, `src/hooks`, `src/store`, `src/providers`, `src/utils/config.ts`
 - [ ] Убрать лишние dependencies из `package.json`
 - [ ] Прогнать сценарии из BOARD_SYNC (collaborative mode, compact/full, доска)
-- [ ] Проверить: PreJoin, full call, compact overlay, чат, поднятие руки, шумоподавление, onboarding
+- [ ] Проверить: PreJoin, full call, compact overlay, чат, поднятие руки, шумоподавление, onboarding, переключение языка
 
 ## Связанные документы
 

@@ -30,6 +30,7 @@ import { ReactionIndicator } from '../shared/ReactionIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
 import { cn } from '@xipkg/utils';
 import { isLocal, useMedia } from '@xipkg/calls-utils';
+import { useTranslation } from 'react-i18next';
 
 type TrackRefContextIfNeededPropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
@@ -100,6 +101,7 @@ export const ParticipantTile = ({
   hidePinToggle,
   ...htmlProps
 }: ParticipantTilePropsT) => {
+  const { t } = useTranslation('calls');
   const maybeTrackRef = useMaybeTrackRefContext();
   const p = useEnsureParticipant(participant);
 
@@ -286,7 +288,7 @@ export const ParticipantTile = ({
                       <div className="bg-background-surface/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
                         <ParticipantName participant={trackReference.participant}>
-                          Демонстрация&nbsp;
+                          {t('participant.screenSharePrefix')}&nbsp;
                         </ParticipantName>
                       </div>
                     )}

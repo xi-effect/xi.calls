@@ -10,5 +10,8 @@
     "../calls.providers/src/ModeSyncProvider.tsx"
   ],
   "extends": ["common.typescript/tsconfig.app.json"],
+  "compilerOptions": {
+    "resolveJsonModule": true
+  },
   "exclude": ["dist", "build", "node_modules"]
 }

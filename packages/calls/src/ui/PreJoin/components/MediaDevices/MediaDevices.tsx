@@ -14,6 +14,7 @@ import {
 import { useCallStore, usePermissionsStore } from '@xipkg/calls-store';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 import { NoiseCancellationSettings } from '@xipkg/calls-ui';
+import { useTranslation } from 'react-i18next';
 
 interface MediaDevicesProps {
   audioTrack?: LocalAudioTrack;
@@ -22,6 +23,7 @@ interface MediaDevicesProps {
 }
 
 export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: MediaDevicesProps) => {
+  const { t } = useTranslation('calls');
   const {
     userChoices: { audioDeviceId, audioOutputDeviceId, videoDeviceId, blurEnabled },
     saveAudioInputDeviceId,
@@ -152,7 +154,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
       <div className="border-border-control bg-background-surface text-text-primary flex flex-col justify-between rounded-2xl border p-5">
         <div>
           <div className="mb-8">
-            <h2 className="text-m-base mb-1 font-sans font-medium">Камера</h2>
+            <h2 className="text-m-base mb-1 font-sans font-medium">{t('preJoin.camera')}</h2>
             <MediaDeviceMenu
               key={videoMenuKey}
               initialSelection={videoDeviceId}
@@ -162,7 +164,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
             />
           </div>
           <div className="my-4">
-            <h2 className="text-m-base mb-1 font-sans font-medium">Звук</h2>
+            <h2 className="text-m-base mb-1 font-sans font-medium">{t('preJoin.sound')}</h2>
             <div className="flex flex-col gap-2">
               <MediaDeviceMenu
                 key={audioInputMenuKey}
@@ -183,7 +185,9 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           {isBlurSupported && (
             <div className="my-4">
               <div className="flex items-center justify-between">
-                <Label className="text-text-primary font-medium">Размытие фона</Label>
+                <Label className="text-text-primary font-medium">
+                  {t('preJoin.backgroundBlur')}
+                </Label>
                 <Toggle checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
             </div>
@@ -200,10 +204,10 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           disabled={isConnecting && !hasActiveCallSession}
         >
           {hasActiveCallSession
-            ? 'Вернуться в звонок'
+            ? t('preJoin.returnToCall')
             : isConnecting
-              ? 'Подключение...'
-              : 'Присоединиться'}
+              ? t('preJoin.connecting')
+              : t('preJoin.join')}
         </Button>
       </div>
       <Alert className="h-full w-full max-w-[1720px]" variant="brand">
@@ -211,11 +215,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           <InfoCircle className="fill-icon-brand" />
         </AlertIcon>
         <AlertContainer className="h-full">
-          <AlertDescription>
-            Перед началом занятия рекомендуется выбрать устройства для видео и звука. Если
-            устройства не доступны, проверьте настройки браузера. Необходимое разрешение на
-            использование микрофона и камеры будет запрошено автоматически.
-          </AlertDescription>
+          <AlertDescription>{t('preJoin.devicesHint')}</AlertDescription>
         </AlertContainer>
       </Alert>
     </div>

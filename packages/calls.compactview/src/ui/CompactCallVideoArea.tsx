@@ -3,6 +3,7 @@ import type { CompactViewModeT } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
 import { ChevronUp, External } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
+import { useTranslation } from 'react-i18next';
 import { usePiP } from '../providers';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import { CompactNavigationControls } from './CompactNavigationControls';
@@ -62,6 +63,7 @@ export function CompactCallVideoArea({
   onMultiNext,
   onAudioExpand,
 }: CompactCallVideoAreaProps) {
+  const { t } = useTranslation('calls');
   const pip = usePiP();
   const showPiPButton = pip?.isSupported && !!currentParticipant;
 
@@ -85,7 +87,7 @@ export function CompactCallVideoArea({
 
   const emptyState = (
     <div className="bg-background-subtle text-text-primary flex h-full w-full items-center justify-center">
-      <span className="text-sm">Нет участников</span>
+      <span className="text-sm">{t('compactView.noParticipants')}</span>
     </div>
   );
 
@@ -184,12 +186,12 @@ export function CompactCallVideoArea({
                   type="button"
                   onClick={() => void pip!.openPiP()}
                   className={tileOverlayButtonClassName}
-                  aria-label="Открыть в отдельном окне"
+                  aria-label={t('compactView.openPip')}
                 >
                   <External className="fill-icon-primary" style={{ width: 16, height: 16 }} />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Открыть в отдельном окне</TooltipContent>
+              <TooltipContent>{t('compactView.openPip')}</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -201,7 +203,7 @@ export function CompactCallVideoArea({
           variant="none"
           onClick={() => onCollapsedChange(true)}
           className="bg-action-primary-background-pressed hover:bg-action-primary-background-pressed/80 text-text-on-accent absolute top-2 right-2 z-10 h-8 w-8 rounded-xl p-0"
-          aria-label="Свернуть"
+          aria-label={t('compactView.collapse')}
         >
           <ChevronUp className="fill-action-primary-text h-4 w-4" />
         </Button>

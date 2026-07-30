@@ -1,4 +1,5 @@
 import { ArrowUp } from '@xipkg/icons';
+import { useTranslation } from 'react-i18next';
 
 type Orientation = 'vertical' | 'horizontal';
 
@@ -18,6 +19,8 @@ type NavigationButtonProps = {
 };
 
 const NavigationButton = ({ onClick, disabled, orientation, direction }: NavigationButtonProps) => {
+  const { t } = useTranslation('calls');
+
   const getRotation = () => {
     if (orientation === 'horizontal') {
       return direction === 'prev' ? '-rotate-90' : 'rotate-90';
@@ -39,7 +42,7 @@ const NavigationButton = ({ onClick, disabled, orientation, direction }: Navigat
         <ArrowUp className={`${getRotation()} fill-inherit`} />
       </div>
       <span className="sr-only">
-        {direction === 'prev' ? 'Предыдущая страница' : 'Следующая страница'}
+        {direction === 'prev' ? t('videoGrid.prevPage') : t('videoGrid.nextPage')}
       </span>
     </button>
   );

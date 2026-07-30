@@ -1,0 +1,214 @@
+{
+  "preJoin": {
+    "backToClassroom": "Back to classroom",
+    "title": "Join the lesson",
+    "camera": "Camera",
+    "sound": "Audio",
+    "backgroundBlur": "Background blur",
+    "returnToCall": "Return to call",
+    "connecting": "Connecting...",
+    "join": "Join",
+    "devicesHint": "Before the lesson starts, choose your video and audio devices. If devices are unavailable, check your browser settings. Permission to use the microphone and camera will be requested automatically.",
+    "device": {
+      "builtinMic": "Built-in microphone",
+      "builtinSpeakers": "Built-in speakers",
+      "builtinCamera": "Built-in camera",
+      "default": "Default"
+    },
+    "hint": {
+      "cameraAndMicDenied": "Camera and microphone not allowed",
+      "cameraDenied": "Camera not allowed",
+      "cameraOff": "Camera is off",
+      "cameraStarting": "Starting camera...",
+      "cameraUnavailable": "Camera unavailable"
+    },
+    "permissions": {
+      "safariStep1": "Tap the {{origin}} icon in the address bar",
+      "step2": "Allow access to the camera and microphone",
+      "chromeStep1": "Click the settings icon in the browser address bar",
+      "allowCameraAndMic": "How to allow camera and microphone",
+      "allowMic": "How to allow microphone",
+      "allowCamera": "How to allow camera",
+      "promptTitle": "Want other participants to hear you?",
+      "canDisableAnytime": "You can turn off the camera or microphone at any time."
+    }
+  },
+  "bottomBar": {
+    "toBoard": "To board",
+    "toBoardTooltip": "Return to the collaborative board",
+    "stopScreenShare": "Stop screen sharing",
+    "shareScreen": "Share screen",
+    "selectBoard": "Choose a board for collaboration"
+  },
+  "upBar": {
+    "linkCopied": "Link copied. Send it to your students",
+    "backTooltip": "Back to classroom. The call will continue.",
+    "view": "View",
+    "viewDisabledTooltip": "Need more than 2 participants or a screen share to switch layout",
+    "viewToggleTooltip": "Switch grid layout",
+    "copyInviteLink": "Copy invite link"
+  },
+  "settings": {
+    "title": "Settings",
+    "camera": "Camera",
+    "allowCamera": "How to allow camera",
+    "microphone": "Microphone",
+    "allowMicrophone": "How to allow microphone",
+    "speakers": "Speakers",
+    "backgroundBlur": "Background blur",
+    "effects": "Sound effects settings",
+    "device": {
+      "builtinMic": "Built-in microphone",
+      "builtinSpeakers": "Built-in speakers",
+      "builtinCamera": "Built-in camera",
+      "unnamed": "Device {{shortId}}"
+    }
+  },
+  "noiseCancellation": {
+    "title": "Noise cancellation",
+    "modeLabel": "Mode",
+    "unavailableSuffix": " (unavailable)",
+    "krispHint": "Enhanced noise cancellation may be unavailable in some browsers.",
+    "mode": {
+      "off": "Off",
+      "webrtc": "Standard",
+      "krisp": "Enhanced"
+    },
+    "errors": {
+      "krispAuth": "Enhanced noise cancellation unavailable (LiveKit Cloud required).",
+      "krispUnavailable": "Krisp unavailable"
+    }
+  },
+  "permissions": {
+    "title": "Camera and microphone access",
+    "description": "For video calls, the site needs access to the <camera>camera</camera> and <mic>microphone</mic> so others can see and hear you. Permissions are requested only for the call — you can turn off the camera or microphone anytime in the call UI.",
+    "howTo": "How to grant permission",
+    "otherBrowsers": "Other browsers",
+    "close": "Close",
+    "browsers": {
+      "chrome": {
+        "title": "Chrome and other Chromium-based browsers (Edge, Brave, etc.)",
+        "step1": "Click the lock or settings icon to the left of the address bar.",
+        "step2": "Find the Camera and Microphone options.",
+        "step3": "Choose Allow for this site and refresh the page if needed.",
+        "link": "Google Chrome guide"
+      },
+      "edge": {
+        "title": "Microsoft Edge",
+        "step1": "Click the lock or settings icon to the left of the address bar.",
+        "step2": "In permissions, set Allow for camera and microphone.",
+        "step3": "If needed, check Windows settings: Settings → Privacy → Camera and Microphone.",
+        "link": "Camera and microphone in Windows"
+      },
+      "firefox": {
+        "title": "Firefox",
+        "step1": "Click the shield or lock icon to the left of the address bar.",
+        "step2": "Open More information → Permissions tab.",
+        "step3": "Allow Use the Camera and Use the Microphone.",
+        "link": "Mozilla Firefox guide"
+      },
+      "safari": {
+        "title": "Safari",
+        "step1": "Click the aA icon or the site name in the address bar.",
+        "step2": "Choose Website Settings.",
+        "step3": "For Camera and Microphone, choose Allow.",
+        "link": "Safari website settings"
+      }
+    }
+  },
+  "whiteboards": {
+    "title": "Collaborative board",
+    "searchPlaceholder": "Search",
+    "loading": "Loading boards...",
+    "loadError": "Failed to load boards",
+    "updatedAt": "Updated: {{date}}",
+    "creating": "Creating...",
+    "createNew": "Create new",
+    "collaborativeLabel": "Open the board in collaborative mode for all call participants",
+    "collaborativeLabelDesktop": "Open the board in collaborative mode<br></br>for all call participants",
+    "select": "Select",
+    "cancel": "Cancel",
+    "access": {
+      "readWrite": "collaborative",
+      "readOnly": "tutor only",
+      "draft": "draft"
+    }
+  },
+  "participant": {
+    "screenSharePrefix": "Screen share",
+    "unpin": "Unpin participant",
+    "pin": "Pin participant",
+    "zoomIn": "Zoom in",
+    "zoomViewport": "Viewport, drag to pan",
+    "zoomOut": "Zoom out",
+    "zoomIncrease": "Zoom in"
+  },
+  "videoGrid": {
+    "empty": "No participants to display",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "page": "Page {{page}}"
+  },
+  "onboarding": {
+    "whiteboard": "Write or draw on the online board during the video call. Prepare a board ahead of time or create a blank one",
+    "link": "Copy the conference link and send it to students. Only members of this classroom can join.",
+    "settings": "Configure audio and video devices and other conference settings",
+    "back": "You can navigate the platform anytime without ending the call. Click the arrow or any menu item, and the conference continues in compact mode",
+    "next": "Continue",
+    "prev": "Back",
+    "done": "Done",
+    "progress": "{{current}} of {{total}}"
+  },
+  "errorPage": {
+    "contactIntro": "If the error keeps happening — write <desktop>to us about it</desktop>",
+    "inTelegram": "in",
+    "telegramChat": "Telegram chat",
+    "or": "or",
+    "email": "by email",
+    "backHomePrefix": "Go back",
+    "backHomeLink": "to the home page"
+  },
+  "chat": {
+    "title": "Chat",
+    "close": "Close chat",
+    "empty": "Start chatting",
+    "placeholder": "Write a message..."
+  },
+  "compactView": {
+    "noParticipants": "No participants",
+    "openPip": "Open in a separate window",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "toBoardAria": "To board",
+    "toBoardTooltip": "Back to board",
+    "returnToConference": "Return to conference",
+    "returnMenuLabel": "Return to conference",
+    "returnOnlyMe": "Only me",
+    "returnEveryone": "Everyone",
+    "participant": "Participant {{index}}",
+    "prevParticipant": "Previous participant",
+    "nextParticipant": "Next participant",
+    "scrollUp": "Scroll up",
+    "scrollDown": "Scroll down",
+    "mode": {
+      "expanded": "Expanded view (multiple participants)",
+      "audio": "Audio only",
+      "basic": "Single participant"
+    }
+  },
+  "reactions": {
+    "tooltip": "Reactions",
+    "thumbsUp": "Thumbs up",
+    "heart": "Love",
+    "party": "Party",
+    "clap": "Clap",
+    "laugh": "Funny",
+    "wow": "Wow",
+    "sad": "Sad",
+    "hands": "Celebrate",
+    "crocodile": "Crocodile",
+    "fire": "Fire",
+    "handshake": "Handshake",
+    "column": "Column"
+  }
+}

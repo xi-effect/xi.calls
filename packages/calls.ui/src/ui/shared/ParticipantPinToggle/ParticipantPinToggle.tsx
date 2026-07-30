@@ -5,6 +5,7 @@ import { Pin, Pinned } from '@xipkg/icons';
 import { toPinnedParticipant, useCallStore } from '@xipkg/calls-store';
 import { useCurrentClassroomId } from '@xipkg/calls-hooks';
 import { cn } from '@xipkg/utils';
+import { useTranslation } from 'react-i18next';
 
 /** Базовые стили оверлей-кнопки на плитке (для inline-использования, без absolute) */
 export const tileOverlayButtonClassName =
@@ -34,6 +35,7 @@ export const ParticipantPinToggle = ({
   onClick,
   ...props
 }: ParticipantPinTogglePropsT) => {
+  const { t } = useTranslation('calls');
   const trackRefFromContext = useMaybeTrackRefContext();
   const trackReference = trackRef ?? trackRefFromContext;
   const classroomId = useCurrentClassroomId();
@@ -62,7 +64,7 @@ export const ParticipantPinToggle = ({
         isPinned && inline && 'opacity-100',
         className,
       )}
-      aria-label={isPinned ? 'Открепить участника' : 'Закрепить участника'}
+      aria-label={isPinned ? t('participant.unpin') : t('participant.pin')}
       aria-pressed={isPinned}
       onClick={handleClick}
       {...props}

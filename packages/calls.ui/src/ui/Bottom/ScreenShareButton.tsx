@@ -3,9 +3,11 @@ import { supportsScreenSharing } from '@livekit/components-core';
 import { useRoomContext, useTrackToggle } from '@livekit/components-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrackToggle } from '../shared';
 
 export const ScreenShareButton = ({ className }: { className?: string }) => {
+  const { t } = useTranslation('calls');
   const browserSupportsScreenSharing = supportsScreenSharing();
   const room = useRoomContext();
 
@@ -47,7 +49,7 @@ export const ScreenShareButton = ({ className }: { className?: string }) => {
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" align="center">
-            {enabled ? 'Остановить показ экрана' : 'Поделиться экраном'}
+            {enabled ? t('bottomBar.stopScreenShare') : t('bottomBar.shareScreen')}
           </TooltipContent>
         </Tooltip>
       )}

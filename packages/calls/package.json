@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "type": "module",
   "exports": {
     ".": {
@@ -8,6 +8,12 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "default": "./dist/index.mjs"
+    },
+    "./locales": {
+      "development": "./src/locales/index.ts",
+      "types": "./dist/locales/index.d.ts",
+      "import": "./dist/locales/index.mjs",
+      "default": "./dist/locales/index.mjs"
     }
   },
   "license": "MIT",
@@ -38,16 +44,16 @@
     "@xipkg/icons": "^3.1.0",
     "@xipkg/button": "4.3.0",
     "@xipkg/toggle": "4.2.0",
-    "@xipkg/calls-ui": "^0.1.14",
-    "@xipkg/calls-utils": "^0.1.14",
-    "@xipkg/calls-types": "^0.1.14",
-    "@xipkg/calls-config": "^0.1.14",
-    "@xipkg/calls-providers": "^0.1.14",
-    "@xipkg/calls-store": "^0.1.14",
-    "@xipkg/calls-hooks": "^0.1.14",
-    "@xipkg/calls-chat": "^0.1.14",
-    "@xipkg/calls-risehand": "^0.1.14",
-    "@xipkg/calls-reactions": "^0.1.14",
+    "@xipkg/calls-ui": "^0.1.15",
+    "@xipkg/calls-utils": "^0.1.15",
+    "@xipkg/calls-types": "^0.1.15",
+    "@xipkg/calls-config": "^0.1.15",
+    "@xipkg/calls-providers": "^0.1.15",
+    "@xipkg/calls-store": "^0.1.15",
+    "@xipkg/calls-hooks": "^0.1.15",
+    "@xipkg/calls-chat": "^0.1.15",
+    "@xipkg/calls-risehand": "^0.1.15",
+    "@xipkg/calls-reactions": "^0.1.15",
     "@xipkg/utils": "^1.8.0"
   },
   "devDependencies": {
@@ -68,14 +74,17 @@
     "typescript-eslint": "^8.65.0"
   },
   "peerDependencies": {
-    "react": "^19.2.8"
+    "i18next": "24.2.2",
+    "react": "^19.2.8",
+    "react-i18next": "15.4.1"
   },
   "description": "calls package",
   "author": "xi.effect",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src/locales"
   ],
   "publishConfig": {
     "access": "public"

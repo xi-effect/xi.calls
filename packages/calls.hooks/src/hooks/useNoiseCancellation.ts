@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Room, Track, LocalAudioTrack } from 'livekit-client';
+import i18n from 'i18next';
 import { useUserChoicesStore } from '@xipkg/calls-store';
 import type { NoiseCancellationMode } from '@xipkg/calls-types';
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { trackNoiseCancellationEvent, NOISE_CANCELLATION_EVENTS } from '@xipkg/calls-utils';
 
 /** Сообщение при ошибке аутентификации Krisp (404 / нет LiveKit Cloud). */
-const KRISP_AUTH_ERROR_MESSAGE = 'Усиленное шумоподавление недоступно (требуется LiveKit Cloud).';
+function getKrispAuthErrorMessage() {
+  return i18n.t('noiseCancellation.errors.krispAuth', { ns: 'calls' });
+}
 
 function isKrispAuthError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
@@ -133,7 +136,7 @@ export function useNoiseCancellation(
       if (!isKrispAuthError(event.reason)) return;
       event.preventDefault();
       event.stopPropagation();
-      setLastErrorRef.current(KRISP_AUTH_ERROR_MESSAGE);
+      setLastErrorRef.current(getKrispAuthErrorMessage());
       setStoreModeRef.current('webrtc');
       krispProcessorRef.current = null;
       const track = resolvedTrackRef.current;
@@ -201,7 +204,7 @@ export function useNoiseCancellation(
           if (!processor) {
             const created = await createKrispProcessor();
             if (!created) {
-              setLastError('Krisp недоступен');
+              setLastError(i18n.t('noiseCancellation.errors.krispUnavailable', { ns: 'calls' }));
               trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.APPLY_FAILED, {
                 reason: 'processor_create_failed',
               });
@@ -221,7 +224,7 @@ export function useNoiseCancellation(
         return 'webrtc' as const;
       } catch (err) {
         const message = isKrispAuthError(err)
-          ? KRISP_AUTH_ERROR_MESSAGE
+          ? getKrispAuthErrorMessage()
           : err instanceof Error
             ? err.message
             : String(err);

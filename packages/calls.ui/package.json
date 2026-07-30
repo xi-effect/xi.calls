@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-ui",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "type": "module",
   "exports": {
     ".": {
@@ -36,12 +36,12 @@
     "@xipkg/toggle": "4.2.0",
     "@xipkg/scrollarea": "2.3.0",
     "@xipkg/slider": "2.3.0",
-    "@xipkg/calls-store": "^0.1.14",
-    "@xipkg/calls-hooks": "^0.1.14",
-    "@xipkg/calls-providers": "^0.1.14",
-    "@xipkg/calls-config": "^0.1.14",
-    "@xipkg/calls-utils": "^0.1.14",
-    "@xipkg/calls-types": "^0.1.14",
+    "@xipkg/calls-store": "^0.1.15",
+    "@xipkg/calls-hooks": "^0.1.15",
+    "@xipkg/calls-providers": "^0.1.15",
+    "@xipkg/calls-config": "^0.1.15",
+    "@xipkg/calls-utils": "^0.1.15",
+    "@xipkg/calls-types": "^0.1.15",
     "@xipkg/utils": "^1.8.0"
   },
   "devDependencies": {
@@ -63,7 +63,9 @@
     "typescript-eslint": "^8.65.0"
   },
   "peerDependencies": {
-    "react": "^19.2.8"
+    "i18next": "24.2.2",
+    "react": "^19.2.8",
+    "react-i18next": "15.4.1"
   },
   "description": "calls ui package",
   "author": "xi.effect",

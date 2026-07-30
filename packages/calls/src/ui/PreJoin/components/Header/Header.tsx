@@ -3,9 +3,11 @@ import { ArrowLeft } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { useCalls } from '@xipkg/calls-providers';
 import { useCallBackNavigation } from '@xipkg/calls-hooks';
+import { useTranslation } from 'react-i18next';
 
 /* eslint-disable no-irregular-whitespace */
 export const Header = () => {
+  const { t } = useTranslation('calls');
   const { callId, leaveToClassroom } = useCallBackNavigation();
   const { room } = useCalls();
   const { data: classroom } = room.useGetClassroom(Number(callId));
@@ -25,11 +27,11 @@ export const Header = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="start">
-            Вернуться в кабинет
+            {t('preJoin.backToClassroom')}
           </TooltipContent>
         </Tooltip>
         <h1 className="text-s-base sm:text-xl-base text-text-primary font-semibold">
-          Присоединиться к занятию
+          {t('preJoin.title')}
         </h1>
       </div>
       <p className="text-xs-base sm:text-s-base text-text-secondary pt-0 pl-12 align-baseline sm:pt-2 sm:pl-0">

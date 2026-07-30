@@ -29,7 +29,7 @@ export const ChatButton = ({ className }: ChatButtonProps) => {
     >
       <Chat className={cn('h-6 w-6', isChatOpen ? 'fill-icon-brand' : 'fill-icon-primary')} />
       {unreadMessagesCount > 0 && (
-        <div className="text-text-danger bg-action-primary-background-pressed absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium">
+        <div className="bg-action-primary-background-default text-action-primary-text absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-medium">
           {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
         </div>
       )}

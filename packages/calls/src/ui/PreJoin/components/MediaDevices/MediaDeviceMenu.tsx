@@ -3,14 +3,8 @@ import { computeMenuPosition, wasClickOutside } from '@livekit/components-core';
 import { Select, SelectContent, SelectGroup, SelectTrigger, SelectValue } from '@xipkg/select';
 import { Conference, Microphone, SoundTwo } from '@xipkg/icons';
 import { useMediaDeviceSelect } from '@livekit/components-react';
+import { useTranslation } from 'react-i18next';
 import { MediaDeviceKind, MediaDeviceSelect } from './MediaDeviceSelect';
-
-const placeholders = {
-  audioinput: 'Встроенный микрофон',
-  audiooutput: 'Встроенные динамики',
-  videoinput: 'Встроенная камера',
-  default: 'По умолчанию',
-};
 
 export interface MediaDeviceMenuProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean;
@@ -29,11 +23,19 @@ export const MediaDeviceMenu = ({
   disabled,
   requestPermissions = false,
 }: MediaDeviceMenuProps) => {
+  const { t } = useTranslation('calls');
   const [isOpen, setIsOpen] = React.useState(false);
   const [updateRequired, setUpdateRequired] = React.useState<boolean>(true);
   const [, setNeedPermissions] = React.useState(requestPermissions);
   const button = React.useRef<HTMLButtonElement>(null);
   const tooltip = React.useRef<HTMLDivElement>(null);
+
+  const placeholders = {
+    audioinput: t('preJoin.device.builtinMic'),
+    audiooutput: t('preJoin.device.builtinSpeakers'),
+    videoinput: t('preJoin.device.builtinCamera'),
+    default: t('preJoin.device.default'),
+  };
 
   const handleError = React.useCallback((e: Error) => {
     console.error('Media device error:', e);

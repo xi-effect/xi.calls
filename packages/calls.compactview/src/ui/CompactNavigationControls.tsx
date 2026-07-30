@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from '@xipkg/icons';
+import { useTranslation } from 'react-i18next';
 
 interface CompactNavigationControlsProps {
   canPrev: boolean;
@@ -21,6 +22,8 @@ export function CompactNavigationControls({
   currentIndex,
   totalParticipants,
 }: CompactNavigationControlsProps) {
+  const { t } = useTranslation('calls');
+
   if (totalParticipants <= 1) {
     return null;
   }
@@ -43,7 +46,7 @@ export function CompactNavigationControls({
                   ? 'bg-background-canvas'
                   : 'bg-background-canvas/50 hover:bg-background-canvas/75'
               }`}
-              aria-label={`Участник ${index + 1}`}
+              aria-label={t('compactView.participant', { index: index + 1 })}
             />
           ))}
         </div>
@@ -58,7 +61,7 @@ export function CompactNavigationControls({
           className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span className="sr-only">Предыдущий участник</span>
+          <span className="sr-only">{t('compactView.prevParticipant')}</span>
         </button>
       </div>
 
@@ -71,7 +74,7 @@ export function CompactNavigationControls({
           className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowRight className="h-4 w-4" />
-          <span className="sr-only">Следующий участник</span>
+          <span className="sr-only">{t('compactView.nextParticipant')}</span>
         </button>
       </div>
     </div>

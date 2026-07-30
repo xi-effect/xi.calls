@@ -10,6 +10,7 @@ import { PagedCarousel } from './PagedCarousel';
 import { GridPaginationControls } from './GridPaginationControls';
 import { useSize } from '@xipkg/calls-hooks';
 import { useCallStore } from '@xipkg/calls-store';
+import { useTranslation } from 'react-i18next';
 
 const ASPECT = 16 / 9;
 const GRID_GAP = 8;
@@ -209,6 +210,7 @@ type CarouselContainerProps = {
 };
 
 export const CarouselContainer = ({ stageTrack, carouselTracks }: CarouselContainerProps) => {
+  const { t } = useTranslation('calls');
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef as React.RefObject<HTMLDivElement>);
   const isMobile = containerSize.width > 0 && containerSize.width < MOBILE_BREAKPOINT;
@@ -218,7 +220,7 @@ export const CarouselContainer = ({ stageTrack, carouselTracks }: CarouselContai
     if (!stageTrack) {
       return (
         <div className="bg-background-subtle flex h-full w-full items-center justify-center rounded-2xl">
-          <span className="text-text-primary text-lg">Нет участников для отображения</span>
+          <span className="text-text-primary text-lg">{t('videoGrid.empty')}</span>
         </div>
       );
     }
@@ -234,7 +236,7 @@ export const CarouselContainer = ({ stageTrack, carouselTracks }: CarouselContai
         {...stageTrack}
       />
     );
-  }, [stageTrack]);
+  }, [stageTrack, t]);
 
   const thumbElements = useMemo(
     () =>

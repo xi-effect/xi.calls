@@ -10,6 +10,7 @@ import {
 import { Emotions } from '@xipkg/icons';
 import { EmojiGlyph } from '@xipkg/calls-ui';
 import { cn } from '@xipkg/utils';
+import { useTranslation } from 'react-i18next';
 import { useReactions } from '../hooks';
 import { REACTION_OPTIONS } from '../constants';
 
@@ -19,6 +20,7 @@ type ReactionButtonPropsT = {
 
 export const ReactionButton = ({ className }: ReactionButtonPropsT) => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation('calls');
   const { sendReaction, isOnCooldown } = useReactions();
 
   return (
@@ -42,7 +44,7 @@ export const ReactionButton = ({ className }: ReactionButtonPropsT) => {
           </DropdownMenuTrigger>
         </TooltipTrigger>
         <TooltipContent side="top" align="center">
-          Реакции
+          {t('reactions.tooltip')}
         </TooltipContent>
       </Tooltip>
 
@@ -55,8 +57,8 @@ export const ReactionButton = ({ className }: ReactionButtonPropsT) => {
         {REACTION_OPTIONS.map((option) => (
           <DropdownMenuItem
             key={option.emoji}
-            aria-label={option.label}
-            title={option.label}
+            aria-label={t(option.labelKey)}
+            title={t(option.labelKey)}
             disabled={isOnCooldown}
             // Не закрываем пикер — можно сразу отправить несколько реакций подряд
             onSelect={(event) => {
@@ -66,7 +68,7 @@ export const ReactionButton = ({ className }: ReactionButtonPropsT) => {
             className="flex h-10 w-10 items-center justify-center rounded-xl p-0"
             data-umami-event="call-send-reaction"
           >
-            <EmojiGlyph emoji={option.emoji} className="h-6 w-6" aria-label={option.label} />
+            <EmojiGlyph emoji={option.emoji} className="h-6 w-6" aria-label={t(option.labelKey)} />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
