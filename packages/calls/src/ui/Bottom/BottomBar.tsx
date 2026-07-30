@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
+import { ReactionButton } from '@xipkg/calls-reactions';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
@@ -91,7 +92,11 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
       )}
     >
       <div className="flex w-full flex-row justify-between p-4 pt-1">
-        <div />
+        <div className="flex flex-row items-center gap-4">
+          <div className="bg-background-surface border-border-default flex h-[48px] w-[48px] items-center justify-center rounded-[16px] border p-1">
+            <ReactionButton />
+          </div>
+        </div>
         <div className="flex flex-row gap-4">
           <div className="bg-background-surface border-border-default flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
             <DevicesBar

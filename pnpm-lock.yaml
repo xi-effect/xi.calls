@@ -217,31 +217,34 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
+      '@xipkg/calls-reactions':
+        specifier: ^0.1.14
+        version: link:../calls.reactions
       '@xipkg/calls-risehand':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -326,25 +329,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -420,31 +423,31 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -553,19 +556,19 @@ importers:
   packages/calls.hooks:
     dependencies:
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       livekit-client:
         specifier: 2.19.1
@@ -626,11 +629,105 @@ importers:
   packages/calls.providers:
     dependencies:
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
+      react:
+        specifier: ^19.2.8
+        version: 19.2.8
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.19.0
+        version: 9.39.4
+      '@tanstack/react-query-devtools':
+        specifier: 5.101.4
+        version: 5.101.4(@tanstack/react-query@5.101.4)(react@19.2.8)
+      '@types/node':
+        specifier: ^20.3.1
+        version: 20.19.41
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.0.2
+        version: 19.2.3(@types/react@19.2.17)
+      '@xipkg/eslint':
+        specifier: 4.6.0
+        version: 4.6.0(turbo@2.10.6)
+      '@xipkg/typescript':
+        specifier: 0.2.0
+        version: 0.2.0
+      common.eslint:
+        specifier: '*'
+        version: link:../common.eslint
+      common.typescript:
+        specifier: '*'
+        version: link:../common.typescript
+      eslint:
+        specifier: ^9.19.0
+        version: 9.39.4
+      eslint-plugin-react-hooks:
+        specifier: ^5.0.0
+        version: 5.2.0(eslint@9.39.4)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.18
+        version: 0.4.26(eslint@9.39.4)
+      globals:
+        specifier: ^15.14.0
+        version: 15.15.0
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.3
+      typescript-eslint:
+        specifier: ^8.65.0
+        version: 8.65.0(eslint@9.39.4)(typescript@5.7.3)
+
+  packages/calls.reactions:
+    dependencies:
+      '@astronautlabs/emoji':
+        specifier: 17.1.0
+        version: 17.1.0
+      '@xipkg/button':
+        specifier: 4.3.0
+        version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
+      '@xipkg/calls-config':
+        specifier: ^0.1.14
+        version: link:../calls.config
+      '@xipkg/calls-hooks':
+        specifier: ^0.1.14
+        version: link:../calls.hooks
+      '@xipkg/calls-providers':
+        specifier: ^0.1.14
+        version: link:../calls.providers
+      '@xipkg/calls-store':
+        specifier: ^0.1.14
+        version: link:../calls.store
+      '@xipkg/calls-types':
+        specifier: ^0.1.14
+        version: link:../calls.types
+      '@xipkg/calls-ui':
+        specifier: ^0.1.14
+        version: link:../calls.ui
+      '@xipkg/calls-utils':
+        specifier: ^0.1.14
+        version: link:../calls.utils
+      '@xipkg/dropdown':
+        specifier: 3.1.0
+        version: 3.1.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
+      '@xipkg/icons':
+        specifier: ^3.1.0
+        version: 3.1.0(react@19.2.8)
+      '@xipkg/tooltip':
+        specifier: 2.2.0
+        version: 2.2.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
+      '@xipkg/utils':
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.8)
+      framer-motion:
+        specifier: 12.42.2
+        version: 12.42.2(react-dom@19.2.8)(react@19.2.8)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -687,19 +784,19 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -760,7 +857,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -862,6 +959,9 @@ importers:
 
   packages/calls.ui:
     dependencies:
+      '@astronautlabs/emoji':
+        specifier: 17.1.0
+        version: 17.1.0
       '@xipkg/badge':
         specifier: 2.1.0
         version: 2.1.0(react@19.2.8)
@@ -869,22 +969,22 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.12
+        specifier: ^0.1.14
         version: link:../calls.utils
       '@xipkg/checkbox':
         specifier: 5.1.0
@@ -1132,6 +1232,12 @@ packages:
       jsonpointer: 5.0.1
       leven: 3.1.0
     dev: true
+
+  /@astronautlabs/emoji@17.1.0:
+    resolution: {integrity: sha512-CjlzmRgzYNZ+7oIFapyiAqIu9TpJp8PbKE5qM8Vm4e6y67nCsh0OaBq+yLYDYylgJOm5nv+Ki9V7Q8+QMdpAyg==}
+    dependencies:
+      emoji-regex: 10.6.0
+    dev: false
 
   /@babel/code-frame@7.29.7:
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -5974,6 +6080,10 @@ packages:
   /electron-to-chromium@1.5.363:
     resolution: {integrity: sha512-VjUKPyWzGnT1fujlkEGC/BvN70Hh70KXtAqcmniXviYlJC/ivcT+BWGPyxWVbJZLfvtKR6dqg1L7T7pgAMBtWA==}
     dev: true
+
+  /emoji-regex@10.6.0:
+    resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
+    dev: false
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}

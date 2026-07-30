@@ -11,6 +11,8 @@ export {
   PermissionsDialog,
   RaisedHandIndicator,
   NoiseCancellationSettings,
+  EmojiGlyph,
+  ReactionIndicator,
 } from './shared';
 export { VideoGrid } from './VideoGrid';
 export { ParticipantName, ParticipantTile, TrackMutedIndicator } from './Participant';

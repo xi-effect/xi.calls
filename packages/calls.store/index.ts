@@ -7,6 +7,8 @@ export {
   useSoundEffectsStore,
   useFeaturesStore,
   useFocusModeStore,
+  useReactionsStore,
+  PARTICIPANT_REACTION_TTL_MS,
 } from './src';
 
 export type {
@@ -15,6 +17,9 @@ export type {
   CompactViewModeT,
   PinnedParticipantT,
   PinnedTrackT,
+  FeatureKey,
+  FloatingReactionT,
+  ParticipantReactionT,
 } from './src';
 export {
   getParticipantUserId,

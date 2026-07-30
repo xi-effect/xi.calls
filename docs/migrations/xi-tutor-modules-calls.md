@@ -26,6 +26,7 @@
 | `@xipkg/calls-ui`          | `ui/` (кроме Call/CompactView) — VideoGrid, BottomBar, PreJoin, …                          |
 | `@xipkg/calls-chat`        | `ui/Chat/`, `hooks/useChat`                                                                |
 | `@xipkg/calls-risehand`    | `hooks/useRaisedHands`, `RaiseHandButton`                                                  |
+| `@xipkg/calls-reactions`   | `ReactionButton`, `ReactionsOverlay`, `useReactions`                                       |
 | `@xipkg/calls-compactview` | `ui/CompactView/`, PiP-провайдер                                                           |
 | `@xipkg/calls`             | `Call`, `PreJoin`, `ActiveRoom` — точка входа full-screen ВКС                              |
 
@@ -42,7 +43,7 @@ calls-providers
     ↓
 calls-hooks
     ↓
-calls-ui, calls-chat, calls-risehand
+calls-ui, calls-chat, calls-risehand, calls-reactions
     ↓
 calls-compactview
     ↓

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type FeatureKey = 'compactView' | 'whiteboard' | 'raiseHand' | 'chat';
+export type FeatureKey = 'compactView' | 'whiteboard' | 'raiseHand' | 'chat' | 'reactions';
 
 type FeatureMapT = Record<FeatureKey, boolean>;
 
@@ -16,6 +16,7 @@ const defaultFeatures: FeatureMapT = {
   whiteboard: true,
   raiseHand: true,
   chat: true,
+  reactions: true,
 };
 
 export const useFeaturesStore = create<FeaturesState>((set) => ({
