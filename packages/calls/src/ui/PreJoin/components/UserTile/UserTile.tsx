@@ -21,6 +21,7 @@ const UserTileUI = ({
   isCameraDeniedOrPrompted,
   isMicrophoneDeniedOrPrompted,
   isVideoInitiated,
+  mirrorVideo,
 }: {
   audioTrack?: LocalAudioTrack;
   videoTrack?: LocalVideoTrack;
@@ -31,6 +32,7 @@ const UserTileUI = ({
   isCameraDeniedOrPrompted: boolean;
   isMicrophoneDeniedOrPrompted: boolean;
   isVideoInitiated: boolean;
+  mirrorVideo: boolean;
 }) => {
   const { t } = useTranslation('calls');
   const isPermissionsBlocked = isCameraDeniedOrPrompted || isMicrophoneDeniedOrPrompted;
@@ -97,7 +99,9 @@ const UserTileUI = ({
     }
 
     return (
-      <div className="aspect-video h-full w-full transform-[rotateY(180deg)]">
+      <div
+        className={`aspect-video h-full w-full${mirrorVideo ? 'transform-[rotateY(180deg)]' : ''}`}
+      >
         <SecureVideo
           ref={videoEl}
           data-lk-facing-mode={facingMode}
@@ -114,7 +118,15 @@ const UserTileUI = ({
         />
       </div>
     );
-  }, [videoTrack, facingMode, videoEl, videoEnabled, isCameraDeniedOrPrompted, isVideoInitiated]);
+  }, [
+    videoTrack,
+    facingMode,
+    videoEl,
+    videoEnabled,
+    isCameraDeniedOrPrompted,
+    isVideoInitiated,
+    mirrorVideo,
+  ]);
 
   const renderAvatar = useMemo(() => {
     if (videoTrack && !videoTrack.isMuted && !isCameraDeniedOrPrompted) return null;
@@ -185,7 +197,7 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
   const { userId } = user ?? {};
 
   const {
-    userChoices: { videoEnabled },
+    userChoices: { videoEnabled, mirrorVideo = true },
   } = usePersistentUserChoices();
 
   const videoEl = useRef<HTMLVideoElement>(null);
@@ -276,6 +288,7 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
       isCameraDeniedOrPrompted={isCameraDeniedOrPrompted}
       isMicrophoneDeniedOrPrompted={isMicrophoneDeniedOrPrompted}
       isVideoInitiated={isVideoInitiated}
+      mirrorVideo={mirrorVideo}
     />
   );
 };

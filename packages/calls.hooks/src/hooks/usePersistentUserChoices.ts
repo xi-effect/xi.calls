@@ -37,5 +37,18 @@ export function usePersistentUserChoices() {
     saveBlurEnabled: (enabled: boolean) => {
       useUserChoicesStore.setState({ blurEnabled: enabled });
     },
+    saveMicrophoneVolume: (volume: number) => {
+      useUserChoicesStore.setState({
+        microphoneVolume: Math.max(0, Math.min(1, volume)),
+      });
+    },
+    saveSpeakerVolume: (volume: number) => {
+      useUserChoicesStore.setState({
+        speakerVolume: Math.max(0, Math.min(1, volume)),
+      });
+    },
+    saveMirrorVideo: (enabled: boolean) => {
+      useUserChoicesStore.setState({ mirrorVideo: enabled });
+    },
   };
 }

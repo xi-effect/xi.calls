@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as AboutRouteImport } from './pages/about'
+import { Route as SoundAndVideoRouteImport } from './pages/sound-and-video'
 import { Route as BoardBoardIdRouteImport } from './pages/board/$boardId'
 import { Route as CallCallIdRouteImport } from './pages/call/$callId'
 import { Route as ClassroomsClassroomIdIndexRouteImport } from './pages/classrooms/$classroomId/index'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SoundAndVideoRoute = SoundAndVideoRouteImport.update({
+  id: '/sound-and-video',
+  path: '/sound-and-video',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoardBoardIdRoute = BoardBoardIdRouteImport.update({
@@ -52,6 +58,7 @@ const ClassroomsClassroomIdBoardsBoardIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sound-and-video': typeof SoundAndVideoRoute
   '/board/$boardId': typeof BoardBoardIdRoute
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
@@ -60,6 +67,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sound-and-video': typeof SoundAndVideoRoute
   '/board/$boardId': typeof BoardBoardIdRoute
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId': typeof ClassroomsClassroomIdIndexRoute
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sound-and-video': typeof SoundAndVideoRoute
   '/board/$boardId': typeof BoardBoardIdRoute
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/sound-and-video'
     | '/board/$boardId'
     | '/call/$callId'
     | '/classrooms/$classroomId/'
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/sound-and-video'
     | '/board/$boardId'
     | '/call/$callId'
     | '/classrooms/$classroomId'
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/sound-and-video'
     | '/board/$boardId'
     | '/call/$callId'
     | '/classrooms/$classroomId/'
@@ -104,6 +116,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  SoundAndVideoRoute: typeof SoundAndVideoRoute
   BoardBoardIdRoute: typeof BoardBoardIdRoute
   CallCallIdRoute: typeof CallCallIdRoute
   ClassroomsClassroomIdIndexRoute: typeof ClassroomsClassroomIdIndexRoute
@@ -124,6 +137,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sound-and-video': {
+      id: '/sound-and-video'
+      path: '/sound-and-video'
+      fullPath: '/sound-and-video'
+      preLoaderRoute: typeof SoundAndVideoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/board/$boardId': {
@@ -160,6 +180,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  SoundAndVideoRoute: SoundAndVideoRoute,
   BoardBoardIdRoute: BoardBoardIdRoute,
   CallCallIdRoute: CallCallIdRoute,
   ClassroomsClassroomIdIndexRoute: ClassroomsClassroomIdIndexRoute,

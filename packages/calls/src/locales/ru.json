@@ -64,6 +64,21 @@
       "unnamed": "Устройство {{shortId}}"
     }
   },
+  "soundAndVideo": {
+    "title": "Звук и видео",
+    "sound": "Звук",
+    "camera": "Камера",
+    "microphone": "Микрофон",
+    "speakers": "Динамики",
+    "test": "Проверить",
+    "testing": "Проверка…",
+    "volume": "Громкость",
+    "sensitivity": "Чувствительность",
+    "mirror": "Отразить зеркально",
+    "cameraUnavailable": "Камера недоступна",
+    "allowCamera": "Как разрешить камеру",
+    "allowMicrophone": "Как разрешить микрофон"
+  },
   "noiseCancellation": {
     "title": "Шумоподавление",
     "modeLabel": "Режим",

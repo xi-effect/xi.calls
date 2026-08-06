@@ -64,6 +64,21 @@
       "unnamed": "Device {{shortId}}"
     }
   },
+  "soundAndVideo": {
+    "title": "Sound and video",
+    "sound": "Sound",
+    "camera": "Camera",
+    "microphone": "Microphone",
+    "speakers": "Speakers",
+    "test": "Test",
+    "testing": "Testing…",
+    "volume": "Volume",
+    "sensitivity": "Sensitivity",
+    "mirror": "Mirror video",
+    "cameraUnavailable": "Camera unavailable",
+    "allowCamera": "How to allow camera",
+    "allowMicrophone": "How to allow microphone"
+  },
   "noiseCancellation": {
     "title": "Noise cancellation",
     "modeLabel": "Mode",

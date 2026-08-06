@@ -1,5 +1,5 @@
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
-import { useCallStore } from '@xipkg/calls-store';
+import { useCallStore, useUserChoicesStore } from '@xipkg/calls-store';
 import { useCallback, useEffect, useRef } from 'react';
 import { DisconnectReason, Track, type RemoteTrackPublication } from 'livekit-client';
 import { useRoom } from './RoomProvider';
@@ -22,10 +22,32 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const { clearConferenceUiState } = useCallsSession();
   const { audioEnabled, videoEnabled, connect, token, updateStore } = useCallStore();
   const callId = navigation.getCallId();
+  const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
+  const audioOutputDeviceId = useUserChoicesStore((s) => s.audioOutputDeviceId);
 
   const { isStarted } = useCallStore();
   const wasConnectedRef = useRef(false);
   const disconnectGraceTimeoutRef = useRef<number | null>(null);
+
+  // Устройство вывода — прямо здесь, чтобы не плодить цикл calls.providers ↔ calls.hooks
+  useEffect(() => {
+    if (!audioOutputDeviceId) return;
+
+    let cancelled = false;
+    const apply = async () => {
+      try {
+        await room.switchActiveDevice('audiooutput', audioOutputDeviceId);
+      } catch (error) {
+        if (!cancelled) {
+          console.warn('Failed to switch audio output device:', error);
+        }
+      }
+    };
+    void apply();
+    return () => {
+      cancelled = true;
+    };
+  }, [room, audioOutputDeviceId]);
 
   const clearPendingDisconnect = useCallback(() => {
     if (disconnectGraceTimeoutRef.current) {
@@ -273,7 +295,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
        * (GainNode с ramp) — отсюда был слышен резкий скачок громкости/тембра.
        * LiveKitProvider не размонтируется при смене режимов, поэтому звук остаётся стабильным.
        */}
-      <RoomAudioRenderer />
+      <RoomAudioRenderer volume={speakerVolume} />
       {children}
     </LiveKitRoom>
   );

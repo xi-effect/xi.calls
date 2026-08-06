@@ -11,6 +11,7 @@ export {
   PermissionsDialog,
   RaisedHandIndicator,
   NoiseCancellationSettings,
+  SoundAndVideoSettings,
   EmojiGlyph,
   ReactionIndicator,
 } from './shared';

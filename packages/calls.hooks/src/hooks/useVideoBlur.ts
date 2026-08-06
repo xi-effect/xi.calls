@@ -41,9 +41,10 @@ export function useVideoBlur(videoTrack: LocalVideoTrack | null | undefined) {
           } as Parameters<typeof BackgroundProcessor>[0]);
 
           await videoTrack.setProcessor(processor);
-          if (cancelled) {
-            // Пока ждали setProcessor, эффект уже "ушёл" — откатываем,
-            // чтобы не оставить процессор, который никто не запрашивал.
+          // Не откатываем setProcessor при cancelled: в React Strict Mode cleanup
+          // срабатывает до завершения init, и немедленный stopProcessor оставлял
+          // превью без размытия после повторного mount.
+          if (cancelled && !useUserChoicesStore.getState().blurEnabled) {
             await videoTrack.stopProcessor().catch(console.error);
           }
         } else {
@@ -54,7 +55,7 @@ export function useVideoBlur(videoTrack: LocalVideoTrack | null | undefined) {
       }
     };
 
-    applyBlur();
+    void applyBlur();
 
     return () => {
       cancelled = true;

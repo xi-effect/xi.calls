@@ -11,6 +11,7 @@ import { usePreviewTracks } from '@livekit/components-react';
 import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 import {
   useVideoBlur,
+  useMicrophoneVolume,
   useResolveInitiallyDefaultDeviceId,
   usePersistentUserChoices,
   useNoiseCancellation,
@@ -196,6 +197,7 @@ export const PreJoin = () => {
 
   // Передаем видеотрек для использования блюра
   useVideoBlur(videoTrack);
+  useMicrophoneVolume(audioTrack);
 
   const noiseCancellation = useNoiseCancellation(null, {
     localAudioTrack: audioTrack ?? undefined,

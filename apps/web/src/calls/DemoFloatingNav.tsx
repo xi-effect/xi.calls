@@ -190,6 +190,13 @@ export const DemoFloatingNav = () => {
           >
             Доска + compact
           </Link>
+          <Link
+            to="/sound-and-video"
+            className={DEMO_LINK_CLASS}
+            activeProps={{ className: `${DEMO_LINK_CLASS} ${DEMO_LINK_ACTIVE_CLASS}` }}
+          >
+            Звук и видео
+          </Link>
         </nav>
       </div>
     </div>

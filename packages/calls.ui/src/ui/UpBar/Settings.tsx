@@ -69,13 +69,15 @@ const DeviceSelector = ({
       value={currentDeviceId || undefined}
       disabled={disabled || !hasDevices}
     >
-      <SelectTrigger className="text-text-primary w-full">
-        <div className="flex items-center gap-2">
+      <SelectTrigger
+        className="text-text-primary w-full"
+        before={
           <span className="fill-icon-primary [&_svg]:fill-icon-primary shrink-0">{icon}</span>
-          <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
-        </div>
+        }
+      >
+        <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
       </SelectTrigger>
-      <SelectContent className="w-88">
+      <SelectContent className="w-full">
         {devices?.map((device) => (
           <SelectItem
             key={device.deviceId}
@@ -202,12 +204,14 @@ export const Settings = ({ children }: SettingsPropsT) => {
     async (deviceId: string) => {
       try {
         saveAudioOutputDeviceId(deviceId);
+        // LiveKitProvider также слушает store; здесь применяем сразу для отзывчивости UI
+        await room.switchActiveDevice('audiooutput', deviceId);
         console.log('Audio output device changed to:', deviceId);
       } catch (err) {
         console.error('Failed to switch audio output device', err);
       }
     },
-    [saveAudioOutputDeviceId],
+    [room, saveAudioOutputDeviceId],
   );
 
   // Обработчики включения/выключения

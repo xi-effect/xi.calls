@@ -1,9 +1,10 @@
 import { useLocalParticipant } from '@livekit/components-react';
-import { LocalVideoTrack } from 'livekit-client';
+import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { Chat } from '@xipkg/calls-chat';
 import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
-import { useVideoBlur } from '@xipkg/calls-hooks';
+import { useMicrophoneVolume, useNoiseCancellation, useVideoBlur } from '@xipkg/calls-hooks';
+import { useRoom } from '@xipkg/calls-providers';
 import { useHandFocus } from '@xipkg/calls-risehand';
 import { ReactionsOverlay } from '@xipkg/calls-reactions';
 import { BottomBar } from '../Bottom/BottomBar';
@@ -18,14 +19,18 @@ export const ActiveRoom = () => {
   // дублировались и здесь, из-за чего на full-режиме параллельно работали два независимых
   // экземпляра синхронизации — двойные data-channel рассылки при смене режима/участников
   // усиливали "шторм" сообщений в момент перехода на доску.
-  // Получаем видео трек для применения блюра
-  const { cameraTrack } = useLocalParticipant();
+  const { room } = useRoom();
+  const { cameraTrack, microphoneTrack } = useLocalParticipant();
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
+  const audioTrack = microphoneTrack?.track as LocalAudioTrack | undefined;
 
-  // Применяем блюр только в полном режиме
+  // Применяем блюр только в полном режиме (в compact — CompactCall)
   const mode = useCallStore((state) => state.mode);
   const videoTrackForBlur = mode === 'full' ? videoTrack : null;
   useVideoBlur(videoTrackForBlur);
+  // Громкость mic и NC — всегда, пока идёт звонок (ActiveRoom смонтирован и в compact)
+  useMicrophoneVolume(audioTrack);
+  useNoiseCancellation(room);
 
   return (
     <div className="flex h-full min-h-0 flex-col">

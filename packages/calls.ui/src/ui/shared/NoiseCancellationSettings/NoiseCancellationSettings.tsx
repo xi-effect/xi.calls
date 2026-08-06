@@ -63,7 +63,7 @@ export function NoiseCancellationSettings({
               {modeLabels[selectValue as NoiseCancellationMode]}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-full">
             {options.map((mode) => {
               const isKrispDisabled = mode === 'krisp' && !nc.allowKrisp;
               const isUnsupported = mode === 'krisp' && nc.isKrispSupported === false;
