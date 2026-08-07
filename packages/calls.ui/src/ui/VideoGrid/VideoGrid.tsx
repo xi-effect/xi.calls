@@ -163,24 +163,6 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
     useCallStore.getState().updateStore('carouselType', preferredFocusLayout);
   }, [hasScreenShare, carouselType]);
 
-  // Блокируем pinch-zoom/ctrl+wheel браузера над всей конференцией (сетка, миниатюры,
-  // controls и т.д.), чтобы страница не масштабировалась. ScreenShareZoom обрабатывает
-  // этот же жест над демонстрацией экрана самостоятельно и останавливает всплытие
-  // (stopPropagation), так что этот обработчик его не трогает.
-  React.useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-
-    const preventPageZoom = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-      }
-    };
-
-    el.addEventListener('wheel', preventPageZoom, { passive: false });
-    return () => el.removeEventListener('wheel', preventPageZoom);
-  }, []);
-
   return (
     <div ref={rootRef} className="relative flex h-full min-h-0 w-full justify-center" {...props}>
       {isWeb() && (

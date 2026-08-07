@@ -13,7 +13,7 @@ const ZOOM_STEP = 0.1;
 const INITIAL_ZOOM_FACTOR = 1.05;
 const THUMBNAIL_MAX_WIDTH = 240;
 const THUMBNAIL_MAX_HEIGHT = 135;
-const ZOOM_EPSILON = 0.001;
+const ZOOM_EPSILON = 0.01;
 
 type VideoDimensions = { width: number; height: number };
 
