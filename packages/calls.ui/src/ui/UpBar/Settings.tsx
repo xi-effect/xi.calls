@@ -8,10 +8,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@xipkg/sheet';
-import { Close, Conference, Microphone, SoundTwo, Music } from '@xipkg/icons';
+import { Close, Conference, HelpCircle, Microphone, SoundTwo, Music } from '@xipkg/icons';
 import { Label } from '@xipkg/label';
 import { Toggle } from '@xipkg/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@xipkg/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import {
   useLocalParticipant,
   usePersistentUserChoices,
@@ -109,9 +110,11 @@ export const Settings = ({ children }: SettingsPropsT) => {
     saveVideoInputEnabled,
   } = usePersistentUserChoices();
 
-  // Получаем audioOutputDeviceId и blurEnabled из store напрямую
+  // Получаем audioOutputDeviceId, blurEnabled и mirrorVideo из store напрямую
+  // (LiveKit usePersistentUserChoices этих полей не знает)
   const audioOutputDeviceId = useUserChoicesStore((state) => state.audioOutputDeviceId);
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);
+  const mirrorVideo = useUserChoicesStore((state) => state.mirrorVideo ?? true);
 
   const navigation = useCallsNavigation();
 
@@ -121,6 +124,10 @@ export const Settings = ({ children }: SettingsPropsT) => {
 
   const handleBlurToggle = useCallback((checked: boolean) => {
     useUserChoicesStore.setState({ blurEnabled: checked });
+  }, []);
+
+  const handleMirrorToggle = useCallback((checked: boolean) => {
+    useUserChoicesStore.setState({ mirrorVideo: checked });
   }, []);
 
   const cameraPermission = usePermissionsStore((s) => s.cameraPermission);
@@ -258,6 +265,26 @@ export const Settings = ({ children }: SettingsPropsT) => {
                 {t('settings.allowCamera')}
               </Button>
             )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Label className="text-text-primary font-medium">{t('settings.mirror')}</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex shrink-0 rounded-sm bg-transparent p-0"
+                      aria-label={t('settings.mirrorTooltip')}
+                    >
+                      <HelpCircle className="fill-icon-secondary h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-64">
+                    {t('settings.mirrorTooltip')}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Toggle checked={mirrorVideo} onCheckedChange={handleMirrorToggle} />
+            </div>
           </div>
 
           {/* Микрофон */}

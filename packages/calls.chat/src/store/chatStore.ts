@@ -13,6 +13,7 @@ export type useChatStoreT = {
   chatMessages: ChatMessageT[];
   unreadMessagesCount: number;
   addChatMessage: (message: ChatMessageT) => void;
+  removeChatMessage: (messageId: string) => void;
   clearUnreadMessages: () => void;
   updateStore: (type: keyof useChatStoreT, value: unknown) => void;
 };
@@ -41,6 +42,12 @@ export const useChatStore = create<useChatStoreT>()((set, get) => ({
     set((state) => ({
       chatMessages: [...state.chatMessages, message],
       unreadMessagesCount: isChatOpen ? unreadMessagesCount : unreadMessagesCount + 1,
+    }));
+  },
+
+  removeChatMessage: (messageId: string) => {
+    set((state) => ({
+      chatMessages: state.chatMessages.filter((msg) => msg.id !== messageId),
     }));
   },
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@xipkg/button';
 import { Textarea } from '@xipkg/textarea';
-import { Send, Close } from '@xipkg/icons';
+import { Send, Close, Trash } from '@xipkg/icons';
 import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Modal, ModalContent, ModalTitle } from '@xipkg/modal';
@@ -21,7 +21,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   const { t, i18n } = useTranslation('calls');
   const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendChatMessage, closeChat } = useChat();
+  const { sendChatMessage, deleteChatMessage, closeChat } = useChat();
   const { chatMessages, isChatOpen } = useChatStore();
   const { data: currentUser } = useCalls().auth.useCurrentUser();
   const timeLocale = i18n.language?.startsWith('ru')
@@ -103,7 +103,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
               return (
                 <div
                   key={message.id}
-                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                  className={`group flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
                   <div className="text-text-primary flex max-w-[90%] flex-col gap-1 rounded-lg select-text">
                     <div className="text-text-primary flex flex-row items-center gap-1 text-xs font-medium">
@@ -124,15 +124,29 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                         })}
                       </div>
                     </div>
-                    <div
-                      className={cn(
-                        'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap select-text',
-                        isOwnMessage
-                          ? 'bg-action-primary-background-disabled'
-                          : 'bg-background-page',
+                    <div className="relative">
+                      <div
+                        className={cn(
+                          'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap select-text',
+                          isOwnMessage
+                            ? 'bg-action-primary-background-disabled'
+                            : 'bg-background-page',
+                        )}
+                      >
+                        {parseLinks(message.text)}
+                      </div>
+                      {isOwnMessage && (
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="none"
+                          className="bg-background-surface border-border-default absolute -top-2 -left-2 h-7 w-7 rounded-full border p-1 opacity-100 shadow-sm sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                          onClick={() => deleteChatMessage(message.id)}
+                          aria-label={t('chat.deleteAria')}
+                        >
+                          <Trash className="fill-icon-secondary h-4 w-4" />
+                        </Button>
                       )}
-                    >
-                      {parseLinks(message.text)}
                     </div>
                   </div>
                 </div>

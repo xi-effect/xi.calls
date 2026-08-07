@@ -9,7 +9,8 @@ import { Button } from '@xipkg/button';
 import { Checkbox } from '@xipkg/checkbox';
 import { Label } from '@xipkg/label';
 import { Toggle } from '@xipkg/toggle';
-import { Conference, Microphone, SoundTwo } from '@xipkg/icons';
+import { Conference, HelpCircle, Microphone, SoundTwo } from '@xipkg/icons';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 import {
@@ -354,6 +355,20 @@ export const SoundAndVideoSettings = ({ className }: SoundAndVideoSettingsProps)
               <label htmlFor="mirror-video" className="text-text-primary cursor-pointer text-sm">
                 {t('soundAndVideo.mirror')}
               </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex shrink-0 rounded-sm bg-transparent p-0"
+                    aria-label={t('soundAndVideo.mirrorTooltip')}
+                  >
+                    <HelpCircle className="fill-icon-secondary h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-64">
+                  {t('soundAndVideo.mirrorTooltip')}
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             <div className="space-y-2">

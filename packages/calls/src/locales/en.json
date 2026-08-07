@@ -5,6 +5,8 @@
     "camera": "Camera",
     "sound": "Audio",
     "backgroundBlur": "Background blur",
+    "mirror": "Mirror video",
+    "mirrorTooltip": "Mirroring is only visible to you. Other participants see you without the mirror effect.",
     "returnToCall": "Return to call",
     "connecting": "Connecting...",
     "join": "Join",
@@ -56,6 +58,8 @@
     "allowMicrophone": "How to allow microphone",
     "speakers": "Speakers",
     "backgroundBlur": "Background blur",
+    "mirror": "Mirror video",
+    "mirrorTooltip": "Mirroring is only visible to you. Other participants see you without the mirror effect.",
     "effects": "Sound effects settings",
     "device": {
       "builtinMic": "Built-in microphone",
@@ -75,6 +79,7 @@
     "volume": "Volume",
     "sensitivity": "Sensitivity",
     "mirror": "Mirror video",
+    "mirrorTooltip": "Mirroring is only visible to you. Other participants see you without the mirror effect.",
     "cameraUnavailable": "Camera unavailable",
     "allowCamera": "How to allow camera",
     "allowMicrophone": "How to allow microphone"
@@ -187,7 +192,9 @@
     "title": "Chat",
     "close": "Close chat",
     "empty": "Start chatting",
-    "placeholder": "Write a message..."
+    "placeholder": "Write a message...",
+    "delete": "Delete",
+    "deleteAria": "Delete message for everyone"
   },
   "compactView": {
     "noParticipants": "No participants",

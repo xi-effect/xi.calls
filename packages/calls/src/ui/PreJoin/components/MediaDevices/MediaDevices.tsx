@@ -3,7 +3,8 @@ import { Button } from '@xipkg/button';
 import { Toggle } from '@xipkg/toggle';
 import { Label } from '@xipkg/label';
 import { Alert, AlertIcon, AlertContainer, AlertDescription } from '@xipkg/alert';
-import { InfoCircle } from '@xipkg/icons';
+import { HelpCircle, InfoCircle } from '@xipkg/icons';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { MediaDeviceMenu } from './MediaDeviceMenu';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import {
@@ -25,13 +26,14 @@ interface MediaDevicesProps {
 export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: MediaDevicesProps) => {
   const { t } = useTranslation('calls');
   const {
-    userChoices: { audioDeviceId, audioOutputDeviceId, videoDeviceId, blurEnabled },
+    userChoices: { audioDeviceId, audioOutputDeviceId, videoDeviceId, blurEnabled, mirrorVideo },
     saveAudioInputDeviceId,
     saveAudioOutputDeviceId,
     saveVideoInputDeviceId,
     saveAudioInputEnabled,
     saveVideoInputEnabled,
     saveBlurEnabled,
+    saveMirrorVideo,
   } = usePersistentUserChoices();
 
   const { updateStore, token, isConnecting } = useCallStore();
@@ -180,6 +182,28 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
                 onActiveDeviceChange={(_, id) => saveAudioOutputDeviceId(id)}
                 disabled={microphonePermission !== 'granted'}
               />
+            </div>
+          </div>
+          <div className="my-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Label className="text-text-primary font-medium">{t('preJoin.mirror')}</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex shrink-0 rounded-sm bg-transparent p-0"
+                      aria-label={t('preJoin.mirrorTooltip')}
+                    >
+                      <HelpCircle className="fill-icon-secondary h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-64">
+                    {t('preJoin.mirrorTooltip')}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Toggle checked={mirrorVideo ?? true} onCheckedChange={saveMirrorVideo} />
             </div>
           </div>
           {isBlurSupported && (

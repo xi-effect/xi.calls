@@ -5,6 +5,30 @@ import { useUserChoicesStore } from '@xipkg/calls-store';
 import type { NoiseCancellationMode } from '@xipkg/calls-types';
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { trackNoiseCancellationEvent, NOISE_CANCELLATION_EVENTS } from '@xipkg/calls-utils';
+import {
+  claimMicProcessorSlot,
+  currentMicProcessorOwner,
+  releaseMicProcessorSlot,
+} from './micProcessorOwnership';
+
+const KRISP_PROCESSOR_OWNER = 'xi-krisp-noise-cancellation';
+
+/**
+ * Слот processor на треке общий с useMicrophoneVolume (гейн громкости) — LiveKit допускает
+ * ровно один TrackProcessor. Останавливаем процессор ТОЛЬКО если он поставлен нами (Krisp),
+ * иначе безусловный track.stopProcessor() сносил бы чужой (гейн) процессор при каждом
+ * маунте/смене режима на 'off'/'webrtc' (а это дефолтный режим).
+ */
+async function stopKrispProcessorIfOwned(track: LocalAudioTrack) {
+  if (currentMicProcessorOwner(track) !== KRISP_PROCESSOR_OWNER) return;
+  try {
+    await track.stopProcessor();
+  } catch {
+    // ignore
+  } finally {
+    releaseMicProcessorSlot(track, KRISP_PROCESSOR_OWNER);
+  }
+}
 
 /** Сообщение при ошибке аутентификации Krisp (404 / нет LiveKit Cloud). */
 function getKrispAuthErrorMessage() {
@@ -141,7 +165,7 @@ export function useNoiseCancellation(
       krispProcessorRef.current = null;
       const track = resolvedTrackRef.current;
       if (track) {
-        track.stopProcessor().catch(() => {});
+        void stopKrispProcessorIfOwned(track);
       }
       trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.APPLY_FAILED, {
         reason: event.reason instanceof Error ? event.reason.message : String(event.reason),
@@ -169,20 +193,12 @@ export function useNoiseCancellation(
       setIsApplying(true);
       try {
         if (!enabled || mode === 'off') {
-          try {
-            await track.stopProcessor();
-          } catch {
-            // ignore
-          }
+          await stopKrispProcessorIfOwned(track);
           krispProcessorRef.current = null;
           return 'off' as const;
         }
         if (mode === 'webrtc') {
-          try {
-            await track.stopProcessor();
-          } catch {
-            // ignore
-          }
+          await stopKrispProcessorIfOwned(track);
           krispProcessorRef.current = null;
           return 'webrtc' as const;
         }
@@ -191,19 +207,27 @@ export function useNoiseCancellation(
           if (!supported) {
             trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.KRISP_UNSUPPORTED_BROWSER);
             setStoreModeRef.current('webrtc');
-            try {
-              await track.stopProcessor();
-            } catch {
-              // ignore
-            }
+            await stopKrispProcessorIfOwned(track);
             krispProcessorRef.current = null;
             trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.FALLBACK_TO_WEBRTC);
             return 'webrtc' as const;
           }
           let processor = krispProcessorRef.current;
           if (!processor) {
+            // Слот processor на треке общий с useMicrophoneVolume — если гейн громкости
+            // уже владеет им, не отбираем (это снесло бы обработку громкости без
+            // предупреждения) и деградируем на webrtc, чтобы не потерять звук вовсе.
+            if (!claimMicProcessorSlot(track, KRISP_PROCESSOR_OWNER)) {
+              trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.KRISP_UNSUPPORTED_BROWSER, {
+                reason: 'processor_slot_busy',
+              });
+              setStoreModeRef.current('webrtc');
+              trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.FALLBACK_TO_WEBRTC);
+              return 'webrtc' as const;
+            }
             const created = await createKrispProcessor();
             if (!created) {
+              releaseMicProcessorSlot(track, KRISP_PROCESSOR_OWNER);
               setLastError(i18n.t('noiseCancellation.errors.krispUnavailable', { ns: 'calls' }));
               trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.APPLY_FAILED, {
                 reason: 'processor_create_failed',
@@ -214,9 +238,14 @@ export function useNoiseCancellation(
             }
             processor = created;
             krispProcessorRef.current = processor;
-            await track.setProcessor(
-              created as unknown as Parameters<LocalAudioTrack['setProcessor']>[0],
-            );
+            try {
+              await track.setProcessor(
+                created as unknown as Parameters<LocalAudioTrack['setProcessor']>[0],
+              );
+            } catch (setProcessorError) {
+              releaseMicProcessorSlot(track, KRISP_PROCESSOR_OWNER);
+              throw setProcessorError;
+            }
           }
           await processor.setEnabled(true);
           return 'krisp' as const;
@@ -232,11 +261,7 @@ export function useNoiseCancellation(
         trackNoiseCancellationEvent(NOISE_CANCELLATION_EVENTS.APPLY_FAILED, {
           reason: err instanceof Error ? err.message : String(err),
         });
-        try {
-          await track.stopProcessor();
-        } catch {
-          // ignore
-        }
+        await stopKrispProcessorIfOwned(track);
         krispProcessorRef.current = null;
         if (mode === 'krisp') {
           setStoreModeRef.current('webrtc');

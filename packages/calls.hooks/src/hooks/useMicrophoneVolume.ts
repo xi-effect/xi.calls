@@ -1,98 +1,91 @@
 import { useEffect, useRef } from 'react';
 import type { LocalAudioTrack } from 'livekit-client';
 import { useUserChoicesStore } from '@xipkg/calls-store';
+import { MicrophoneGainProcessor } from './microphoneGainProcessor';
+import { claimMicProcessorSlot, releaseMicProcessorSlot } from './micProcessorOwnership';
 
-type MicGainGraph = {
-  ctx: AudioContext;
-  gain: GainNode;
-  source: MediaStreamAudioSourceNode;
-  sourceTrack: MediaStreamTrack;
-  gainedTrack: MediaStreamTrack;
-};
+const GAIN_PROCESSOR_OWNER = 'xi-microphone-gain';
 
-async function swapTrackMedia(audioTrack: LocalAudioTrack, nextTrack: MediaStreamTrack) {
-  try {
-    await audioTrack.replaceTrack(nextTrack, { userProvidedTrack: true });
-    return;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    // PreJoin / preview: трек ещё не опубликован, RTCRtpSender нет
-    if (!message.toLowerCase().includes('unpublished')) {
-      throw error;
-    }
-  }
+function getOrCreateAudioContext(audioTrack: LocalAudioTrack): AudioContext | undefined {
+  // В комнате Room сам проставляет общий audioContext на LocalAudioTrack (см.
+  // Room.acquireAudioContext -> localParticipant.setAudioContext). В PreJoin трек создаётся
+  // без комнаты, поэтому audioContext там ещё не установлен — LiveKit в этом случае
+  // ЗАПРЕЩАЕТ setProcessor() (бросает ошибку), значит нужно создать контекст сами.
+  const existing = (audioTrack as unknown as { audioContext?: AudioContext }).audioContext;
+  if (existing) return existing;
 
-  // setMediaStreamTrack в LK private, но доступен в runtime для unpublished preview
-  const setMediaStreamTrack = (
-    audioTrack as unknown as {
-      setMediaStreamTrack?: (track: MediaStreamTrack, force?: boolean) => Promise<void>;
-    }
-  ).setMediaStreamTrack;
+  const AudioContextCtor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextCtor) return undefined;
 
-  if (typeof setMediaStreamTrack === 'function') {
-    await setMediaStreamTrack.call(audioTrack, nextTrack, true);
-    return;
-  }
-
-  throw new Error('Unable to apply microphone volume: no replaceTrack/setMediaStreamTrack');
+  const ctx = new AudioContextCtor();
+  audioTrack.setAudioContext(ctx);
+  return ctx;
 }
 
 /**
- * Применяет microphoneVolume (0..1) к локальному аудиотреку через GainNode.
- * Обновление громкости — только gain.value; граф пересобирается при смене трека.
+ * Применяет microphoneVolume (0..1) к локальному аудиотреку через GainNode, оформленный как
+ * штатный LiveKit TrackProcessor (см. microphoneGainProcessor.ts) — тот же механизм, на
+ * котором работают Krisp/virtual background. Это даёт два принципиальных отличия от ручной
+ * подмены трека через replaceTrack():
+ *
+ * 1. LiveKit сам вызывает processor.restart() при КАЖДОЙ замене реального
+ *    MediaStreamTrack (mute/unmute-триггерный reacquire, смена устройства и т.п.) — граф
+ *    больше не может остаться висеть на протухшем источнике незаметно для остального кода.
+ * 2. Процессор сам следит за своим здоровьем (вотчдог на входном/выходном AnalyserNode) и
+ *    при необходимости откатывается на сырой трек — звук не пропадает даже если сам Web
+ *    Audio graph «завис» (известный баг браузеров: ctx.state остаётся "running", хотя
+ *    рендер-тред фактически не работает после сворачивания вкладки).
+ *
+ * ВАЖНО: граф создаётся ТОЛЬКО когда громкость отличается от значения по умолчанию (1).
+ * Этот хук монтируется в ActiveRoom, PreJoin и SoundAndVideoSettings; большинство звонков
+ * никогда не трогают пользовательскую громкость, так что для них Web Audio API вообще не
+ * задействуется.
  */
 export function useMicrophoneVolume(audioTrack: LocalAudioTrack | null | undefined) {
   const volume = useUserChoicesStore((s) => s.microphoneVolume ?? 1);
-  const graphRef = useRef<MicGainGraph | null>(null);
+  const processorRef = useRef<MicrophoneGainProcessor | null>(null);
   const volumeRef = useRef(volume);
   volumeRef.current = volume;
+  const hasCustomVolume = volume !== 1;
 
   useEffect(() => {
-    if (!audioTrack) return;
-
-    const AudioContextCtor =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextCtor) return;
+    if (!audioTrack || !hasCustomVolume) return;
 
     let cancelled = false;
 
     const setup = async () => {
       try {
-        const sourceTrack = audioTrack.mediaStreamTrack;
-        if (!sourceTrack || sourceTrack.readyState === 'ended') return;
-
-        const ctx = new AudioContextCtor();
-        if (ctx.state === 'suspended') {
-          await ctx.resume();
-        }
-
-        const source = ctx.createMediaStreamSource(new MediaStream([sourceTrack]));
-        const gain = ctx.createGain();
-        gain.gain.value = Math.max(0, Math.min(1, volumeRef.current));
-        const dest = ctx.createMediaStreamDestination();
-        source.connect(gain);
-        gain.connect(dest);
-
-        const gainedTrack = dest.stream.getAudioTracks()[0];
-        if (!gainedTrack) {
-          await ctx.close().catch(() => undefined);
+        // Слот процессора на треке общий с useNoiseCancellation (Krisp) — если тот уже
+        // владеет слотом, не отбираем и не трогаем track.setProcessor() вообще: громкость
+        // в этом случае не применится, но звук останется целым (не гоняемся за чужим
+        // слотом и не сносим чужой процессор).
+        if (!claimMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER)) {
+          console.warn(
+            'useMicrophoneVolume: слот processor уже занят (вероятно, Krisp), громкость не применена',
+          );
           return;
         }
 
-        await swapTrackMedia(audioTrack, gainedTrack);
+        const ctx = getOrCreateAudioContext(audioTrack);
+        if (!ctx) {
+          releaseMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER);
+          return;
+        }
+
+        const processor = new MicrophoneGainProcessor(() => volumeRef.current);
+        await audioTrack.setProcessor(processor);
         if (cancelled) {
-          await swapTrackMedia(audioTrack, sourceTrack).catch(() => undefined);
-          gainedTrack.stop();
-          source.disconnect();
-          gain.disconnect();
-          await ctx.close().catch(() => undefined);
+          await audioTrack.stopProcessor().catch(() => undefined);
+          releaseMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER);
           return;
         }
 
-        graphRef.current = { ctx, gain, source, sourceTrack, gainedTrack };
+        processorRef.current = processor;
       } catch (error) {
         console.error('Failed to apply microphone volume:', error);
+        releaseMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER);
       }
     };
 
@@ -100,38 +93,23 @@ export function useMicrophoneVolume(audioTrack: LocalAudioTrack | null | undefin
 
     return () => {
       cancelled = true;
-      const current = graphRef.current;
-      graphRef.current = null;
+      const current = processorRef.current;
+      processorRef.current = null;
       if (!current) return;
 
-      void (async () => {
-        try {
-          if (current.sourceTrack.readyState === 'live') {
-            await swapTrackMedia(audioTrack, current.sourceTrack);
-          }
-        } catch {
-          /* ignore */
-        }
-        try {
-          current.source.disconnect();
-          current.gain.disconnect();
-        } catch {
-          /* ignore */
-        }
-        try {
-          current.gainedTrack.stop();
-        } catch {
-          /* ignore */
-        }
-        await current.ctx.close().catch(() => undefined);
-      })();
+      // stopProcessor() — штатный метод LiveKit: он гарантированно возвращает на sender
+      // сырой _mediaStreamTrack (applyConstraints + forced setMediaStreamTrack), независимо
+      // от внутреннего состояния нашего графа.
+      if (audioTrack.getProcessor() === current) {
+        void audioTrack.stopProcessor().catch((error) => {
+          console.error('Failed to restore original microphone track:', error);
+        });
+      }
+      releaseMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER);
     };
-  }, [audioTrack]);
+  }, [audioTrack, hasCustomVolume]);
 
   useEffect(() => {
-    const gain = graphRef.current?.gain;
-    if (!gain) return;
-    const next = Math.max(0, Math.min(1, volume));
-    gain.gain.setTargetAtTime(next, gain.context.currentTime, 0.02);
+    processorRef.current?.setVolume(volume);
   }, [volume]);
 }

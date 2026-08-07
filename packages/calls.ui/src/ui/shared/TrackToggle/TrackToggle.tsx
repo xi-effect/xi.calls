@@ -71,18 +71,17 @@ export const TrackToggle = ({
       openPermissionsDialog();
       return;
     }
-    if (track) {
-      const wasMuted = track.isMuted;
-      const newEnabled = wasMuted;
-      if (wasMuted) {
-        track.unmute();
-      } else {
-        track.mute();
-      }
-      onChange?.(newEnabled, true);
-    } else {
-      onChange?.(!enabled, true);
-    }
+    // Раньше здесь ЖЕ вызывали track.mute()/unmute() и ЖЕ пробрасывали onChange, а
+    // onChange у всех вызывающих (BottomBar/CompactCall/PiPCompactCall/Settings) сам
+    // дёргает useTrackToggle().toggle() -> localParticipant.setMicrophoneEnabled(...),
+    // который внутри тоже вызывает track.unmute()/mute(). Из-за этого один клик запускал
+    // ДВА параллельных unmute()/mute() на одном и том же треке — они гонялись за
+    // getUserMedia/restart, и трек мог остаться опубликованным, но "тихим" (без звука
+    // на входе). В PreJoin обработчик onChange (Controls.tsx) сам мутит трек напрямую —
+    // там тоже была бы такая же гонка. Теперь TrackToggle только сообщает намерение
+    // через onChange, а кто именно и как применяет его к треку — решает вызывающий код.
+    const nextEnabled = track ? track.isMuted : !enabled;
+    onChange?.(nextEnabled, true);
   };
 
   const trackVol = useTrackVolume(microTrack);
