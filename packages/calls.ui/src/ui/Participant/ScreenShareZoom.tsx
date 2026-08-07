@@ -14,6 +14,7 @@ const ZOOM_STEP = 0.1;
 const INITIAL_ZOOM_FACTOR = 1.05;
 const THUMBNAIL_MAX_WIDTH = 240;
 const THUMBNAIL_MAX_HEIGHT = 135;
+const ZOOM_EPSILON = 0.001;
 
 type VideoDimensions = { width: number; height: number };
 
@@ -90,6 +91,42 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
       ro?.disconnect();
     };
   }, [updateVideoDimensions, updateContainerSize]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Зум тачпадом (и Ctrl+колесо мыши) приходит как wheel-событие с ctrlKey=true
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // deltaY < 0 обычно означает zoom in / уменьшение картинки
+      const direction = e.deltaY < 0 ? 1 : -1;
+
+      if (direction < 0 && !isPanelOpen) return;
+
+      const min =
+        videoDimensions && containerSize ? getFitZoom(videoDimensions, containerSize) : MIN_ZOOM;
+
+      if (direction > 0) {
+        setIsPanelOpen(true);
+      }
+
+      setZoomLevel((z) => {
+        const next = Math.min(MAX_ZOOM, Math.max(min, z - e.deltaY * ZOOM_EPSILON));
+        if (direction === -1 && next <= min + ZOOM_EPSILON) {
+          setIsPanelOpen(false);
+          return MIN_ZOOM;
+        }
+        return next;
+      });
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [videoDimensions, containerSize, isPanelOpen]);
 
   useEffect(() => {
     if (!videoDimensions || !containerSize) return;
