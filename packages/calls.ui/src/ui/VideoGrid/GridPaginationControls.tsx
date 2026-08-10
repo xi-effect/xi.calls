@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from '@xipkg/icons';
+import { useTranslation } from 'react-i18next';
 
 interface GridPaginationControlsProps {
   canPrev: boolean;
@@ -23,6 +24,8 @@ export function GridPaginationControls({
   currentPage,
   totalPages,
 }: GridPaginationControlsProps) {
+  const { t } = useTranslation('calls');
+
   if (totalPages <= 1) {
     return null;
   }
@@ -38,7 +41,7 @@ export function GridPaginationControls({
           className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span className="sr-only">Предыдущая страница</span>
+          <span className="sr-only">{t('videoGrid.prevPage')}</span>
         </button>
       </div>
 
@@ -51,7 +54,7 @@ export function GridPaginationControls({
           className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary z-10 flex items-center justify-center rounded-full p-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowRight className="h-4 w-4" />
-          <span className="sr-only">Следующая страница</span>
+          <span className="sr-only">{t('videoGrid.nextPage')}</span>
         </button>
       </div>
 
@@ -68,7 +71,7 @@ export function GridPaginationControls({
                   ? 'bg-background-canvas'
                   : 'bg-background-canvas/50 hover:bg-background-canvas/75'
               }`}
-              aria-label={`Страница ${index + 1}`}
+              aria-label={t('videoGrid.page', { page: index + 1 })}
             />
           ))}
         </div>

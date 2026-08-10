@@ -1,18 +1,34 @@
 export type ReactionOptionT = {
   emoji: string;
-  label: string;
+  labelKey:
+    | 'reactions.thumbsUp'
+    | 'reactions.heart'
+    | 'reactions.party'
+    | 'reactions.clap'
+    | 'reactions.laugh'
+    | 'reactions.wow'
+    | 'reactions.sad'
+    | 'reactions.hands'
+    | 'reactions.crocodile'
+    | 'reactions.fire'
+    | 'reactions.handshake'
+    | 'reactions.column';
 };
 
-/** Курируемый набор реакций (как в Google Meet) */
+/** Курируемый набор реакций (как в Google Meet) + бренд-эмодзи */
 export const REACTION_OPTIONS: ReactionOptionT[] = [
-  { emoji: '👍', label: 'Класс' },
-  { emoji: '❤️', label: 'Любовь' },
-  { emoji: '🎉', label: 'Ура' },
-  { emoji: '👏', label: 'Аплодисменты' },
-  { emoji: '😂', label: 'Смешно' },
-  { emoji: '😮', label: 'Удивление' },
-  { emoji: '😢', label: 'Грусть' },
-  { emoji: '🙌', label: 'Восторг' },
+  { emoji: '👍', labelKey: 'reactions.thumbsUp' },
+  { emoji: '❤️', labelKey: 'reactions.heart' },
+  { emoji: '🎉', labelKey: 'reactions.party' },
+  { emoji: '👏', labelKey: 'reactions.clap' },
+  { emoji: '😂', labelKey: 'reactions.laugh' },
+  { emoji: '😮', labelKey: 'reactions.wow' },
+  { emoji: '😢', labelKey: 'reactions.sad' },
+  { emoji: '🙌', labelKey: 'reactions.hands' },
+  { emoji: '🐊', labelKey: 'reactions.crocodile' },
+  { emoji: '🔥', labelKey: 'reactions.fire' },
+  { emoji: '🤝', labelKey: 'reactions.handshake' },
+  { emoji: '🏛️', labelKey: 'reactions.column' },
 ];
 
 export const REACTION_MESSAGE_TYPE = 'reaction';

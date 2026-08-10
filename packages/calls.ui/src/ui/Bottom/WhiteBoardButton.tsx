@@ -1,11 +1,13 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { WhiteBoard } from '@xipkg/icons';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { WhiteboardsModal } from './WhiteboardsModal';
 import { Button } from '@xipkg/button';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
 
 export const WhiteBoardButton = () => {
+  const { t } = useTranslation('calls');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClick = () => {
@@ -28,7 +30,7 @@ export const WhiteBoardButton = () => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top" align="center">
-          Выбрать доску для совместной работы
+          {t('bottomBar.selectBoard')}
         </TooltipContent>
       </Tooltip>
 

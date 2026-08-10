@@ -20,6 +20,12 @@ export type LocalUserChoices = LocalUserChoicesLK & {
   noiseCancellationEnabled?: boolean;
   /** Режим шумоподавления: off | webrtc | krisp. */
   noiseCancellationMode?: NoiseCancellationMode;
+  /** Громкость микрофона (0..1), для preview/тестов и будущей apply в звонке. */
+  microphoneVolume?: number;
+  /** Громкость динамиков (0..1), для тестового воспроизведения и будущей apply в звонке. */
+  speakerVolume?: number;
+  /** Зеркальное отражение локального превью камеры. */
+  mirrorVideo?: boolean;
 };
 
 function getUserChoicesState(): LocalUserChoices {
@@ -31,6 +37,9 @@ function getUserChoicesState(): LocalUserChoices {
     videoSubscribeQuality: VideoQuality.HIGH,
     noiseCancellationEnabled: false,
     noiseCancellationMode: 'webrtc',
+    microphoneVolume: 1,
+    speakerVolume: 1,
+    mirrorVideo: true,
     ...loadUserChoices(),
   };
 }

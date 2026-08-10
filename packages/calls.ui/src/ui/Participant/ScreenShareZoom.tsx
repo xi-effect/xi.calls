@@ -6,6 +6,7 @@ import { ZoomIn, ZoomOut } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { Slider } from '@xipkg/slider';
 import { cn } from '@xipkg/utils';
+import { useTranslation } from 'react-i18next';
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 2.5;
@@ -42,6 +43,7 @@ type ScreenShareZoomProps = {
  * по клику — панель с миниатюрой, перетаскиваемой областью просмотра и контролами зума (как в Discord).
  */
 export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZoomProps) {
+  const { t } = useTranslation('calls');
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panX, setPanX] = useState(0);
@@ -329,7 +331,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
           variant="none"
           onClick={handleZoomIn}
           className="bg-background-surface/80 hover:bg-background-surface absolute right-2 bottom-2 z-20 h-8 w-8 rounded-lg backdrop-blur"
-          aria-label="Приблизить"
+          aria-label={t('participant.zoomIn')}
         >
           <ZoomIn className="h-4 w-4" />
         </Button>
@@ -356,7 +358,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
                 />
                 {viewportRect && (
                   <div
-                    aria-label="Область просмотра, перетащите для перемещения"
+                    aria-label={t('participant.zoomViewport')}
                     className="border-border-focus bg-action-primary-background-default/30 absolute cursor-grab rounded border-2 active:cursor-grabbing"
                     style={{
                       left: `${viewportRect.left}%`,
@@ -383,7 +385,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               onClick={handleZoomOut}
               disabled={!isPanelOpen}
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
-              aria-label="Уменьшить"
+              aria-label={t('participant.zoomOut')}
             >
               <ZoomOut className="text-text-primary group-hover:text-text-primary group-focus:text-text-primary group-active:text-text-primary h-4 w-4" />
             </Button>
@@ -402,7 +404,7 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
               onClick={handleZoomIn}
               disabled={zoomLevel >= MAX_ZOOM}
               className="group h-8 w-8 shrink-0 rounded-lg disabled:pointer-events-none disabled:opacity-50"
-              aria-label="Увеличить"
+              aria-label={t('participant.zoomIncrease')}
             >
               <ZoomIn className="text-text-primary group-hover:text-text-primary group-focus:text-text-primary group-active:text-text-primary h-4 w-4" />
             </Button>

@@ -17,9 +17,11 @@ import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { useCallBackNavigation } from '@xipkg/calls-hooks';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { useMedia } from '@xipkg/calls-utils';
+import { useTranslation } from 'react-i18next';
 import { Settings } from './Settings';
 
 export const UpBar = () => {
+  const { t } = useTranslation('calls');
   const isMobile = useMedia('(max-width: 720px)');
   const navigation = useCallsNavigation();
   const callId = navigation.getCallId();
@@ -90,7 +92,7 @@ export const UpBar = () => {
         : '';
     if (link) {
       navigator.clipboard.writeText(link);
-      toast.success('Ссылка скопирована. Отравьте её ученикам');
+      toast.success(t('upBar.linkCopied'));
     }
   };
 
@@ -119,7 +121,7 @@ export const UpBar = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="start">
-            Вернуться в кабинет. Звонок не прервется.
+            {t('upBar.backTooltip')}
           </TooltipContent>
         </Tooltip>
 
@@ -140,13 +142,13 @@ export const UpBar = () => {
               data-umami-event-layout={carouselType}
             >
               {getViewIcon()}
-              <span className="text-text-primary">Вид</span>
+              <span className="text-text-primary">{t('upBar.view')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
             {!canUseFocusLayout && carouselType === 'grid'
-              ? 'Нужно больше 2 участников или демонстрация экрана для переключения вида'
-              : 'Переключить вид сетки'}
+              ? t('upBar.viewDisabledTooltip')
+              : t('upBar.viewToggleTooltip')}
           </TooltipContent>
         </Tooltip>
         {isTutor && (
@@ -164,7 +166,7 @@ export const UpBar = () => {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="end">
-              Скопировать ссылку-приглашение
+              {t('upBar.copyInviteLink')}
             </TooltipContent>
           </Tooltip>
         )}

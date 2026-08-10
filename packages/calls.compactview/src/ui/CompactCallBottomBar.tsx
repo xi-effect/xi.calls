@@ -11,6 +11,7 @@ import {
 import { Account, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
 import type { CompactViewModeT } from '@xipkg/calls-store';
+import { useTranslation } from 'react-i18next';
 import { getNextCompactViewMode } from '../constants';
 import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { ChatButton } from '@xipkg/calls-chat';
@@ -56,11 +57,12 @@ export function CompactCallBottomBar({
   onMaximize,
   isTutor,
 }: CompactCallBottomBarPropsT) {
+  const { t } = useTranslation('calls');
   const nextViewMode = getNextCompactViewMode(compactViewMode);
   const viewModeToggleMeta = {
-    expanded: { Icon: Users, label: 'Развёрнутый вид (несколько участников)' },
-    audio: { Icon: SoundTwo, label: 'Только аудио' },
-    basic: { Icon: Account, label: 'Один участник' },
+    expanded: { Icon: Users, label: t('compactView.mode.expanded') },
+    audio: { Icon: SoundTwo, label: t('compactView.mode.audio') },
+    basic: { Icon: Account, label: t('compactView.mode.basic') },
   }[nextViewMode];
   const ViewModeIcon = viewModeToggleMeta.Icon;
 
@@ -111,12 +113,12 @@ export function CompactCallBottomBar({
                 variant="primary"
                 className="h-8 w-8 rounded-xl p-0"
                 onClick={onBackToBoard}
-                aria-label="На доску"
+                aria-label={t('compactView.toBoardAria')}
               >
                 <WhiteBoard className="fill-action-primary-text h-6 w-6" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Обратно на доску</TooltipContent>
+            <TooltipContent>{t('compactView.toBoardTooltip')}</TooltipContent>
           </Tooltip>
         </div>
       )}
@@ -142,23 +144,23 @@ export function CompactCallBottomBar({
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent>Вернуться в конференцию</TooltipContent>
+              <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
             </Tooltip>
             <DropdownMenuContent side="top" align="end" className="z-1000 min-w-[200px]">
               <DropdownMenuLabel className="text-text-secondary text-sm">
-                Вернуть в конференцию
+                {t('compactView.returnMenuLabel')}
               </DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onMaximize(false)}
                 className="text-text-primary cursor-pointer text-sm"
               >
-                Только меня
+                {t('compactView.returnOnlyMe')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onMaximize(true)}
                 className="text-text-primary cursor-pointer text-sm"
               >
-                Всех участников
+                {t('compactView.returnEveryone')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -174,7 +176,7 @@ export function CompactCallBottomBar({
                 <Maximize className="fill-icon-primary" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Вернуться в конференцию</TooltipContent>
+            <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
           </Tooltip>
         )}
         <DisconnectButton className="h-[32px] w-[32px] rounded-xl" />

@@ -19,6 +19,8 @@ export {
   useSpeakingParticipant,
   useStartCall,
   useVideoBlur,
+  useMicrophoneVolume,
+  useAudioOutputDevice,
   useVideoSecurity,
   useWatchPermissions,
   useSortedTracks,

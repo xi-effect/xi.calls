@@ -88,3 +88,111 @@ export const playSound = (soundType: SoundType, volume: number = 1): void => {
     console.error(`❌ Error playing sound ${soundType}:`, error);
   }
 };
+
+type PlaySoundOnDeviceOptions = {
+  volume?: number;
+  /** deviceId устройства вывода (HTMLMediaElement.setSinkId), если поддерживается */
+  sinkId?: string;
+};
+
+type AudioContextWithSink = AudioContext & {
+  setSinkId?: (id: string) => Promise<void>;
+};
+
+/**
+ * Воспроизводит тестовый звук на выбранном устройстве вывода.
+ * Возвращает Promise, который резолвится после старта playback (или reject при ошибке).
+ * Требует, чтобы хост отдавал файлы из `/sounds/...`.
+ */
+export const playSoundOnDevice = async (
+  soundType: SoundType,
+  options: PlaySoundOnDeviceOptions = {},
+): Promise<void> => {
+  const { volume = 1, sinkId } = options;
+  const audio = new Audio(SOUND_PATHS[soundType]);
+  audio.volume = Math.max(0, Math.min(1, volume));
+
+  const audioWithSink = audio as HTMLAudioElement & {
+    setSinkId?: (id: string) => Promise<void>;
+  };
+
+  if (sinkId && typeof audioWithSink.setSinkId === 'function') {
+    try {
+      await audioWithSink.setSinkId(sinkId);
+    } catch (error) {
+      console.warn('⚠️ Failed to set audio output device:', error);
+    }
+  }
+
+  audio.currentTime = 0;
+  await audio.play();
+};
+
+type PlaySpeakerTestToneOptions = {
+  volume?: number;
+  /** deviceId устройства вывода (AudioContext.setSinkId), если поддерживается */
+  sinkId?: string;
+  durationMs?: number;
+  frequencyHz?: number;
+};
+
+/**
+ * Тестовый тон через Web Audio API — не зависит от файлов `/sounds/*` на хосте.
+ * Использует AudioContext.setSinkId, когда браузер и deviceId это позволяют.
+ */
+export const playSpeakerTestTone = async (
+  options: PlaySpeakerTestToneOptions = {},
+): Promise<void> => {
+  const { volume = 1, sinkId, durationMs = 900, frequencyHz = 880 } = options;
+
+  const AudioContextCtor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+  if (!AudioContextCtor) {
+    throw new Error('AudioContext is not supported');
+  }
+
+  const ctx = new AudioContextCtor() as AudioContextWithSink;
+
+  try {
+    if (sinkId && typeof ctx.setSinkId === 'function') {
+      try {
+        await ctx.setSinkId(sinkId);
+      } catch (error) {
+        console.warn('⚠️ Failed to set audio output device for test tone:', error);
+      }
+    }
+
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = frequencyHz;
+
+    const peak = Math.max(0, Math.min(1, volume)) * 0.22;
+    const now = ctx.currentTime;
+    const end = now + durationMs / 1000;
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(peak, now + 0.04);
+    gain.gain.linearRampToValueAtTime(peak * 0.85, end - 0.12);
+    gain.gain.linearRampToValueAtTime(0, end);
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+    oscillator.start(now);
+    oscillator.stop(end);
+
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, durationMs + 40);
+    });
+  } finally {
+    await ctx.close().catch(() => {
+      /* ignore */
+    });
+  }
+};

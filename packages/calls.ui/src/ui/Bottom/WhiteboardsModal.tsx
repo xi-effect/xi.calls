@@ -17,6 +17,7 @@ import { useCallStore } from '@xipkg/calls-store';
 import { useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { useMedia } from '@xipkg/calls-utils';
+import { Trans, useTranslation } from 'react-i18next';
 
 // Типы материалов определены в @xipkg/calls-types -> ClassroomMaterialsT
 
@@ -26,6 +27,7 @@ type WhiteboardsModalProps = {
 };
 
 export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) => {
+  const { t } = useTranslation('calls');
   const isMobile = useMedia('(max-width: 720px)');
   const navigation = useCallsNavigation();
   const callId = navigation.getCallId();
@@ -115,6 +117,12 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
     }
   };
 
+  const accessLabel = (mode: string) => {
+    if (mode === 'read_write') return t('whiteboards.access.readWrite');
+    if (mode === 'read_only') return t('whiteboards.access.readOnly');
+    return t('whiteboards.access.draft');
+  };
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
@@ -130,11 +138,11 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         </ModalCloseButton>
         <ModalHeader className="border-border-default shrink-0 border-b">
           <ModalTitle className="text-m-base sm:text-l-base text-text-primary">
-            Доска для совместной работы
+            {t('whiteboards.title')}
           </ModalTitle>
           <Input
             before={<Search className="fill-icon-secondary" />}
-            placeholder="Поиск"
+            placeholder={t('whiteboards.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="placeholder:text-text-secondary text-text-primary min-h-10"
@@ -146,11 +154,11 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         >
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-text-secondary">Загрузка досок...</p>
+              <p className="text-text-secondary">{t('whiteboards.loading')}</p>
             </div>
           ) : isError ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-text-danger">Ошибка загрузки досок</p>
+              <p className="text-text-danger">{t('whiteboards.loadError')}</p>
             </div>
           ) : (
             <ScrollArea className={`h-full w-full ${isMobile ? 'max-h-[50dvh]' : 'max-h-[400px]'}`}>
@@ -176,16 +184,14 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                               : 'text-s-base bg-tag-violet-background text-tag-violet-accent px-2 py-1 font-medium'
                         }
                       >
-                        {board.student_access_mode === 'read_write'
-                          ? 'совместная работа'
-                          : board.student_access_mode === 'read_only'
-                            ? 'только репетитор'
-                            : 'черновик'}
+                        {accessLabel(board.student_access_mode)}
                       </Badge>
                     )}
                     <h3 className="text-m-base text-text-primary">{board.name}</h3>
                     <p className="text-xs-base text-text-secondary">
-                      Изменено: {new Date(board.updated_at).toLocaleDateString()}
+                      {t('whiteboards.updatedAt', {
+                        date: new Date(board.updated_at).toLocaleDateString(),
+                      })}
                     </p>
                   </div>
                 ))}
@@ -194,7 +200,9 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                   onClick={handleCreateNewBoard}
                 >
                   <h3 className="text-s-base text-text-link group-hover:text-text-link">
-                    {addClassroomMaterials.isPending ? 'Создание...' : 'Создать новую'}
+                    {addClassroomMaterials.isPending
+                      ? t('whiteboards.creating')
+                      : t('whiteboards.createNew')}
                   </h3>
                 </div>
               </div>
@@ -215,13 +223,13 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               className="text-s-base text-text-primary cursor-pointer"
             >
               {isMobile ? (
-                'Открыть доску в режиме совместной работы для всех участников звонка'
+                t('whiteboards.collaborativeLabel')
               ) : (
-                <>
-                  Открыть доску в режиме совместной работы
-                  <br />
-                  для всех участников звонка
-                </>
+                <Trans
+                  i18nKey="whiteboards.collaborativeLabelDesktop"
+                  ns="calls"
+                  components={{ br: <br /> }}
+                />
               )}
             </label>
           </div>
@@ -232,7 +240,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               disabled={!selectedBoardId}
               className={isMobile ? 'min-h-11 w-full' : ''}
             >
-              Выбрать
+              {t('whiteboards.select')}
             </Button>
             <Button
               size="m"
@@ -240,7 +248,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               onClick={() => onOpenChange(false)}
               className={isMobile ? 'min-h-11 w-full' : ''}
             >
-              Отменить
+              {t('whiteboards.cancel')}
             </Button>
           </div>
         </ModalFooter>

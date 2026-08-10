@@ -8,10 +8,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@xipkg/sheet';
-import { Close, Conference, Microphone, SoundTwo, Music } from '@xipkg/icons';
+import { Close, Conference, HelpCircle, Microphone, SoundTwo, Music } from '@xipkg/icons';
 import { Label } from '@xipkg/label';
 import { Toggle } from '@xipkg/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@xipkg/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import {
   useLocalParticipant,
   usePersistentUserChoices,
@@ -30,15 +31,10 @@ import { useRoom, useCallsNavigation, useCallsRuntimeConfig } from '@xipkg/calls
 import { useNoiseCancellation, useCannotUseDevice } from '@xipkg/calls-hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
 import { Button } from '@xipkg/button';
+import { useTranslation } from 'react-i18next';
 
 type SettingsPropsT = {
   children: React.ReactNode;
-};
-
-const placeholders = {
-  audioinput: 'Встроенный микрофон',
-  audiooutput: 'Встроенные динамики',
-  videoinput: 'Встроенная камера',
 };
 
 // Компонент для выбора устройства (перемонтируется по key при смене разрешения, чтобы обновить список)
@@ -55,7 +51,14 @@ const DeviceSelector = ({
   icon: React.ReactNode;
   disabled?: boolean;
 }) => {
+  const { t } = useTranslation('calls');
   const { devices } = useMediaDeviceSelect({ kind });
+
+  const placeholders = {
+    audioinput: t('settings.device.builtinMic'),
+    audiooutput: t('settings.device.builtinSpeakers'),
+    videoinput: t('settings.device.builtinCamera'),
+  };
 
   const currentDevice = devices?.find((device) => device.deviceId === currentDeviceId);
   const displayValue = currentDevice?.label || placeholders[kind];
@@ -67,20 +70,22 @@ const DeviceSelector = ({
       value={currentDeviceId || undefined}
       disabled={disabled || !hasDevices}
     >
-      <SelectTrigger className="text-text-primary w-full">
-        <div className="flex items-center gap-2">
+      <SelectTrigger
+        className="text-text-primary w-full"
+        before={
           <span className="fill-icon-primary [&_svg]:fill-icon-primary shrink-0">{icon}</span>
-          <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
-        </div>
+        }
+      >
+        <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
       </SelectTrigger>
-      <SelectContent className="w-88">
+      <SelectContent className="w-full">
         {devices?.map((device) => (
           <SelectItem
             key={device.deviceId}
             className="text-text-primary h-auto"
             value={device.deviceId}
           >
-            {device.label || `Устройство ${device.deviceId.slice(0, 8)}`}
+            {device.label || t('settings.device.unnamed', { shortId: device.deviceId.slice(0, 8) })}
           </SelectItem>
         ))}
       </SelectContent>
@@ -89,6 +94,7 @@ const DeviceSelector = ({
 };
 
 export const Settings = ({ children }: SettingsPropsT) => {
+  const { t } = useTranslation('calls');
   const { room } = useRoom();
   const {
     noiseCancellation: { featureEnabled: noiseCancellationFeatureEnabled },
@@ -104,9 +110,11 @@ export const Settings = ({ children }: SettingsPropsT) => {
     saveVideoInputEnabled,
   } = usePersistentUserChoices();
 
-  // Получаем audioOutputDeviceId и blurEnabled из store напрямую
+  // Получаем audioOutputDeviceId, blurEnabled и mirrorVideo из store напрямую
+  // (LiveKit usePersistentUserChoices этих полей не знает)
   const audioOutputDeviceId = useUserChoicesStore((state) => state.audioOutputDeviceId);
   const blurEnabled = useUserChoicesStore((state) => state.blurEnabled);
+  const mirrorVideo = useUserChoicesStore((state) => state.mirrorVideo ?? true);
 
   const navigation = useCallsNavigation();
 
@@ -116,6 +124,10 @@ export const Settings = ({ children }: SettingsPropsT) => {
 
   const handleBlurToggle = useCallback((checked: boolean) => {
     useUserChoicesStore.setState({ blurEnabled: checked });
+  }, []);
+
+  const handleMirrorToggle = useCallback((checked: boolean) => {
+    useUserChoicesStore.setState({ mirrorVideo: checked });
   }, []);
 
   const cameraPermission = usePermissionsStore((s) => s.cameraPermission);
@@ -199,12 +211,14 @@ export const Settings = ({ children }: SettingsPropsT) => {
     async (deviceId: string) => {
       try {
         saveAudioOutputDeviceId(deviceId);
+        // LiveKitProvider также слушает store; здесь применяем сразу для отзывчивости UI
+        await room.switchActiveDevice('audiooutput', deviceId);
         console.log('Audio output device changed to:', deviceId);
       } catch (err) {
         console.error('Failed to switch audio output device', err);
       }
     },
-    [saveAudioOutputDeviceId],
+    [room, saveAudioOutputDeviceId],
   );
 
   // Обработчики включения/выключения
@@ -221,7 +235,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="bg-background-surface text-text-primary w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 shadow-2xl">
         <SheetHeader className="mb-6 flex h-10 flex-row items-center justify-between space-y-0">
-          <SheetTitle className="text-text-primary">Настройки</SheetTitle>
+          <SheetTitle className="text-text-primary">{t('settings.title')}</SheetTitle>
           <SheetClose className="hover:bg-background-page mt-0 rounded-md bg-transparent p-1">
             <Close className="fill-icon-primary" />
           </SheetClose>
@@ -231,7 +245,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
           {/* Камера */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-text-primary font-medium">Камера</Label>
+              <Label className="text-text-primary font-medium">{t('settings.camera')}</Label>
               <Toggle
                 checked={isCameraEnabled}
                 onCheckedChange={handleCameraToggle}
@@ -248,15 +262,35 @@ export const Settings = ({ children }: SettingsPropsT) => {
             />
             {!isCameraGranted && (
               <Button type="button" size="s" variant="ghost" onClick={openPermissionsDialog}>
-                Как разрешить камеру
+                {t('settings.allowCamera')}
               </Button>
             )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Label className="text-text-primary font-medium">{t('settings.mirror')}</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex shrink-0 rounded-sm bg-transparent p-0"
+                      aria-label={t('settings.mirrorTooltip')}
+                    >
+                      <HelpCircle className="fill-icon-secondary h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-64">
+                    {t('settings.mirrorTooltip')}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Toggle checked={mirrorVideo} onCheckedChange={handleMirrorToggle} />
+            </div>
           </div>
 
           {/* Микрофон */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-text-primary font-medium">Микрофон</Label>
+              <Label className="text-text-primary font-medium">{t('settings.microphone')}</Label>
               <Toggle
                 checked={isMicrophoneEnabled}
                 onCheckedChange={handleMicrophoneToggle}
@@ -273,7 +307,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
             />
             {!isMicrophoneGranted && (
               <Button type="button" size="s" variant="ghost" onClick={openPermissionsDialog}>
-                Как разрешить микрофон
+                {t('settings.allowMicrophone')}
               </Button>
             )}
 
@@ -286,7 +320,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
 
           {/* Динамики (список устройств вывода может зависеть от разрешения микрофона в части браузеров) */}
           <div className="space-y-3">
-            <Label className="text-text-primary font-medium">Динамики</Label>
+            <Label className="text-text-primary font-medium">{t('settings.speakers')}</Label>
             <DeviceSelector
               key={audioOutputSelectorKey}
               kind="audiooutput"
@@ -301,7 +335,9 @@ export const Settings = ({ children }: SettingsPropsT) => {
           {isBlurSupported && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-text-primary font-medium">Размытие фона</Label>
+                <Label className="text-text-primary font-medium">
+                  {t('settings.backgroundBlur')}
+                </Label>
                 <Toggle checked={blurEnabled} onCheckedChange={handleBlurToggle} />
               </div>
             </div>
@@ -319,7 +355,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
               }}
             >
               <Music className="h-4 w-4" />
-              Настройки эффектов
+              {t('settings.effects')}
             </Button>
           </div>
         </div>

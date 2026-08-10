@@ -6,5 +6,6 @@ export { VideoTrack, SecureVideo } from './VideoTrack';
 export { PermissionsDialog } from './PermissionsDialog';
 export { RaisedHandIndicator } from './RaisedHandIndicator';
 export { NoiseCancellationSettings } from './NoiseCancellationSettings';
+export { SoundAndVideoSettings } from './SoundAndVideoSettings';
 export { EmojiGlyph, EMOJI_CDN_BASE_URL } from './EmojiGlyph';
 export { ReactionIndicator } from './ReactionIndicator';

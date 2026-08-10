@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useClassroomPins } from '@xipkg/calls-hooks';
+import { useTranslation } from 'react-i18next';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
@@ -32,6 +33,7 @@ type PiPCompactCallPropsT = {
 };
 
 export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT) {
+  const { t } = useTranslation('calls');
   const compactViewMode = useCallStore((s) => s.compactViewMode);
   const updateStore = useCallStore((s) => s.updateStore);
   const setViewMode = useCallback(
@@ -40,9 +42,9 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
   );
   const nextViewMode = getNextCompactViewMode(compactViewMode);
   const viewModeToggleMeta = {
-    expanded: { Icon: Users, label: 'Развёрнутый вид (несколько участников)' },
-    audio: { Icon: SoundTwo, label: 'Только аудио' },
-    basic: { Icon: Account, label: 'Один участник' },
+    expanded: { Icon: Users, label: t('compactView.mode.expanded') },
+    audio: { Icon: SoundTwo, label: t('compactView.mode.audio') },
+    basic: { Icon: Account, label: t('compactView.mode.basic') },
   }[nextViewMode];
   const ViewModeIcon = viewModeToggleMeta.Icon;
   const [multiScrollIndex, setMultiScrollIndex] = useState(0);
@@ -155,7 +157,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   const emptyState = (
     <div className="bg-background-subtle text-text-primary flex h-full w-full items-center justify-center rounded-2xl">
-      <span className="text-sm">Нет участников</span>
+      <span className="text-sm">{t('compactView.noParticipants')}</span>
     </div>
   );
 

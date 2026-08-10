@@ -16,8 +16,10 @@ import { Button } from '@xipkg/button';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 import { ReactionButton } from '@xipkg/calls-reactions';
+import { useTranslation } from 'react-i18next';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
+  const { t } = useTranslation('calls');
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
   });
@@ -136,11 +138,11 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                   data-umami-event="call-back-to-board"
                 >
                   <WhiteBoard className="fill-action-primary-text h-5 w-5" />
-                  <span className="text-text-on-accent ml-2">К доске</span>
+                  <span className="text-text-on-accent ml-2">{t('bottomBar.toBoard')}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" align="center">
-                Вернуться к доске для совместной работы
+                {t('bottomBar.toBoardTooltip')}
               </TooltipContent>
             </Tooltip>
           )}

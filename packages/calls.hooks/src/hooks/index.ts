@@ -12,6 +12,8 @@ export { useSpeakingParticipant } from './useSpeakingParticipant';
 export { useVideoSecurity } from './useVideoSecurity';
 export { useScreenShareCleanup } from './useScreenShareCleanup';
 export { useVideoBlur } from './useVideoBlur';
+export { useMicrophoneVolume } from './useMicrophoneVolume';
+export { useAudioOutputDevice } from './useAudioOutputDevice';
 export { useEmptyItemContainerOfUser } from './useEmptyItemContainerOfUser';
 export { useParticipantJoinSync } from './useParticipantJoinSync';
 export { useSortedTracks } from './useSortedTracks';

@@ -30,6 +30,8 @@ import { ReactionIndicator } from '../shared/ReactionIndicator';
 import { ScreenShareZoom } from './ScreenShareZoom';
 import { cn } from '@xipkg/utils';
 import { isLocal, useMedia } from '@xipkg/calls-utils';
+import { useUserChoicesStore } from '@xipkg/calls-store';
+import { useTranslation } from 'react-i18next';
 
 type TrackRefContextIfNeededPropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
@@ -100,6 +102,9 @@ export const ParticipantTile = ({
   hidePinToggle,
   ...htmlProps
 }: ParticipantTilePropsT) => {
+  const { t } = useTranslation('calls');
+  const mirrorVideo = useUserChoicesStore((s) => s.mirrorVideo ?? true);
+  const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
   const maybeTrackRef = useMaybeTrackRefContext();
   const p = useEnsureParticipant(participant);
 
@@ -238,9 +243,10 @@ export const ParticipantTile = ({
                             `absolute inset-0 h-full w-full object-cover object-center ${getVideoClassName()}`,
                           )}
                           style={{
-                            // Зеркалим только локальное превью (как в зеркале); остальные и демонстрация — без зеркала
+                            // Зеркалим только локальное превью камеры, если включено в настройках
                             ...(trackReference.source === Track.Source.Camera &&
-                              isLocal(trackReference.participant) && {
+                              isLocal(trackReference.participant) &&
+                              mirrorVideo && {
                                 transform: 'rotateY(180deg)',
                               }),
                             boxSizing: 'border-box',
@@ -265,7 +271,7 @@ export const ParticipantTile = ({
                   (!trackReference.publication?.isSubscribed ||
                     trackReference.publication?.kind !== 'video' ||
                     trackReference.publication?.track?.isMuted) && (
-                    <AudioTrack trackRef={trackReference} />
+                    <AudioTrack trackRef={trackReference} volume={speakerVolume} />
                   )}
                 <div className="lk-participant-metadata absolute right-2 bottom-2 left-2 z-10 flex items-center justify-between gap-2">
                   <div>
@@ -286,7 +292,7 @@ export const ParticipantTile = ({
                       <div className="bg-background-surface/80 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
                         <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
                         <ParticipantName participant={trackReference.participant}>
-                          Демонстрация&nbsp;
+                          {t('participant.screenSharePrefix')}&nbsp;
                         </ParticipantName>
                       </div>
                     )}

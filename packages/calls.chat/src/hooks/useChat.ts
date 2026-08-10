@@ -6,6 +6,7 @@ import { playSound } from '@xipkg/calls-utils';
 import { useChatStore } from '../store';
 
 const CHAT_MESSAGE_TYPE = 'chat_message';
+const CHAT_MESSAGE_DELETE_TYPE = 'chat_message_delete';
 
 type ChatMessagePayload = {
   id: string;
@@ -15,9 +16,14 @@ type ChatMessagePayload = {
   timestamp: number;
 };
 
+type ChatMessageDeletePayload = {
+  id: string;
+  senderId: string;
+};
+
 export const useChat = () => {
   const { sendMessage } = useLiveKitDataChannel();
-  const { addChatMessage, clearUnreadMessages, updateStore } = useChatStore();
+  const { addChatMessage, removeChatMessage, clearUnreadMessages, updateStore } = useChatStore();
   const chatSoundVolume = useSoundEffectsStore((s) => s.chatMessageVolume);
   const { room } = useRoom();
 
@@ -66,16 +72,28 @@ export const useChat = () => {
         // Проверяем, что это не наше собственное сообщение
         const currentParticipantInfo = getCurrentParticipantInfo();
         if (payload.senderId === currentParticipantInfo.senderId) {
-          console.log('💬 Ignoring own message:', payload);
           return;
         }
 
-        console.log('💬 Received chat message:', payload);
         addChatMessage(payload);
         playSound('chatMessage', chatSoundVolume);
+        return;
+      }
+
+      if (message.type === CHAT_MESSAGE_DELETE_TYPE) {
+        const payload = message.payload as ChatMessageDeletePayload;
+        if (!payload?.id || !payload?.senderId) return;
+
+        // Удаляем только если автор удаления совпадает с автором сообщения —
+        // чужой клиент не может удалить чужие сообщения через поддельный payload.
+        const existing = useChatStore.getState().chatMessages.find((msg) => msg.id === payload.id);
+        if (!existing) return;
+        if (String(existing.senderId) !== String(payload.senderId)) return;
+
+        removeChatMessage(payload.id);
       }
     },
-    [addChatMessage, getCurrentParticipantInfo, chatSoundVolume],
+    [addChatMessage, removeChatMessage, getCurrentParticipantInfo, chatSoundVolume],
   );
 
   // Слушаем сообщения чата
@@ -94,8 +112,6 @@ export const useChat = () => {
         timestamp: Date.now(),
       };
 
-      console.log('📤 Sending chat message:', message);
-
       // Добавляем сообщение в локальный store отправителя
       addChatMessage(message);
 
@@ -103,6 +119,26 @@ export const useChat = () => {
       sendMessage(CHAT_MESSAGE_TYPE, message);
     },
     [sendMessage, getCurrentParticipantInfo, addChatMessage],
+  );
+
+  const deleteChatMessage = useCallback(
+    (messageId: string) => {
+      const existing = useChatStore.getState().chatMessages.find((msg) => msg.id === messageId);
+      if (!existing) return;
+
+      const participantInfo = getCurrentParticipantInfo();
+      if (String(existing.senderId) !== String(participantInfo.senderId)) return;
+
+      const payload: ChatMessageDeletePayload = {
+        id: messageId,
+        senderId: participantInfo.senderId,
+      };
+
+      // Optimistic: сразу убираем у себя, затем broadcast для остальных
+      removeChatMessage(messageId);
+      sendMessage(CHAT_MESSAGE_DELETE_TYPE, payload);
+    },
+    [sendMessage, getCurrentParticipantInfo, removeChatMessage],
   );
 
   const toggleChat = useCallback(() => {
@@ -121,6 +157,7 @@ export const useChat = () => {
 
   return {
     sendChatMessage,
+    deleteChatMessage,
     toggleChat,
     openChat,
     closeChat,

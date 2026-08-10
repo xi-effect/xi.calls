@@ -1,4 +1,5 @@
 import { ArrowUp } from '@xipkg/icons';
+import { useTranslation } from 'react-i18next';
 
 interface CompactMultiViewControlsProps {
   canPrev: boolean;
@@ -17,6 +18,8 @@ export function CompactMultiViewControls({
   onPrev,
   onNext,
 }: CompactMultiViewControlsProps) {
+  const { t } = useTranslation('calls');
+
   return (
     <div className="pointer-events-none absolute inset-0">
       {/* Стрелка вверх — по центру сверху (на первой плитке), если есть куда листать */}
@@ -26,7 +29,7 @@ export function CompactMultiViewControls({
             type="button"
             onClick={onPrev}
             className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary flex items-center justify-center rounded-full p-2"
-            aria-label="Листать вверх"
+            aria-label={t('compactView.scrollUp')}
           >
             <ArrowUp className="h-4 w-4 fill-inherit" />
           </button>
@@ -39,7 +42,7 @@ export function CompactMultiViewControls({
             type="button"
             onClick={onNext}
             className="bg-background-subtle/80 hover:bg-background-subtle fill-icon-primary flex items-center justify-center rounded-full p-2"
-            aria-label="Листать вниз"
+            aria-label={t('compactView.scrollDown')}
           >
             <ArrowUp className="h-4 w-4 rotate-180 fill-inherit" />
           </button>

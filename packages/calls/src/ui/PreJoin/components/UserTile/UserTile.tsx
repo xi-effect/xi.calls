@@ -9,6 +9,7 @@ import { SecureVideo } from '@xipkg/calls-ui';
 import { Settings } from '@xipkg/icons';
 import { isSafari } from '@xipkg/calls-utils';
 import { useCalls } from '@xipkg/calls-providers';
+import { useTranslation } from 'react-i18next';
 
 const UserTileUI = ({
   audioTrack,
@@ -20,6 +21,7 @@ const UserTileUI = ({
   isCameraDeniedOrPrompted,
   isMicrophoneDeniedOrPrompted,
   isVideoInitiated,
+  mirrorVideo,
 }: {
   audioTrack?: LocalAudioTrack;
   videoTrack?: LocalVideoTrack;
@@ -30,7 +32,9 @@ const UserTileUI = ({
   isCameraDeniedOrPrompted: boolean;
   isMicrophoneDeniedOrPrompted: boolean;
   isVideoInitiated: boolean;
+  mirrorVideo: boolean;
 }) => {
+  const { t } = useTranslation('calls');
   const isPermissionsBlocked = isCameraDeniedOrPrompted || isMicrophoneDeniedOrPrompted;
 
   const hintMessage = useMemo(() => {
@@ -39,20 +43,21 @@ const UserTileUI = ({
     }
     if (isCameraDeniedOrPrompted) {
       return isMicrophoneDeniedOrPrompted
-        ? 'Камера и микрофон не разрешены'
-        : 'Камера не разрешена';
+        ? t('preJoin.hint.cameraAndMicDenied')
+        : t('preJoin.hint.cameraDenied');
     }
     if (!videoEnabled) {
-      return 'Камера отключена';
+      return t('preJoin.hint.cameraOff');
     }
     if (!isVideoInitiated) {
-      return 'Запуск камеры...';
+      return t('preJoin.hint.cameraStarting');
     }
     if (videoTrack && videoEnabled) {
       return '';
     }
-    return 'Камера недоступна';
+    return t('preJoin.hint.cameraUnavailable');
   }, [
+    t,
     videoTrack,
     videoEnabled,
     isCameraDeniedOrPrompted,
@@ -67,32 +72,26 @@ const UserTileUI = ({
         typeof window !== 'undefined'
           ? (window.location?.origin?.replace('https://', '') ?? '')
           : '';
-      return [
-        `Нажмите на иконку ${origin} в адресной строке`,
-        'Снимите запрет на использование камеры и микрофона',
-      ];
+      return [t('preJoin.permissions.safariStep1', { origin }), t('preJoin.permissions.step2')];
     }
-    return [
-      'Нажмите на значок настроек в адресной строке браузера',
-      'Снимите запрет на использование камеры и микрофона',
-    ];
-  }, []);
+    return [t('preJoin.permissions.chromeStep1'), t('preJoin.permissions.step2')];
+  }, [t]);
 
   const permissionsButtonLabel = useMemo(() => {
     if (!isMicrophoneDeniedOrPrompted && !isCameraDeniedOrPrompted) {
       return null;
     }
     if (isCameraDeniedOrPrompted && isMicrophoneDeniedOrPrompted) {
-      return 'Как разрешить камеру и микрофон';
+      return t('preJoin.permissions.allowCameraAndMic');
     }
     if (isMicrophoneDeniedOrPrompted) {
-      return 'Как разрешить микрофон';
+      return t('preJoin.permissions.allowMic');
     }
     if (isCameraDeniedOrPrompted) {
-      return 'Как разрешить камеру';
+      return t('preJoin.permissions.allowCamera');
     }
     return null;
-  }, [isMicrophoneDeniedOrPrompted, isCameraDeniedOrPrompted]);
+  }, [t, isMicrophoneDeniedOrPrompted, isCameraDeniedOrPrompted]);
 
   const renderVideo = useMemo(() => {
     if (!videoTrack || isCameraDeniedOrPrompted) {
@@ -100,7 +99,9 @@ const UserTileUI = ({
     }
 
     return (
-      <div className="aspect-video h-full w-full transform-[rotateY(180deg)]">
+      <div
+        className={`aspect-video h-full w-full${mirrorVideo ? 'transform-[rotateY(180deg)]' : ''}`}
+      >
         <SecureVideo
           ref={videoEl}
           data-lk-facing-mode={facingMode}
@@ -117,7 +118,15 @@ const UserTileUI = ({
         />
       </div>
     );
-  }, [videoTrack, facingMode, videoEl, videoEnabled, isCameraDeniedOrPrompted, isVideoInitiated]);
+  }, [
+    videoTrack,
+    facingMode,
+    videoEl,
+    videoEnabled,
+    isCameraDeniedOrPrompted,
+    isVideoInitiated,
+    mirrorVideo,
+  ]);
 
   const renderAvatar = useMemo(() => {
     if (videoTrack && !videoTrack.isMuted && !isCameraDeniedOrPrompted) return null;
@@ -143,9 +152,7 @@ const UserTileUI = ({
 
         {isPermissionsBlocked && (
           <div className="bg-opacity-60 absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black p-6 text-center">
-            <p className="text-lg font-normal text-white">
-              Хотите, чтобы другие участники услышали вас?
-            </p>
+            <p className="text-lg font-normal text-white">{t('preJoin.permissions.promptTitle')}</p>
             <ol className="list-inside list-decimal space-y-2 text-left text-sm text-white">
               {permissionsInstructions.map((instruction, index) => (
                 <li key={index} className="flex items-start gap-2">
@@ -155,7 +162,7 @@ const UserTileUI = ({
               ))}
             </ol>
             <p className="text-text-disabled text-sm">
-              Камеру или микрофон можно отключить в любой момент.
+              {t('preJoin.permissions.canDisableAnytime')}
             </p>
             {permissionsButtonLabel && (
               <Button size="m" variant="ghost" onClick={openPermissionsDialog}>
@@ -190,7 +197,7 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
   const { userId } = user ?? {};
 
   const {
-    userChoices: { videoEnabled },
+    userChoices: { videoEnabled, mirrorVideo = true },
   } = usePersistentUserChoices();
 
   const videoEl = useRef<HTMLVideoElement>(null);
@@ -281,6 +288,7 @@ export const UserTile = ({ audioTrack, videoTrack }: UserTileProps) => {
       isCameraDeniedOrPrompted={isCameraDeniedOrPrompted}
       isMicrophoneDeniedOrPrompted={isMicrophoneDeniedOrPrompted}
       isVideoInitiated={isVideoInitiated}
+      mirrorVideo={mirrorVideo}
     />
   );
 };

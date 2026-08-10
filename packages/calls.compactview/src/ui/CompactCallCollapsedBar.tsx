@@ -5,6 +5,7 @@ import { ChevronBottom, MicrophoneOff, RedLine } from '@xipkg/icons';
 import { Button } from '@xipkg/button';
 import { ParticipantName, TrackMutedIndicator, RaisedHandIndicator } from '@xipkg/calls-ui';
 import { cn } from '@xipkg/utils';
+import { useTranslation } from 'react-i18next';
 
 type CompactCallCollapsedBarProps = {
   participant: Participant | null;
@@ -19,6 +20,7 @@ export function CompactCallCollapsedBar({
   onExpand,
   className,
 }: CompactCallCollapsedBarProps) {
+  const { t } = useTranslation('calls');
   const { bars } = useAudioWaveform(audioTrack ?? undefined, {
     barCount: 24,
     volMultiplier: 4,
@@ -54,7 +56,7 @@ export function CompactCallCollapsedBar({
               <RedLine className="fill-icon-danger absolute h-4 w-4" />
             </div>
             <span className="text-xs-base-size text-text-primary leading-[16px]">
-              Нет участников
+              {t('compactView.noParticipants')}
             </span>
           </>
         )}
@@ -80,7 +82,7 @@ export function CompactCallCollapsedBar({
         variant="none"
         onClick={onExpand}
         className="bg-action-primary-background-pressed hover:bg-action-primary-background-pressed/80 text-text-on-accent h-8 w-8 shrink-0 rounded-xl p-0"
-        aria-label="Развернуть"
+        aria-label={t('compactView.expand')}
       >
         <ChevronBottom className="fill-action-primary-text h-4 w-4" />
       </Button>
