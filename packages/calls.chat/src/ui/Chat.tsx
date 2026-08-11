@@ -140,7 +140,7 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                           type="button"
                           size="icon"
                           variant="none"
-                          className="bg-background-surface border-border-default absolute -top-2 -left-2 h-7 w-7 rounded-full border p-1 opacity-100 shadow-sm sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                          className="bg-background-surface border-border-default absolute -top-2 -left-2 h-7 w-7 rounded-full border p-1 opacity-100 shadow-sm sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
                           onClick={() => deleteChatMessage(message.id)}
                           aria-label={t('chat.deleteAria')}
                         >

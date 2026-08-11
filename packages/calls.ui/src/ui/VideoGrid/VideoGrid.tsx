@@ -58,6 +58,7 @@ function useFirstPageSize(
 export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   const lastAutoFocusedScreenShareTrack = React.useRef<TrackReferenceOrPlaceholder | null>(null);
   const hadScreenShareRef = React.useRef(false);
+  const rootRef = React.useRef<HTMLDivElement>(null);
 
   const carouselType = useCallStore((state) => state.carouselType);
   const { pins } = useClassroomPins();
@@ -163,7 +164,7 @@ export const VideoGrid = ({ ...props }: VideoConferenceProps) => {
   }, [hasScreenShare, carouselType]);
 
   return (
-    <div className="relative flex h-full min-h-0 w-full justify-center" {...props}>
+    <div ref={rootRef} className="relative flex h-full min-h-0 w-full justify-center" {...props}>
       {isWeb() && (
         <LayoutContextProvider value={layoutContext}>
           <div
