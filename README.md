@@ -81,6 +81,9 @@ pnpm run dev:all
 
 # Предпросмотр production сборки
 pnpm run preview
+
+# Запуск livekit-сервера
+
 ```
 
 ### Сборка
@@ -141,6 +144,46 @@ pnpm run format-check
 VITE_SERVER_URL_BACKEND=http://localhost:3000
 VITE_DEVTOOLS_ENABLED=true
 ```
+
+### LiveKit демо-режим
+
+Демо-режим xi.calls позволяет установить соединение и использовать функции ВКС изолированно, не используя инфраструктуру xi.tutor.
+
+Для этого нужно:
+
+1. Установить LiveKit сервер:
+   - **macOS**: `brew install livekit`
+   - **Windows**: скачать [livekit-server_\<version\>_windows_amd64.zip](https://github.com/livekit/livekit/releases/latest)
+2. Установить `lk` для генерации токена:
+   - **macOS**: `brew install livekit-cli`
+   - **Windows**: скачать [lk_\<version\>_windows_amd64.zip](https://github.com/livekit/livekit-cli/releases/latest)
+3. Сгенерировать LiveKit токен:
+
+```bash
+   <Path to lk.exe> token create \
+     --api-key devkey --api-secret secret \
+     --join --room demo --identity demo-user \
+     --valid-for 24h
+```
+
+4. Добавить в `.env.local` (создать переменные, если их нет):
+
+```env
+   VITE_LIVEKIT_DEV_MODE=true
+   VITE_SERVER_URL_LIVEKIT_DEV=<server url из шага 3>
+   VITE_LIVEKIT_DEV_TOKEN=<токен из шага 3>
+```
+
+5. Запустить сервер в отдельном терминале:
+
+```bash
+   livekit-server --dev (macOS)
+   <Path to livekit.exe> --dev (windows)
+```
+
+> Оставьте LiveKit сервер запущенным и перезапустите клиентское приложение (`pnpm run dev`), если оно уже было запущено — Vite подхватывает `.env.local` только при старте.
+
+> Токен ограничен по времени (`--valid-for 24h`) — по истечении срока просто повторите шаг 3 и обновите `VITE_LIVEKIT_DEV_TOKEN`.
 
 ## 📚 Создание новых пакетов
 
