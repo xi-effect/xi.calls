@@ -69,7 +69,7 @@ export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps =
   const chatContent = (
     <>
       {/* Заголовок */}
-      <div className="border-border-default flex items-center justify-between pr-3">
+      <div className="border-border-default flex shrink-0 items-center justify-between pr-3">
         <h3 className="text-text-primary text-lg font-medium">{t('chat.title')}</h3>
         <Button size="icon" variant="none" onClick={closeChat}>
           <Close className="h-6 w-6" aria-label={t('chat.close')} />
@@ -77,7 +77,7 @@ export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps =
       </div>
 
       {/* Сообщения */}
-      <ScrollArea className="min-h-0 flex-1 py-2 pr-3">
+      <ScrollArea className="h-full min-h-0 flex-1 py-2 pr-3">
         <div className="space-y-4">
           {chatMessages.length === 0 ? (
             <div className="text-text-secondary text-center">
@@ -148,7 +148,7 @@ export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps =
   );
 
   if (embedded) {
-    return <div className={cn(chatPanelClassName, 'h-full w-full')}>{chatContent}</div>;
+    return <div className={cn(chatPanelClassName, 'h-full min-h-0 w-full')}>{chatContent}</div>;
   }
 
   if (isMobile) {

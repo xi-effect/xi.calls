@@ -137,7 +137,9 @@ export function PiPProvider({ children }: PiPProviderProps) {
       {children}
       {pipWindow &&
         createPortal(
-          <PiPCompactCall pipWindow={pipWindow} resizePiPTo={resizePiPTo} />,
+          <div className="h-full min-h-0">
+            <PiPCompactCall pipWindow={pipWindow} resizePiPTo={resizePiPTo} />
+          </div>,
           pipWindow.document.body,
         )}
     </PiPContext.Provider>

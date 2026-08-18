@@ -89,8 +89,12 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   // Размер окна PiP:
   useEffect(() => {
-    const updateSize = () =>
-      setPipSize({ width: pipWindow.innerWidth, height: pipWindow.innerHeight });
+    const updateSize = () => {
+      const { innerWidth, innerHeight, document: pipDoc } = pipWindow;
+      setPipSize({ width: innerWidth, height: innerHeight });
+      pipDoc.documentElement.style.height = `${innerHeight}px`;
+      pipDoc.body.style.height = `${innerHeight}px`;
+    };
     updateSize();
     pipWindow.addEventListener('resize', updateSize);
     return () => pipWindow.removeEventListener('resize', updateSize);
@@ -120,16 +124,24 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   const pipContentHeight = pipWindowHeight - PIP_DOCUMENT_WINDOW_FRAME_PX;
 
-  // Сразу после открытия/смены режима — innerHeight ещё может быть меньше расчётного
+  // Видео-раскладка сама задаёт высоту окна. Чат занимает текущий innerHeight
+  // (как плитки при ручном ресайзе PiP) — не пережимаем окно формулой чата.
   useLayoutEffect(() => {
+    if (isChatOpen) return;
     resizePiPTo?.(pipWindowHeight);
-  }, [resizePiPTo, pipWindowHeight]);
+  }, [resizePiPTo, pipWindowHeight, isChatOpen]);
 
   useEffect(() => {
+    if (isChatOpen) {
+      if (pipSize.height + 2 < pipContentHeight) {
+        resizePiPTo?.(pipWindowHeight);
+      }
+      return;
+    }
     if (pipSize.height < pipContentHeight - 2) {
       resizePiPTo?.(pipWindowHeight);
     }
-  }, [resizePiPTo, pipWindowHeight, pipContentHeight, pipSize.height]);
+  }, [resizePiPTo, pipWindowHeight, pipContentHeight, pipSize.height, isChatOpen]);
 
   const multiVisibleParticipants = useMemo(
     () => participants.slice(multiScrollIndex, multiScrollIndex + multiVisibleCount),
@@ -167,7 +179,10 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
   );
 
   return (
-    <div className="flex h-full flex-col gap-1 p-1">
+    <div
+      className="flex min-h-0 flex-col gap-1 p-1"
+      style={{ height: pipSize.height }}
+    >
       {compactViewMode === 'audio' && !isChatOpen ? (
         <CompactCallCollapsedBar
           participant={currentParticipant?.participant ?? null}
@@ -228,7 +243,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
             emptyState
           )}
           {isChatOpen && (
-            <div className="absolute inset-0 z-10">
+            <div className="absolute inset-0 z-10 flex h-full min-h-0 flex-col">
               <Chat embedded />
             </div>
           )}

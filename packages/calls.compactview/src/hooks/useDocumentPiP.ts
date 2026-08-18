@@ -133,7 +133,9 @@ export function useDocumentPiP({
           pip.document.documentElement.setAttribute('data-theme', theme);
         }
 
+        pip.document.documentElement.style.height = '100%';
         pip.document.body.style.margin = '0';
+        pip.document.body.style.height = '100%';
         pip.document.body.style.overflow = 'hidden';
         pip.document.body.style.background = 'var(--xi-gray-0, #fff)';
 

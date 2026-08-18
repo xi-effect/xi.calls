@@ -73,7 +73,7 @@ export const ChatComposer = ({ placeholder, onSend }: ChatComposerProps) => {
     }) ?? true;
 
   return (
-    <div className="flex items-end gap-2 pr-3">
+    <div className="flex shrink-0 items-end gap-2 pr-3">
       <div
         className={cn(
           'border-border-default flex max-h-40 w-full flex-1 items-center rounded-xl border pl-4',
