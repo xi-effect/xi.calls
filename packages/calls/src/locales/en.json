@@ -194,7 +194,11 @@
     "empty": "Start chatting",
     "placeholder": "Write a message...",
     "delete": "Delete",
-    "deleteAria": "Delete message for everyone"
+    "deleteAria": "Delete message for everyone",
+    "formatBold": "Bold",
+    "formatItalic": "Italic",
+    "formatUnderline": "Underline",
+    "formatStrike": "Strikethrough"
   },
   "compactView": {
     "noParticipants": "No participants",

@@ -194,7 +194,11 @@
     "empty": "Начните общение в чате",
     "placeholder": "Напишите сообщение...",
     "delete": "Удалить",
-    "deleteAria": "Удалить сообщение для всех"
+    "deleteAria": "Удалить сообщение для всех",
+    "formatBold": "Жирный",
+    "formatItalic": "Курсив",
+    "formatUnderline": "Подчёркнутый",
+    "formatStrike": "Зачёркнутый"
   },
   "compactView": {
     "noParticipants": "Нет участников",

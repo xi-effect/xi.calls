@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
+import type { JSONContent } from '@tiptap/core';
 import { Button } from '@xipkg/button';
-import { Textarea } from '@xipkg/textarea';
-import { Send, Close, Trash } from '@xipkg/icons';
+import { Close, Trash } from '@xipkg/icons';
 import { UserProfile } from '@xipkg/userprofile';
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Modal, ModalContent, ModalTitle } from '@xipkg/modal';
@@ -10,16 +10,18 @@ import { useChat } from '../hooks';
 import { useCalls } from '@xipkg/calls-providers';
 import { useChatStore } from '../store';
 import { cn, useMediaQuery } from '@xipkg/utils';
-import { parseLinks } from '../utils/chat';
+import { ChatComposer } from './ChatComposer';
+import { ChatMessageContent } from './ChatMessageContent';
 
 type ChatProps = {
   /** В компакт-режиме: классы позиционирования (как у CompactCall: top-16 bottom-4 left-4 и т.д.) */
   compactPositionClassName?: string;
+  /** Встроить чат в родителя (PiP): без fixed/modal, на всю доступную высоту */
+  embedded?: boolean;
 };
 
-export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
+export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps = {}) => {
   const { t, i18n } = useTranslation('calls');
-  const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendChatMessage, deleteChatMessage, closeChat } = useChat();
   const { chatMessages, isChatOpen } = useChatStore();
@@ -33,8 +35,6 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });
   };
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isChatOpen) {
@@ -53,32 +53,18 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
     }
   }, [chatMessages.length, isChatOpen]);
 
-  const handleSendMessage = () => {
-    if (messageText.trim()) {
-      sendChatMessage(messageText);
-      setMessageText('');
-      requestAnimationFrame(() => {
-        scrollToBottom('smooth');
-      });
-    }
-
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-  };
-
-  const handleKeyDownSendMessage = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Enter без Shift - отправка сообщения
-    // Shift+Enter - перенос строки (разрешаем стандартное поведение)
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-    // Если Shift+Enter, не предотвращаем стандартное поведение - будет перенос строки
+  const handleSendMessage = (text: string, content?: JSONContent) => {
+    sendChatMessage(text, content);
+    requestAnimationFrame(() => {
+      scrollToBottom('smooth');
+    });
   };
 
   const isMobile = useMediaQuery('(max-width: 639px)');
   if (!isChatOpen) return null;
+
+  const chatPanelClassName =
+    'border-border-default bg-background-surface flex min-h-0 flex-col overflow-hidden rounded-2xl border p-4 pr-1';
 
   const chatContent = (
     <>
@@ -125,22 +111,22 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
                       </div>
                     </div>
                     <div className="relative">
-                      <div
+                      <ChatMessageContent
+                        text={message.text}
+                        content={message.content}
                         className={cn(
-                          'cursor-text rounded-lg px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap select-text',
+                          'cursor-text rounded-lg px-3 py-2 select-text',
                           isOwnMessage
                             ? 'bg-action-primary-background-disabled'
                             : 'bg-background-page',
                         )}
-                      >
-                        {parseLinks(message.text)}
-                      </div>
+                      />
                       {isOwnMessage && (
                         <Button
                           type="button"
                           size="icon"
                           variant="none"
-                          className="bg-background-surface border-border-default absolute -top-2 -left-2 h-7 w-7 rounded-full border p-1 opacity-100 shadow-sm sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                          className="bg-background-surface border-border-default absolute -top-2 -left-2 h-7 w-7 rounded-full border p-1 opacity-100 shadow-sm sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
                           onClick={() => deleteChatMessage(message.id)}
                           aria-label={t('chat.deleteAria')}
                         >
@@ -157,37 +143,13 @@ export const Chat = ({ compactPositionClassName }: ChatProps = {}) => {
         </div>
       </ScrollArea>
 
-      {/* Поле ввода */}
-      <div className="flex items-end gap-2 pr-3">
-        <div className="border-border-default flex max-h-40 w-full flex-1 items-center rounded-xl border pl-4">
-          <Textarea
-            ref={textareaRef}
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            placeholder={t('chat.placeholder')}
-            className="my-3 max-h-32 min-w-full rounded-none border-none p-0 pr-2"
-            onKeyDown={handleKeyDownSendMessage}
-          />
-          <div className="pr-1">
-            <Button
-              size="icon"
-              variant="primary"
-              onClick={handleSendMessage}
-              disabled={!messageText.trim()}
-              className="rounded-xl p-2"
-            >
-              <Send
-                className={cn(
-                  'fill-action-primary-text group-hover:fill-action-primary-text h-6 w-6',
-                  !messageText.trim() && 'fill-icon-secondary',
-                )}
-              />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ChatComposer placeholder={t('chat.placeholder')} onSend={handleSendMessage} />
     </>
   );
+
+  if (embedded) {
+    return <div className={cn(chatPanelClassName, 'h-full w-full')}>{chatContent}</div>;
+  }
 
   if (isMobile) {
     return (

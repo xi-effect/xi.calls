@@ -1,20 +1,17 @@
 import { useCallback } from 'react';
+import type { JSONContent } from '@tiptap/core';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from '@xipkg/calls-hooks';
 import { useRoom } from '@xipkg/calls-providers';
 import { useSoundEffectsStore } from '@xipkg/calls-store';
 import { playSound } from '@xipkg/calls-utils';
+import { sanitizeChatContent } from '../editor/sanitizeContent';
 import { useChatStore } from '../store';
+import type { ChatMessageT } from '../types';
 
 const CHAT_MESSAGE_TYPE = 'chat_message';
 const CHAT_MESSAGE_DELETE_TYPE = 'chat_message_delete';
 
-type ChatMessagePayload = {
-  id: string;
-  text: string;
-  senderId: string;
-  senderName: string;
-  timestamp: number;
-};
+type ChatMessagePayload = ChatMessageT;
 
 type ChatMessageDeletePayload = {
   id: string;
@@ -75,7 +72,10 @@ export const useChat = () => {
           return;
         }
 
-        addChatMessage(payload);
+        addChatMessage({
+          ...payload,
+          content: sanitizeChatContent(payload.content),
+        });
         playSound('chatMessage', chatSoundVolume);
         return;
       }
@@ -100,13 +100,15 @@ export const useChat = () => {
   useLiveKitDataChannelListener(handleChatMessage);
 
   const sendChatMessage = useCallback(
-    (text: string) => {
+    (text: string, content?: JSONContent) => {
       if (!text.trim()) return;
 
       const participantInfo = getCurrentParticipantInfo();
+      const sanitizedContent = sanitizeChatContent(content);
       const message: ChatMessagePayload = {
         id: `${Date.now()}-${Math.random()}`,
         text: text.trim(),
+        ...(sanitizedContent ? { content: sanitizedContent } : {}),
         senderId: participantInfo.senderId,
         senderName: participantInfo.senderName,
         timestamp: Date.now(),

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   useLocalParticipant,
   usePersistentUserChoices,
@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
+import { Chat, ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
@@ -22,9 +23,10 @@ import {
   PIP_TILE_HEIGHT_16_9_PX,
   TILE_GAP_PX,
   getNextCompactViewMode,
-  getPipContentHeight,
   getPipRequiredHeightForTiles,
   getPipWindowHeight,
+  getPipWindowHeightWithChat,
+  PIP_DOCUMENT_WINDOW_FRAME_PX,
 } from '../constants';
 
 type PiPCompactCallPropsT = {
@@ -35,6 +37,7 @@ type PiPCompactCallPropsT = {
 export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT) {
   const { t } = useTranslation('calls');
   const compactViewMode = useCallStore((s) => s.compactViewMode);
+  const isChatOpen = useChatStore((s) => s.isChatOpen);
   const updateStore = useCallStore((s) => s.updateStore);
   const setViewMode = useCallback(
     (mode: CompactViewModeT) => updateStore('compactViewMode', mode),
@@ -95,29 +98,27 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   // Сколько полных плиток (16:9) помещается при текущей высоте окна.
   // Плитка добавляется, только когда есть полное место; убирается сразу, как перестаёт влезать.
+  // При открытом чате окно выше — не раздуваем expanded под чатом.
+  const tilesCountBeforeChatRef = useRef(1);
   const multiVisibleCount = useMemo(() => {
+    if (isChatOpen) return tilesCountBeforeChatRef.current;
+
     let n = 1;
     while (n < totalParticipants && getPipRequiredHeightForTiles(n + 1) <= pipSize.height) {
       n++;
     }
+    tilesCountBeforeChatRef.current = n;
     return n;
-  }, [pipSize.height, totalParticipants]);
+  }, [pipSize.height, totalParticipants, isChatOpen]);
 
-  const pipContentHeight = useMemo(() => {
-    if (compactViewMode === 'audio') {
-      return getPipContentHeight('audio');
-    }
-    if (compactViewMode === 'expanded') {
-      return getPipContentHeight('expanded', multiVisibleCount);
-    }
-    return getPipContentHeight('basic');
-  }, [compactViewMode, multiVisibleCount]);
+  const pipWindowHeight = useMemo(() => {
+    const tileCount = compactViewMode === 'expanded' ? multiVisibleCount : 1;
+    return isChatOpen
+      ? getPipWindowHeightWithChat(compactViewMode, tileCount)
+      : getPipWindowHeight(compactViewMode, tileCount);
+  }, [compactViewMode, multiVisibleCount, isChatOpen]);
 
-  const pipWindowHeight = useMemo(
-    () =>
-      getPipWindowHeight(compactViewMode, compactViewMode === 'expanded' ? multiVisibleCount : 1),
-    [compactViewMode, multiVisibleCount],
-  );
+  const pipContentHeight = pipWindowHeight - PIP_DOCUMENT_WINDOW_FRAME_PX;
 
   // Сразу после открытия/смены режима — innerHeight ещё может быть меньше расчётного
   useLayoutEffect(() => {
@@ -167,7 +168,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   return (
     <div className="flex h-full flex-col gap-1 p-1">
-      {compactViewMode === 'audio' ? (
+      {compactViewMode === 'audio' && !isChatOpen ? (
         <CompactCallCollapsedBar
           participant={currentParticipant?.participant ?? null}
           audioTrack={currentAudioTrack ?? null}
@@ -205,7 +206,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
                 }
               />
             </div>
-          ) : currentParticipant ? (
+          ) : compactViewMode === 'audio' ? null : currentParticipant ? (
             <>
               <ParticipantTile
                 trackRef={currentParticipant}
@@ -225,6 +226,11 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
             </>
           ) : (
             emptyState
+          )}
+          {isChatOpen && (
+            <div className="absolute inset-0 z-10">
+              <Chat embedded />
+            </div>
           )}
         </div>
       )}
@@ -269,6 +275,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
         <div className={cn(barCn, 'ml-auto')}>
           <ScreenShareButton className="h-[28px] w-[28px]" />
+          <ChatButton className="h-[28px] w-[28px] min-w-[28px] rounded-xl" />
           <RaiseHandButton className="h-[28px] w-[28px]" />
         </div>
 

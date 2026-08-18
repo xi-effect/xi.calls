@@ -1,12 +1,7 @@
 import { create } from 'zustand';
+import type { ChatMessageT } from '../types';
 
-type ChatMessageT = {
-  id: string;
-  text: string;
-  senderId: string;
-  senderName: string;
-  timestamp: number;
-};
+export type { ChatMessageT };
 
 export type useChatStoreT = {
   isChatOpen: boolean;
