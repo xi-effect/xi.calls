@@ -9,7 +9,7 @@ const wrapMarks = (text: string, marks: JSONContent['marks']): ReactNode => {
       case 'bold':
         return <strong className="font-bold">{acc}</strong>;
       case 'italic':
-        return <em className="pr-[0.18em] italic">{acc}</em>;
+        return <em className="italic">{acc}</em>;
       case 'strike':
         return <s>{acc}</s>;
       case 'underline':
