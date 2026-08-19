@@ -1,8 +1,21 @@
 import { useEffect, useState } from 'react';
 
+const PINCH_SCALE_EPSILON = 0.01;
+
 const getVisualViewportHeight = (): number | undefined => {
   if (typeof window === 'undefined') return undefined;
-  return window.visualViewport?.height ?? window.innerHeight;
+  const viewport = window.visualViewport;
+  if (!viewport) return window.innerHeight;
+
+  // Pinch-zoom на трекпаде уменьшает visualViewport.height, но ширина layout
+  // остаётся прежней. Если отдать эту высоту контейнеру звонка, сетка считает
+  // раскладку для широкого и очень низкого прямоугольника и складывает все
+  // плитки в одну строку. Для pinch берём высоту layout viewport.
+  if (Math.abs(viewport.scale - 1) > PINCH_SCALE_EPSILON) {
+    return window.innerHeight;
+  }
+
+  return viewport.height;
 };
 
 /**
@@ -17,10 +30,10 @@ const getVisualViewportHeight = (): number | undefined => {
  * панель управления звонком внизу экрана), может оказаться ниже реально видимой области.
  *
  * `window.visualViewport` в отличие от `window.innerHeight`/`dvh` всегда отражает
- * актуальную видимую высоту (за вычетом адресной строки/клавиатуры) и одинаково на
- * всех платформах — на десктопе и в браузерах без адресной строки поверх контента он
- * совпадает с `window.innerHeight`, поэтому применение этого хука безопасно и не меняет
- * поведение вне iOS Safari.
+ * актуальную видимую высоту (за вычетом адресной строки/клавиатуры). На десктопе
+ * без pinch-zoom он совпадает с `window.innerHeight`. Во время pinch-zoom
+ * (`visualViewport.scale !== 1`) высота layout не меняется — хук возвращает
+ * `innerHeight`, чтобы не схлопывать сетку.
  */
 export const useVisualViewportHeight = (): number | undefined => {
   const [height, setHeight] = useState<number | undefined>(getVisualViewportHeight);

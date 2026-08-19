@@ -60,6 +60,16 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
     startClientY: number;
   } | null>(null);
   const pendingInitialZoomRef = useRef(false);
+  const isPanelOpenRef = useRef(isPanelOpen);
+  const videoDimensionsRef = useRef(videoDimensions);
+  const containerSizeRef = useRef(containerSize);
+  const zoomLevelRef = useRef(zoomLevel);
+  const gestureStartZoomRef = useRef(1);
+  const gestureActiveRef = useRef(false);
+  isPanelOpenRef.current = isPanelOpen;
+  videoDimensionsRef.current = videoDimensions;
+  containerSizeRef.current = containerSize;
+  zoomLevelRef.current = zoomLevel;
 
   const updateVideoDimensions = useCallback(() => {
     if (!containerRef.current) return;
@@ -96,37 +106,72 @@ export function ScreenShareZoom({ trackRef, children, className }: ScreenShareZo
     const container = containerRef.current;
     if (!container) return;
 
+    const minZoom = () => {
+      const dims = videoDimensionsRef.current;
+      const size = containerSizeRef.current;
+      return dims && size ? getFitZoom(dims, size) : MIN_ZOOM;
+    };
+
+    const applyZoom = (next: number, direction: 1 | -1) => {
+      const min = minZoom();
+      const clamped = Math.min(MAX_ZOOM, Math.max(min, next));
+      if (direction === -1 && clamped <= min + ZOOM_EPSILON) {
+        setIsPanelOpen(false);
+        setZoomLevel(MIN_ZOOM);
+        return;
+      }
+      if (direction > 0) setIsPanelOpen(true);
+      setZoomLevel(clamped);
+    };
+
     const handleWheel = (e: WheelEvent) => {
-      // Зум тачпадом (и Ctrl+колесо мыши) приходит как wheel-событие с ctrlKey=true
+      // Зум тачпадом (и Ctrl+колесо мыши) приходит как wheel-событие с ctrlKey=true.
+      // Safari параллельно шлёт gesture*: не дублируем зум, пока жест активен.
       if (!e.ctrlKey) return;
       e.preventDefault();
       e.stopPropagation();
+      if (gestureActiveRef.current) return;
 
-      // deltaY < 0 обычно означает zoom in / уменьшение картинки
-      const direction = e.deltaY < 0 ? 1 : -1;
+      // deltaY < 0 обычно означает zoom in
+      const direction: 1 | -1 = e.deltaY < 0 ? 1 : -1;
+      if (direction < 0 && !isPanelOpenRef.current) return;
 
-      if (direction < 0 && !isPanelOpen) return;
+      applyZoom(zoomLevelRef.current - e.deltaY * ZOOM_EPSILON, direction);
+    };
 
-      const min =
-        videoDimensions && containerSize ? getFitZoom(videoDimensions, containerSize) : MIN_ZOOM;
+    const handleGestureStart = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      gestureActiveRef.current = true;
+      gestureStartZoomRef.current = zoomLevelRef.current;
+    };
 
-      if (direction > 0) {
-        setIsPanelOpen(true);
-      }
+    const handleGestureChange = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const scale = Number((e as unknown as { scale?: number }).scale) || 1;
+      const direction: 1 | -1 = scale >= 1 ? 1 : -1;
+      if (direction < 0 && !isPanelOpenRef.current) return;
+      applyZoom(gestureStartZoomRef.current * scale, direction);
+    };
 
-      setZoomLevel((z) => {
-        const next = Math.min(MAX_ZOOM, Math.max(min, z - e.deltaY * ZOOM_EPSILON));
-        if (direction === -1 && next <= min + ZOOM_EPSILON) {
-          setIsPanelOpen(false);
-          return MIN_ZOOM;
-        }
-        return next;
-      });
+    const handleGestureEnd = () => {
+      gestureActiveRef.current = false;
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, [videoDimensions, containerSize, isPanelOpen]);
+    container.addEventListener('gesturestart', handleGestureStart);
+    container.addEventListener('gesturechange', handleGestureChange);
+    container.addEventListener('gestureend', handleGestureEnd);
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('gesturestart', handleGestureStart);
+      container.removeEventListener('gesturechange', handleGestureChange);
+      container.removeEventListener('gestureend', handleGestureEnd);
+    };
+    // Намеренно []: пересоздание слушателя в середине pinch снимает preventDefault
+    // и Chrome успевает включить масштабирование всей страницы.
+  }, []);
 
   useEffect(() => {
     if (!videoDimensions || !containerSize) return;
