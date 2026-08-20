@@ -227,7 +227,7 @@ importers:
         version: link:../calls.reactions
       '@xipkg/calls-risehand':
         specifier: ^0.1.28
-        version: link:../calls.riseHand
+        version: link:../calls.risehand
       '@xipkg/calls-store':
         specifier: ^0.1.28
         version: link:../calls.store
@@ -463,7 +463,7 @@ importers:
         version: link:../calls.providers
       '@xipkg/calls-risehand':
         specifier: ^0.1.28
-        version: link:../calls.riseHand
+        version: link:../calls.risehand
       '@xipkg/calls-store':
         specifier: ^0.1.28
         version: link:../calls.store
