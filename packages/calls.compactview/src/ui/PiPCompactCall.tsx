@@ -179,10 +179,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
   );
 
   return (
-    <div
-      className="flex min-h-0 flex-col gap-1 p-1"
-      style={{ height: pipSize.height }}
-    >
+    <div className="flex min-h-0 flex-col gap-1 p-1" style={{ height: pipSize.height }}>
       {compactViewMode === 'audio' && !isChatOpen ? (
         <CompactCallCollapsedBar
           participant={currentParticipant?.participant ?? null}
