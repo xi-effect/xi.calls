@@ -106,8 +106,7 @@ modules.calls/
     "@xipkg/calls-compactview": "^0.0.0",
     "@xipkg/calls-hooks": "^0.0.0",
     "@xipkg/calls-providers": "^0.0.0",
-    "@xipkg/calls-store": "^0.0.0",
-    "@livekit/components-styles": "1.2.0"
+    "@xipkg/calls-store": "^0.0.0"
   }
 }
 ```
@@ -234,11 +233,12 @@ export const createCallsRuntimeConfig = () => ({
 Подключите один раз в shell или в entry приложения:
 
 ```ts
-import '@livekit/components-styles';
 import '@xipkg/calls-ui/styles.css';
 ```
 
 `styles.css` включает **grid.css** (`--available-height`, раскладка плиток), video-security и driver. Без этого импорта сетка ВКС в npm-сборке не работает — CSS из `VideoGrid.tsx` в `dist` не попадает.
+
+Не подключайте `@livekit/components-styles`: пакет ставит плиткам `border-radius: var(--lk-border-radius)` и `display: flex` + `gap`, из‑за этого углы и сетка расходятся с нашим UI.
 
 Удалите локальный импорт `./shared/VideoTrack/video-security.css` и локальный `src/styles/grid.css`.
 
@@ -388,7 +388,7 @@ PeerDeps UI-пакетов: `i18next@24.2.2`, `react-i18next@15.4.1` (уже е�
 - [ ] Установить `@xipkg/calls`, `@xipkg/calls-compactview`, `@xipkg/calls-hooks`, `@xipkg/calls-providers`, `@xipkg/calls-store`
 - [ ] Создать `useCallsDeps`, `createCallsRuntimeConfig`, `useTanstackCallsNavigation`, `callsSession`
 - [ ] Создать `CallsShell` и подключить в layout маршрутов с ВКС
-- [ ] Подключить CSS: `@livekit/components-styles`, `@xipkg/calls-ui/styles.css` (обязательно, иначе нет grid)
+- [ ] Подключить CSS: `@xipkg/calls-ui/styles.css` (обязательно, иначе нет grid). Не подключать `@livekit/components-styles`
 - [ ] Зарегистрировать локали: `import { callsEn, callsRu } from '@xipkg/calls/locales'` → namespace `calls` в i18n
 - [ ] Обновить `index.ts` — re-export из npm-пакетов
 - [ ] Заменить ручную обёртку `RoomProvider`/`LiveKitProvider` на `CallsShell`

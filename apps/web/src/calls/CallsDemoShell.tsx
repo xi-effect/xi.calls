@@ -19,7 +19,6 @@ import { createCallsRuntimeConfigFromEnv } from './createCallsRuntimeConfig';
 import { CallsDemoEnvBanner } from './CallsDemoEnvBanner';
 import { DemoFloatingNav } from './DemoFloatingNav';
 
-import '@livekit/components-styles';
 import '@xipkg/calls-ui/styles.css';
 
 type CallsDemoShellPropsT = {

@@ -45,7 +45,12 @@
   --upbar-height: 0px;
 }
 
-.lk-participant-tile {
+div.lk-participant-tile {
+  /* Сброс @livekit/components-styles: там display:flex + gap и
+     border-radius: var(--lk-border-radius) (0.5rem или 0 без data-lk-theme). */
+  display: block;
+  flex-direction: unset;
+  gap: 0;
   /* без paint: иначе в Chromium рамка speaking иногда рисуется без скругления */
   contain: layout style;
   transform: translateZ(0); /* Активируем аппаратное ускорение */
@@ -54,6 +59,16 @@
   /* Семантический фон + бордер как у BottomBar / карточек */
   background: var(--xi-background-subtle);
   border: 2px solid var(--xi-border-default);
+}
+
+/* LiveKit рисует speaking-кольцо через ::after со своим радиусом */
+div.lk-participant-tile::after {
+  content: none;
+}
+
+/* LiveKit прячет плейсхолдер (opacity: 0), пока камера не muted */
+div.lk-participant-tile .lk-participant-placeholder {
+  opacity: 1;
 }
 
 /* Светлая тема: фон чуть темнее page, чтобы плитка не сливалась с белым */

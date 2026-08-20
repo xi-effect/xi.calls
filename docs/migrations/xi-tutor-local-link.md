@@ -80,8 +80,7 @@ pnpm exec turbo run build --filter='./packages/calls...'
     "@xipkg/calls-store": "link:../../xi.calls/packages/calls.store",
     "@xipkg/calls-types": "link:../../xi.calls/packages/calls.types",
     "@xipkg/calls-ui": "link:../../xi.calls/packages/calls.ui",
-    "@xipkg/calls-utils": "link:../../xi.calls/packages/calls.utils",
-    "@livekit/components-styles": "1.2.0"
+    "@xipkg/calls-utils": "link:../../xi.calls/packages/calls.utils"
   }
 }
 ```
