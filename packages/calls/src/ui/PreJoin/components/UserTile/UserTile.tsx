@@ -165,7 +165,7 @@ const UserTileUI = ({
               {t('preJoin.permissions.canDisableAnytime')}
             </p>
             {permissionsButtonLabel && (
-              <Button size="m" variant="ghost" onClick={openPermissionsDialog}>
+              <Button size="m" variant="primary" onClick={openPermissionsDialog}>
                 {permissionsButtonLabel}
               </Button>
             )}
