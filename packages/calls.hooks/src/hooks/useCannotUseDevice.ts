@@ -2,24 +2,21 @@ import { useMemo } from 'react';
 import { usePermissionsStore } from '@xipkg/calls-store';
 
 export const useCannotUseDevice = (kind: MediaDeviceKind) => {
-  const cameraPermission = usePermissionsStore((state) => state.cameraPermission);
-  const microphonePermission = usePermissionsStore((state) => state.microphonePermission);
-  const isLoading = usePermissionsStore((state) => state.isLoading);
+  const { cameraPermission, microphonePermission, isLoading } = usePermissionsStore((state) => ({
+    cameraPermission: state.cameraPermission,
+    microphonePermission: state.microphonePermission,
+    isLoading: state.isLoading,
+  }));
 
   return useMemo(() => {
     if (isLoading) return true;
 
-    const isMicrophoneDenied = microphonePermission === 'denied';
-    const isMicrophonePrompted = microphonePermission === 'prompt';
-    const isCameraDenied = cameraPermission === 'denied';
-    const isCameraPrompted = cameraPermission === 'prompt';
-
     switch (kind) {
       case 'audioinput':
       case 'audiooutput':
-        return isMicrophoneDenied || isMicrophonePrompted;
+        return microphonePermission === 'denied' || microphonePermission === 'prompt';
       case 'videoinput':
-        return isCameraDenied || isCameraPrompted;
+        return cameraPermission === 'denied' || cameraPermission === 'prompt';
       default:
         return false;
     }
