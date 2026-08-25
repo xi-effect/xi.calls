@@ -9,6 +9,7 @@ import { SecureVideo } from '@xipkg/calls-ui';
 import { Settings } from '@xipkg/icons';
 import { isSafari } from '@xipkg/calls-utils';
 import { useCalls } from '@xipkg/calls-providers';
+import { cn } from '@xipkg/utils';
 import { useTranslation } from 'react-i18next';
 
 const UserTileUI = ({
@@ -99,13 +100,11 @@ const UserTileUI = ({
     }
 
     return (
-      <div
-        className={`aspect-video h-full w-full${mirrorVideo ? 'transform-[rotateY(180deg)]' : ''}`}
-      >
+      <div className="h-full w-full">
         <SecureVideo
           ref={videoEl}
           data-lk-facing-mode={facingMode}
-          className="h-full w-full object-cover"
+          className={cn('h-full w-full object-cover object-center', mirrorVideo && 'scale-x-[-1]')}
           playsInline
           muted
           style={{

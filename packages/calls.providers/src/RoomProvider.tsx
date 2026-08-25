@@ -31,8 +31,10 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
     const roomOptions: RoomOptions = {
       // Не отключаемся при потере фокуса
       stopLocalTrackOnUnpublish: false,
-      // Включаем адаптивный стриминг для оптимизации качества
-      adaptiveStream: false,
+      // AdaptiveStream сам ставит удалённое видео на паузу, когда вкладка в фоне
+      // (pauseVideoInBackground по умолчанию true). Нам нужно, чтобы картинка
+      // участников не пропадала при уходе со страницы / в compact.
+      adaptiveStream: { pauseVideoInBackground: false },
       // Dynacast вызывает частые renegotiation при смене подписок — на локальном сервере
       // это часто приводит к NegotiationError: negotiation timed out
       dynacast: false,
