@@ -12,6 +12,7 @@ import { useClassroomPins } from '@xipkg/calls-hooks';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { usePiP } from '../providers';
 import { usePhoneLayout } from '@xipkg/calls-utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
@@ -70,6 +71,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     goToPrev,
   } = compactNavigation;
   const callsNavigation = useCallsNavigation();
+  const pip = usePiP();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const compactViewMode = useCallStore((state) => state.compactViewMode);
@@ -150,6 +152,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
 
   const handleMaximize = useCallback(
     (syncToAll: boolean = false) => {
+      pip?.closePiP();
       if (!room || !token || room.state !== 'connected') return;
       const callParam = callsNavigation.search.call;
       const targetCallId =
@@ -181,6 +184,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
       activeBoardId,
       updateStore,
       syncModeToOthers,
+      pip,
     ],
   );
 

@@ -10,6 +10,7 @@ import { getPipHeightForMode, PIP_HEIGHT_BASIC_PX, PIP_PANEL_WIDTH_PX } from '..
 
 type PiPContextValue = {
   openPiP: () => Promise<void>;
+  closePiP: () => void;
   isPiPActive: boolean;
   isSupported: boolean;
   resizePiPTo: (height: number) => void;
@@ -103,6 +104,24 @@ export function PiPProvider({ children }: PiPProviderProps) {
   const openPiPRef = useRef(openPiP);
   openPiPRef.current = openPiP;
 
+  useEffect(() => {
+    if (!isSupported || isMobile) return;
+
+    const request = () => {
+      void openPiPRef.current();
+    };
+    const close = () => {
+      closePiP();
+    };
+
+    window.addEventListener('sovlium:call-pip-request', request);
+    window.addEventListener('sovlium:call-pip-close', close);
+    return () => {
+      window.removeEventListener('sovlium:call-pip-request', request);
+      window.removeEventListener('sovlium:call-pip-close', close);
+    };
+  }, [isSupported, isMobile, closePiP]);
+
   // Media Session PiP — с корректной высотой под текущий режим (не дефолт basic)
   useEffect(() => {
     if (!isSupported || isMobile) return;
@@ -127,6 +146,7 @@ export function PiPProvider({ children }: PiPProviderProps) {
 
   const value: PiPContextValue = {
     openPiP,
+    closePiP,
     isPiPActive: pipWindow !== null,
     isSupported: isSupported && !isMobile,
     resizePiPTo,

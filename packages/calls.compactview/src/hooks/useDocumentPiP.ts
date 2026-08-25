@@ -16,6 +16,7 @@ declare global {
 
   interface Window {
     documentPictureInPicture?: DocumentPictureInPicture;
+    __SOVLIUM_NATIVE__?: boolean;
   }
 
   // setMicrophoneActive / setCameraActive есть в Chrome 93+, в lib.dom.d.ts пока нет
@@ -172,6 +173,9 @@ export function useDocumentPiP({
     if (!enabled) return;
 
     const handleVisibilityChange = () => {
+      // Native mini-window *is* the opener; closing on focus would expand
+      // the call every time the user clicks the overlay.
+      if (typeof window !== 'undefined' && window.__SOVLIUM_NATIVE__) return;
       if (!document.hidden && pipWindowRef.current) {
         closePiP();
       }
