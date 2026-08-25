@@ -2,11 +2,10 @@ import { useMemo } from 'react';
 import { usePermissionsStore } from '@xipkg/calls-store';
 
 export const useCannotUseDevice = (kind: MediaDeviceKind) => {
-  const { cameraPermission, microphonePermission, isLoading } = usePermissionsStore((state) => ({
-    cameraPermission: state.cameraPermission,
-    microphonePermission: state.microphonePermission,
-    isLoading: state.isLoading,
-  }));
+  // Нельзя возвращать новый объект из селектора — zustand сравнивает через Object.is.
+  const cameraPermission = usePermissionsStore((state) => state.cameraPermission);
+  const microphonePermission = usePermissionsStore((state) => state.microphonePermission);
+  const isLoading = usePermissionsStore((state) => state.isLoading);
 
   return useMemo(() => {
     if (isLoading) return true;
