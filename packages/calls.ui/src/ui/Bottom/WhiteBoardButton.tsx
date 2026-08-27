@@ -34,7 +34,7 @@ export const WhiteBoardButton = () => {
         </TooltipContent>
       </Tooltip>
 
-      <WhiteboardsModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      {isModalOpen ? <WhiteboardsModal open onOpenChange={setIsModalOpen} /> : null}
     </>
   );
 };

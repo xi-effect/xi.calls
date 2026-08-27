@@ -11,7 +11,7 @@ import { Button } from '@xipkg/button';
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Badge } from '@xipkg/badge';
 import { Checkbox } from '@xipkg/checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Close, Search } from '@xipkg/icons';
 import { useCallStore } from '@xipkg/calls-store';
 import { useSyncModeToOthers } from '@xipkg/calls-hooks';
@@ -24,6 +24,12 @@ import { Trans, useTranslation } from 'react-i18next';
 type WhiteboardsModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+};
+
+const toBoardId = (id: unknown): string | null => {
+  if (typeof id === 'number' && Number.isFinite(id)) return String(id);
+  if (typeof id === 'string' && id.trim().length > 0) return id.trim();
+  return null;
 };
 
 export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) => {
@@ -40,8 +46,15 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBoardId, setSelectedBoardId] = useState<number | null>(null);
+  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
   const [isCollaborativeMode, setIsCollaborativeMode] = useState(true);
+
+  useEffect(() => {
+    if (open) return;
+    setSearchQuery('');
+    setSelectedBoardId(null);
+    setIsCollaborativeMode(true);
+  }, [open]);
 
   // Хук для создания новой доски
   const { addClassroomMaterials } = room.useAddClassroomMaterials();
@@ -64,8 +77,8 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
       searchQuery.trim() ? b.name.toLowerCase().includes(searchQuery.trim().toLowerCase()) : true,
     );
 
-  const handleBoardSelect = (boardId: number) => {
-    setSelectedBoardId(boardId);
+  const handleBoardSelect = (boardId: unknown) => {
+    setSelectedBoardId(toBoardId(boardId));
   };
 
   const handleCreateNewBoard = async () => {
@@ -78,16 +91,13 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         student_access_mode: 'read_write', // Режим совместного редактирования
       });
 
-      if (result?.data?.id) {
-        const newBoardId = parseInt(result.data.id);
+      const newBoardId = toBoardId(result?.data?.id);
+      if (!newBoardId) return;
 
-        // Выбираем новую доску
-        setSelectedBoardId(newBoardId);
+      setSelectedBoardId(newBoardId);
 
-        // Если включен режим совместной работы, отправляем сообщение всем участникам
-        if (isCollaborativeMode) {
-          syncModeToOthers('compact', newBoardId.toString(), classroomId);
-        }
+      if (isCollaborativeMode) {
+        syncModeToOthers('compact', newBoardId, classroomId);
       }
     } catch (error) {
       console.error('❌ Error creating new board:', error);
@@ -95,26 +105,28 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   };
 
   const handleConfirm = () => {
-    if (selectedBoardId) {
-      // Обновляем локальный режим и сохраняем информацию о доске
-      updateStore('mode', 'compact');
-      updateStore('activeBoardId', selectedBoardId.toString());
-      updateStore('activeClassroom', classroomId);
+    if (!selectedBoardId) return;
 
-      // Если включен режим совместной работы, отправляем сообщение всем участникам
-      if (isCollaborativeMode) {
-        syncModeToOthers('compact', selectedBoardId.toString(), classroomId);
-      }
+    // Сначала цель перехода и навигация, потом compact: иначе zustand синхронно
+    // перестраивает дерево (Call → CompactView) и повторный переход на ту же доску
+    // может не успеть уйти в роутер. localFullView сбрасываем — иначе после
+    // «Вернуть только меня» applyRoomMetadata игнорирует переход на доску.
+    updateStore('localFullView', false);
+    updateStore('activeBoardId', selectedBoardId);
+    updateStore('activeClassroom', classroomId);
 
-      // Переходим на доску: всегда в контексте кабинета /classrooms/:id/boards/:boardId
-      if (classroomId) {
-        navigation.navigateToClassroomBoard(classroomId, selectedBoardId.toString());
-      } else {
-        navigation.navigateToBoard(selectedBoardId.toString());
-      }
-
-      onOpenChange(false);
+    if (isCollaborativeMode) {
+      syncModeToOthers('compact', selectedBoardId, classroomId);
     }
+
+    if (classroomId) {
+      navigation.navigateToClassroomBoard(classroomId, selectedBoardId);
+    } else {
+      navigation.navigateToBoard(selectedBoardId);
+    }
+
+    updateStore('mode', 'compact');
+    onOpenChange(false);
   };
 
   const accessLabel = (mode: string) => {
@@ -167,7 +179,7 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
                   <div
                     key={board.id}
                     className={`hover:bg-background-page border-border-default flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
-                      selectedBoardId === board.id
+                      selectedBoardId === String(board.id)
                         ? 'border-border-focus bg-status-info-background'
                         : ''
                     }`}
