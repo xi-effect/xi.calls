@@ -4,7 +4,6 @@ import { Participant, Track } from 'livekit-client';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { isTrackReference } from '@livekit/components-core';
 import {
-  AudioTrack,
   LockLockedIcon,
   ParticipantContextIfNeeded,
   ParticipantTileProps,
@@ -12,7 +11,6 @@ import {
   TrackMutedIndicatorProps,
   TrackRefContext,
   useEnsureParticipant,
-  useFeatureContext,
   useIsEncrypted,
   useMaybeTrackRefContext,
   useParticipantTile,
@@ -104,7 +102,6 @@ export const ParticipantTile = ({
 }: ParticipantTilePropsT) => {
   const { t } = useTranslation('calls');
   const mirrorVideo = useUserChoicesStore((s) => s.mirrorVideo ?? true);
-  const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
   const maybeTrackRef = useMaybeTrackRefContext();
   const p = useEnsureParticipant(participant);
 
@@ -154,8 +151,6 @@ export const ParticipantTile = ({
   });
   const isEncrypted = useIsEncrypted(p);
 
-  const autoManageSubscription = useFeatureContext()?.autoSubscription;
-
   const getVideoClassName = () => {
     if (trackReference.source === Track.Source.ScreenShare) {
       return 'object-contain';
@@ -179,16 +174,20 @@ export const ParticipantTile = ({
                 {/* Аватар только когда камера выключена; для демонстрации экрана — только нейтральный фон */}
                 {(() => {
                   const isScreenShare = trackReference.source === Track.Source.ScreenShare;
-                  const hasVideo =
+                  // Не смотрим isSubscribed/isEnabled: AdaptiveStream выставляет
+                  // isEnabled=false, когда <video> ещё не смонтирован (compact),
+                  // и плитка тогда никогда не вешает VideoTrack — чужие камеры
+                  // зависают, своя (local) не проходит через AdaptiveStream.
+                  const canRenderVideo =
                     isTrackReference(trackReference) &&
                     (trackReference.publication?.kind === 'video' ||
                       trackReference.source === Track.Source.Camera ||
                       trackReference.source === Track.Source.ScreenShare) &&
-                    trackReference.publication?.isSubscribed &&
-                    trackReference.publication?.isEnabled &&
                     !trackReference.publication?.track?.isMuted;
                   const showAvatar =
-                    !isScreenShare && trackReference.source === Track.Source.Camera && !hasVideo;
+                    !isScreenShare &&
+                    trackReference.source === Track.Source.Camera &&
+                    !canRenderVideo;
                   const displayName =
                     trackReference.participant.name ||
                     trackReference.participant.identity ||
@@ -232,8 +231,6 @@ export const ParticipantTile = ({
                   (trackReference.publication?.kind === 'video' ||
                     trackReference.source === Track.Source.Camera ||
                     trackReference.source === Track.Source.ScreenShare) &&
-                  trackReference.publication?.isSubscribed &&
-                  trackReference.publication?.isEnabled &&
                   !trackReference.publication?.track?.isMuted &&
                   (() => {
                     const videoBlock = (
@@ -254,7 +251,10 @@ export const ParticipantTile = ({
                             backgroundColor: '#000',
                           }}
                           trackRef={trackReference}
-                          manageSubscription={autoManageSubscription}
+                          // Не отписываем трек, когда плитка вне viewport: при уходе
+                          // в compact VideoGrid размонтируется, и IntersectionObserver
+                          // оставлял чужие камеры без подписки (своя — local — оставалась).
+                          manageSubscription={false}
                         />
                       </div>
                     );
@@ -266,13 +266,6 @@ export const ParticipantTile = ({
                       videoBlock
                     );
                   })()}
-                {/* Аудио трек для случаев без видео */}
-                {isTrackReference(trackReference) &&
-                  (!trackReference.publication?.isSubscribed ||
-                    trackReference.publication?.kind !== 'video' ||
-                    trackReference.publication?.track?.isMuted) && (
-                    <AudioTrack trackRef={trackReference} volume={speakerVolume} />
-                  )}
                 <div className="lk-participant-metadata absolute right-2 bottom-2 left-2 z-10 flex items-center justify-between gap-2">
                   <div>
                     {trackReference.source === Track.Source.Camera ? (

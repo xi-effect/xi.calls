@@ -222,13 +222,19 @@ export const Settings = ({ children }: SettingsPropsT) => {
   );
 
   // Обработчики включения/выключения
-  const handleMicrophoneToggle = useCallback(async () => {
-    microphoneToggle.toggle();
-  }, [microphoneToggle]);
+  const handleMicrophoneToggle = useCallback(
+    async (enabled: boolean) => {
+      await microphoneToggle.toggle(enabled);
+    },
+    [microphoneToggle],
+  );
 
-  const handleCameraToggle = useCallback(async () => {
-    cameraToggle.toggle();
-  }, [cameraToggle]);
+  const handleCameraToggle = useCallback(
+    async (enabled: boolean) => {
+      await cameraToggle.toggle(enabled);
+    },
+    [cameraToggle],
+  );
 
   return (
     <Sheet>

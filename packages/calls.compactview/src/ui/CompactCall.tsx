@@ -56,8 +56,14 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     },
   });
 
-  const handleMicrophoneToggle = useCallback(() => microphoneToggle.toggle(), [microphoneToggle]);
-  const handleCameraToggle = useCallback(() => cameraToggle.toggle(), [cameraToggle]);
+  const handleMicrophoneToggle = useCallback(
+    (enabled: boolean) => microphoneToggle.toggle(enabled),
+    [microphoneToggle],
+  );
+  const handleCameraToggle = useCallback(
+    (enabled: boolean) => cameraToggle.toggle(enabled),
+    [cameraToggle],
+  );
 
   const compactNavigation = useCompactNavigation();
   const {

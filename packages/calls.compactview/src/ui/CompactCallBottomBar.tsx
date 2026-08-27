@@ -23,14 +23,14 @@ type CompactCallDevicesPropsT = {
   microTrackToggle: {
     showIcon: boolean;
     source: import('livekit-client').Track.Source;
-    onChange: () => void;
+    onChange: (enabled: boolean) => void;
   };
   videoTrack: LocalVideoTrack | undefined;
   videoEnabled: boolean;
   videoTrackToggle: {
     showIcon: boolean;
     source: import('livekit-client').Track.Source;
-    onChange: () => void;
+    onChange: (enabled: boolean) => void;
   };
 };
 

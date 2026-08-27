@@ -98,10 +98,9 @@ export const VideoTrack = forwardRef<HTMLVideoElement, VideoTrackProps>(
       // @ts-expect-error - controlsList не типизирован в TypeScript, но поддерживается браузерами
       videoElement.controlsList = 'nodownload nofullscreen noremoteplayback';
 
-      // Блокируем autoplay и другие атрибуты
-      videoElement.autoplay = false;
       videoElement.loop = false;
-      videoElement.muted = true; // Оставляем muted для корректной работы
+      videoElement.muted = true;
+      videoElement.playsInline = true;
 
       return () => {
         videoElement.removeEventListener('contextmenu', handleContextMenu);

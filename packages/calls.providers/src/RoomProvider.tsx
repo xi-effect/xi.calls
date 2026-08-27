@@ -31,10 +31,10 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
     const roomOptions: RoomOptions = {
       // Не отключаемся при потере фокуса
       stopLocalTrackOnUnpublish: false,
-      // AdaptiveStream сам ставит удалённое видео на паузу, когда вкладка в фоне
-      // (pauseVideoInBackground по умолчанию true). Нам нужно, чтобы картинка
-      // участников не пропадала при уходе со страницы / в compact.
-      adaptiveStream: { pauseVideoInBackground: false },
+      // AdaptiveStream нельзя включать «чтобы видео жило в фоне»: он глушит
+      // удалённый поток, когда <video> не виден или нулевого размера (compact,
+      // свёрнутая вкладка). Фон/расфокус держит KeepVideosPlaying.
+      adaptiveStream: false,
       // Dynacast вызывает частые renegotiation при смене подписок — на локальном сервере
       // это часто приводит к NegotiationError: negotiation timed out
       dynacast: false,

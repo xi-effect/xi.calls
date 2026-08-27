@@ -57,7 +57,7 @@ export const TrackToggle = ({
         : source === Track.Source.ScreenShare
           ? screenShareTrack
           : undefined;
-  const enabled =
+  const enabledFromProps =
     source === Track.Source.Microphone
       ? microEnabled
       : source === Track.Source.Camera
@@ -65,6 +65,9 @@ export const TrackToggle = ({
         : source === Track.Source.ScreenShare
           ? screenShareEnabled
           : false;
+  // Иконка — от реального mute трека, иначе UI может показать «выкл»,
+  // пока mediaStreamTrack ещё шлёт звук (рассинхрон isMicrophoneEnabled / isMuted).
+  const enabled = track ? !track.isMuted : !!enabledFromProps;
 
   const toggle = () => {
     if (permissionBlocked) {
@@ -80,8 +83,7 @@ export const TrackToggle = ({
     // на входе). В PreJoin обработчик onChange (Controls.tsx) сам мутит трек напрямую —
     // там тоже была бы такая же гонка. Теперь TrackToggle только сообщает намерение
     // через onChange, а кто именно и как применяет его к треку — решает вызывающий код.
-    const nextEnabled = track ? track.isMuted : !enabled;
-    onChange?.(nextEnabled, true);
+    onChange?.(!enabled, true);
   };
 
   const trackVol = useTrackVolume(microTrack);

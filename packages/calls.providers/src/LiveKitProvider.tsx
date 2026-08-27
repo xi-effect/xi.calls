@@ -3,6 +3,7 @@ import { useCallStore, useUserChoicesStore } from '@xipkg/calls-store';
 import { useCallback, useEffect, useRef } from 'react';
 import { DisconnectReason, Track, type RemoteTrackPublication } from 'livekit-client';
 import { useRoom } from './RoomProvider';
+import { KeepVideosPlaying } from './KeepVideosPlaying';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
 import { useCallsSession } from './session/CallsSessionProvider';
 import { useCallsRuntimeConfig } from './CallsRuntimeConfigProvider';
@@ -165,9 +166,8 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     }
 
     const isSubscribableVideo = (publication: RemoteTrackPublication) =>
-      (publication.source === Track.Source.Camera ||
-        publication.source === Track.Source.ScreenShare) &&
-      publication.isEnabled;
+      publication.kind === Track.Kind.Video &&
+      (publication.source === Track.Source.Camera || publication.source === Track.Source.ScreenShare);
 
     const restoreVideoSubscriptions = () => {
       if (room.state !== 'connected') {
@@ -252,8 +252,9 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     room.on('reconnected', handleReconnected);
     room.on('trackPublished', handleTrackPublished);
 
-    // Страхуемся и на случай, если экран уже демонстрировался в момент нашего
-    // подключения, а первичная авто-подписка молча не удалась.
+    // Не вызываем restore сразу: на локальном LiveKit 1.8.x лишний setSubscribed
+    // в момент publish даёт NegotiationError: negotiation timed out и цикл reconnect.
+    // CompactCall сам доподписывает видимые треки, когда комната уже connected.
     scheduleTimeout(restoreVideoSubscriptions, 3000);
 
     return () => {
@@ -296,6 +297,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
        * LiveKitProvider не размонтируется при смене режимов, поэтому звук остаётся стабильным.
        */}
       <RoomAudioRenderer volume={speakerVolume} />
+      <KeepVideosPlaying />
       {children}
     </LiveKitRoom>
   );

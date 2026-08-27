@@ -127,12 +127,14 @@ export function CompactCallVideoArea({
     >
       {isMobile ? (
         currentParticipant ? (
-          <ParticipantTile
-            trackRef={currentParticipant}
-            participant={currentParticipant.participant}
-            className="h-full w-full"
-            hidePinToggle={showDesktopOverlay}
-          />
+          <div className="relative h-full w-full min-h-0 min-w-0">
+            <ParticipantTile
+              trackRef={currentParticipant}
+              participant={currentParticipant.participant}
+              className="h-full w-full"
+              hidePinToggle={showDesktopOverlay}
+            />
+          </div>
         ) : (
           emptyState
         )
@@ -165,12 +167,14 @@ export function CompactCallVideoArea({
           />
         </div>
       ) : currentParticipant ? (
-        <ParticipantTile
-          trackRef={currentParticipant}
-          participant={currentParticipant.participant}
-          className="h-full w-full"
-          hidePinToggle={showDesktopOverlay}
-        />
+        <div className="relative h-full w-full min-h-0 min-w-0">
+          <ParticipantTile
+            trackRef={currentParticipant}
+            participant={currentParticipant.participant}
+            className="h-full w-full"
+            hidePinToggle={showDesktopOverlay}
+          />
+        </div>
       ) : (
         emptyState
       )}
