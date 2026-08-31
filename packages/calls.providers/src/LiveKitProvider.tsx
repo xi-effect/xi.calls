@@ -10,6 +10,8 @@ import { useCallsRuntimeConfig } from './CallsRuntimeConfigProvider';
 
 /** Даём SDK время на auto-reconnect после NegotiationError, прежде чем сбрасывать UI */
 const DISCONNECT_GRACE_MS = 5_000;
+/** В скрытой вкладке таймеры и сеть троттлятся, поэтому ждём переподключение дольше */
+const HIDDEN_DISCONNECT_GRACE_MS = 20_000;
 
 type LiveKitProviderPropsT = {
   children: React.ReactNode;
@@ -27,7 +29,6 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const audioOutputDeviceId = useUserChoicesStore((s) => s.audioOutputDeviceId);
 
   const { isStarted } = useCallStore();
-  const wasConnectedRef = useRef(false);
   const disconnectGraceTimeoutRef = useRef<number | null>(null);
 
   // Устройство вывода — прямо здесь, чтобы не плодить цикл calls.providers ↔ calls.hooks
@@ -58,7 +59,6 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   }, []);
 
   const finalizeDisconnect = useCallback(() => {
-    wasConnectedRef.current = false;
     updateStore('connect', false);
     updateStore('isStarted', false);
     updateStore('mode', 'full');
@@ -79,7 +79,6 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
   const handleConnect = useCallback(() => {
     clearPendingDisconnect();
-    wasConnectedRef.current = true;
     updateStore('connect', true);
 
     const { activeClassroom } = useCallStore.getState();
@@ -93,13 +92,32 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     }
   }, [callId, clearConferenceUiState, clearPendingDisconnect, updateStore]);
 
+  /**
+   * `LiveKitRoom` вызывает `room.connect` только при смене своих пропсов, поэтому
+   * после неожиданного разрыва сессия сама не восстанавливается: комната остаётся
+   * disconnected, а `connect` в стоворе — true. Раньше при скрытой вкладке мы вообще
+   * выходили из обработчика, и ученик продолжал видеть интерфейс звонка, из которого
+   * его уже выкинуло. Переподключаемся руками и сносим UI, если не получилось.
+   */
+  const attemptReconnect = useCallback(async () => {
+    const url = isDevMode ? serverUrlDev : serverUrl;
+    const activeToken = (isDevMode ? devToken : token) ?? '';
+
+    if (!url || !activeToken) return false;
+    if (room.state !== 'disconnected') return true;
+
+    try {
+      await room.connect(url, activeToken);
+      console.log('LiveKit: manual reconnect succeeded');
+      return true;
+    } catch (error) {
+      console.warn('LiveKit: manual reconnect failed', error);
+      return false;
+    }
+  }, [devToken, isDevMode, room, serverUrl, serverUrlDev, token]);
+
   const handleDisconnect = useCallback(
     (reason?: DisconnectReason) => {
-      if (document.hidden && wasConnectedRef.current) {
-        console.log('Page hidden - will attempt to reconnect when visible');
-        return;
-      }
-
       if (
         room.state === 'reconnecting' ||
         room.state === 'connecting' ||
@@ -128,6 +146,10 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
       console.warn('LiveKit: disconnected, scheduling UI teardown', { reason, state: room.state });
 
+      void attemptReconnect();
+
+      const graceMs = document.hidden ? HIDDEN_DISCONNECT_GRACE_MS : DISCONNECT_GRACE_MS;
+
       disconnectGraceTimeoutRef.current = window.setTimeout(() => {
         disconnectGraceTimeoutRef.current = null;
 
@@ -141,9 +163,9 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
         }
 
         finalizeDisconnect();
-      }, DISCONNECT_GRACE_MS);
+      }, graceMs);
     },
-    [clearPendingDisconnect, finalizeDisconnect, room],
+    [attemptReconnect, clearPendingDisconnect, finalizeDisconnect, room],
   );
 
   const handleError = useCallback((error: Error) => {
@@ -165,9 +187,16 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       return;
     }
 
+    // Каждый setSubscribed запускает renegotiation на subscriber-соединении.
+    // Публикация с выключенной камерой в подписке не нуждается, а попытка её
+    // подписать никогда не приводит к isSubscribed=true — то есть любая повторная
+    // логика вокруг неё превращается в бесконечный цикл renegotiation и
+    // NegotiationError: negotiation timed out, из которого комнату выбрасывает.
     const isSubscribableVideo = (publication: RemoteTrackPublication) =>
       publication.kind === Track.Kind.Video &&
-      (publication.source === Track.Source.Camera || publication.source === Track.Source.ScreenShare);
+      (publication.source === Track.Source.Camera ||
+        publication.source === Track.Source.ScreenShare) &&
+      publication.isEnabled;
 
     const restoreVideoSubscriptions = () => {
       if (room.state !== 'connected') {
@@ -197,8 +226,9 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     // reconnect/visibilitychange, поэтому демонстрация экрана, включённая
     // посреди уже активного звонка, могла у собеседника не появиться никогда.
     // Подстраховываемся повторными попытками подписки после каждой публикации.
-    const RETRY_DELAYS_MS = [1500, 4000, 8000];
+    const RETRY_DELAY_MS = 2500;
     const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>();
+    const retriedTrackSids = new Set<string>();
 
     const scheduleTimeout = (fn: () => void, delay: number) => {
       const timeoutId = setTimeout(() => {
@@ -209,31 +239,42 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       return timeoutId;
     };
 
-    const scheduleSubscriptionRetries = (publication: RemoteTrackPublication) => {
-      RETRY_DELAYS_MS.forEach((delay) => {
-        scheduleTimeout(() => {
-          if (room.state !== 'connected') return;
-          if (!isSubscribableVideo(publication) || publication.isSubscribed) return;
+    // Ровно одна повторная попытка на трек за сессию: если и она не помогла,
+    // проблема не в потерянном setSubscribed, и дальнейшие вызовы только копят
+    // renegotiation на живом соединении.
+    const scheduleSubscriptionRetry = (publication: RemoteTrackPublication) => {
+      if (retriedTrackSids.has(publication.trackSid)) return;
+      retriedTrackSids.add(publication.trackSid);
 
-          console.warn(
-            `LiveKit: track ${publication.trackSid} (${publication.source}) is still not subscribed after publish, retrying subscribe`,
-          );
-          publication.setSubscribed(true);
-        }, delay);
-      });
+      scheduleTimeout(() => {
+        if (room.state !== 'connected') return;
+        if (!isSubscribableVideo(publication) || publication.isSubscribed) return;
+
+        console.warn(
+          `LiveKit: track ${publication.trackSid} (${publication.source}) is still not subscribed after publish, retrying subscribe once`,
+        );
+        publication.setSubscribed(true);
+      }, RETRY_DELAY_MS);
     };
 
     const handleTrackPublished = (publication: RemoteTrackPublication) => {
-      if (publication.kind !== Track.Kind.Video || !isSubscribableVideo(publication)) {
+      if (!isSubscribableVideo(publication)) {
         return;
       }
 
-      scheduleSubscriptionRetries(publication);
+      scheduleSubscriptionRetry(publication);
     };
 
     const handleVisibilityChange = () => {
-      if (!document.hidden && room.state === 'connected') {
+      if (document.hidden) return;
+
+      if (room.state === 'connected') {
         restoreVideoSubscriptions();
+        return;
+      }
+
+      if (room.state === 'disconnected' && useCallStore.getState().connect) {
+        void attemptReconnect();
       }
     };
 
@@ -264,9 +305,10 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       room.off('trackPublished', handleTrackPublished);
       pendingTimeouts.forEach(clearTimeout);
       pendingTimeouts.clear();
+      retriedTrackSids.clear();
       clearPendingDisconnect();
     };
-  }, [isStarted, connect, room, clearPendingDisconnect]);
+  }, [isStarted, connect, room, clearPendingDisconnect, attemptReconnect]);
 
   const lkToken = (isDevMode ? devToken : token) ?? '';
   const canConnect = Boolean(lkToken) && Boolean(connect);

@@ -13,6 +13,14 @@ import { useRoom } from './RoomProvider';
 const KEEP_ALIVE_WIDTH_PX = 16;
 const KEEP_ALIVE_HEIGHT_PX = 9;
 
+/**
+ * Если браузер снимает элемент с воспроизведения быстрее, чем мы его запускаем
+ * (перегруженный декодер, политика автоплея), безусловный retry превращается в
+ * цикл play/pause на частоте кадров и съедает CPU, которого и без того не хватает.
+ */
+const MAX_PLAY_RETRIES_PER_WINDOW = 5;
+const PLAY_RETRY_WINDOW_MS = 2_000;
+
 const isRemoteCameraOrScreen = (publication: RemoteTrackPublication) =>
   publication.kind === Track.Kind.Video &&
   (publication.source === Track.Source.Camera || publication.source === Track.Source.ScreenShare);
@@ -60,6 +68,20 @@ export const KeepVideosPlaying = () => {
     if (!host) return;
 
     const keepAlives = keepAliveRef.current;
+    const playRetries = new WeakMap<HTMLVideoElement, { count: number; windowStart: number }>();
+
+    const canRetryPlay = (element: HTMLVideoElement) => {
+      const now = Date.now();
+      const budget = playRetries.get(element);
+
+      if (!budget || now - budget.windowStart > PLAY_RETRY_WINDOW_MS) {
+        playRetries.set(element, { count: 1, windowStart: now });
+        return true;
+      }
+
+      budget.count += 1;
+      return budget.count <= MAX_PLAY_RETRIES_PER_WINDOW;
+    };
 
     const detachKeepAlive = (trackSid: string) => {
       const keepAlive = keepAlives.get(trackSid);
@@ -147,6 +169,8 @@ export const KeepVideosPlaying = () => {
         );
         if (!hasLiveTrack) return;
       }
+
+      if (!canRetryPlay(element)) return;
 
       requestAnimationFrame(() => playVideoElement(element));
     };

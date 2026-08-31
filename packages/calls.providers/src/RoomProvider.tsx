@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useMemo } from 'react';
-import { Room, RoomOptions, ConnectionQuality, Track } from 'livekit-client';
+import { Room, RoomOptions, ConnectionQuality, Track, VideoPresets } from 'livekit-client';
 
 type RoomContextTypeT = {
   room: Room;
@@ -39,6 +39,18 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
       // это часто приводит к NegotiationError: negotiation timed out
       dynacast: false,
       disconnectOnPageLeave: false,
+      // Раз adaptiveStream выключен, подписчик всегда берёт верхний simulcast-слой,
+      // независимо от размера плитки. На 720p это ~1.7 Мбит/с на каждого участника:
+      // группа из 4 человек упирается в домашний канал и рвёт соединение. 540p
+      // держит вдвое меньший поток при том же субъективном качестве в сетке.
+      videoCaptureDefaults: {
+        resolution: VideoPresets.h540.resolution,
+      },
+      publishDefaults: {
+        simulcast: true,
+        videoEncoding: VideoPresets.h540.encoding,
+        videoSimulcastLayers: [VideoPresets.h180, VideoPresets.h360],
+      },
     };
 
     const newRoom = new Room(roomOptions);

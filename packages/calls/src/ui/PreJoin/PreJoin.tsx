@@ -19,7 +19,9 @@ import {
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { usePermissionsStore } from '@xipkg/calls-store';
 
-const CAMERA_RESOLUTION = { width: 1280, height: 720 };
+// Должно совпадать с videoCaptureDefaults в RoomProvider: 720p на группе из
+// четырёх человек не пролезает в домашний канал и рвёт соединение.
+const CAMERA_RESOLUTION = { width: 960, height: 540 };
 
 export const PreJoin = () => {
   const {
