@@ -1,6 +1,7 @@
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { useCallStore, useUserChoicesStore } from '@xipkg/calls-store';
-import { useCallback, useEffect, useRef } from 'react';
+import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { DisconnectReason, Track, type RemoteTrackPublication } from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { KeepVideosPlaying } from './KeepVideosPlaying';
@@ -23,10 +24,24 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const { room } = useRoom();
   const navigation = useCallsNavigation();
   const { clearConferenceUiState } = useCallsSession();
-  const { audioEnabled, videoEnabled, connect, token, updateStore } = useCallStore();
+  const {
+    audioEnabled,
+    audioDeviceId,
+    videoEnabled,
+    connect,
+    token,
+    updateStore,
+  } = useCallStore();
   const callId = navigation.getCallId();
   const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
   const audioOutputDeviceId = useUserChoicesStore((s) => s.audioOutputDeviceId);
+  const audioCaptureOptions = useMemo(
+    () => ({
+      ...getBaselineAudioCaptureOptions(),
+      deviceId: audioDeviceId || undefined,
+    }),
+    [audioDeviceId],
+  );
 
   const { isStarted } = useCallStore();
   const disconnectGraceTimeoutRef = useRef<number | null>(null);
@@ -327,7 +342,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       onConnected={handleConnect}
       onDisconnected={handleDisconnect}
       onError={handleError}
-      audio={audioEnabled || false}
+      audio={audioEnabled ? audioCaptureOptions : false}
       video={videoEnabled || false}
     >
       {/*

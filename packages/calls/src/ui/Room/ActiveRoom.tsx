@@ -3,7 +3,12 @@ import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { Chat } from '@xipkg/calls-chat';
 import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
-import { useMicrophoneVolume, useNoiseCancellation, useVideoBlur } from '@xipkg/calls-hooks';
+import {
+  useMicrophoneVolume,
+  useNoiseCancellation,
+  useVideoBlur,
+  useVoiceEnhancement,
+} from '@xipkg/calls-hooks';
 import { useRoom } from '@xipkg/calls-providers';
 import { useHandFocus } from '@xipkg/calls-risehand';
 import { ReactionsOverlay } from '@xipkg/calls-reactions';
@@ -28,7 +33,10 @@ export const ActiveRoom = () => {
   const mode = useCallStore((state) => state.mode);
   const videoTrackForBlur = mode === 'full' ? videoTrack : null;
   useVideoBlur(videoTrackForBlur);
-  // Громкость mic и NC — всегда, пока идёт звонок (ActiveRoom смонтирован и в compact)
+  // WASM подключается только после входа в комнату: PreJoin и публикация обычного
+  // микрофона не зависят от загрузки тяжёлого lazy chunk.
+  useVoiceEnhancement({ localAudioTrack: audioTrack, manageTrack: true });
+  // Громкость mic и NC — всегда, пока идёт звонок (ActiveRoom смонтирован и в compact).
   useMicrophoneVolume(audioTrack);
   useNoiseCancellation(room);
 

@@ -6,7 +6,7 @@ import {
   LocalUserChoices as LocalUserChoicesLK,
 } from '@livekit/components-core';
 import { VideoQuality } from 'livekit-client';
-import type { NoiseCancellationMode } from '@xipkg/calls-types';
+import type { NoiseCancellationMode, VoiceEnhancementConfig } from '@xipkg/calls-types';
 
 export type VideoResolution = 'h720' | 'h360' | 'h180';
 
@@ -26,6 +26,8 @@ export type LocalUserChoices = LocalUserChoicesLK & {
   speakerVolume?: number;
   /** Зеркальное отражение локального превью камеры. */
   mirrorVideo?: boolean;
+  /** Локальная WASM-обработка голоса перед публикацией микрофона. */
+  voiceEnhancement?: VoiceEnhancementConfig;
 };
 
 function getUserChoicesState(): LocalUserChoices {
@@ -40,6 +42,10 @@ function getUserChoicesState(): LocalUserChoices {
     microphoneVolume: 1,
     speakerVolume: 1,
     mirrorVideo: true,
+    voiceEnhancement: {
+      enabled: false,
+      intensity: 90,
+    },
     ...loadUserChoices(),
   };
 }

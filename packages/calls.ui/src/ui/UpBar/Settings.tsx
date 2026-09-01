@@ -30,6 +30,7 @@ import {
 import { useRoom, useCallsNavigation, useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { useNoiseCancellation, useCannotUseDevice } from '@xipkg/calls-hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
+import { VoiceEnhancementSettings } from '../shared/VoiceEnhancementSettings';
 import { Button } from '@xipkg/button';
 import { useTranslation } from 'react-i18next';
 
@@ -322,6 +323,9 @@ export const Settings = ({ children }: SettingsPropsT) => {
                 <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
               </div>
             )}
+            <div className="border-border-default mt-4 border-t pt-4">
+              <VoiceEnhancementSettings />
+            </div>
           </div>
 
           {/* Динамики (список устройств вывода может зависеть от разрешения микрофона в части браузеров) */}

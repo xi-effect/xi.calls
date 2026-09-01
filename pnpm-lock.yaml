@@ -211,34 +211,34 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-reactions':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.reactions
       '@xipkg/calls-risehand':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -350,25 +350,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -450,31 +450,31 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -588,20 +588,26 @@ importers:
 
   packages/calls.hooks:
     dependencies:
+      '@libreaudio/la-call':
+        specifier: ^0.1.4
+        version: 0.1.4
+      '@sentry/browser':
+        specifier: 10.67.0
+        version: 10.67.0
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       i18next:
         specifier: 24.2.2
@@ -664,11 +670,14 @@ importers:
 
   packages/calls.providers:
     dependencies:
+      '@xipkg/calls-config':
+        specifier: ^0.1.37
+        version: link:../calls.config
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -729,25 +738,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/dropdown':
         specifier: 3.1.0
@@ -826,19 +835,19 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -899,7 +908,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -1017,22 +1026,22 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.28
+        specifier: ^0.1.37
         version: link:../calls.utils
       '@xipkg/checkbox':
         specifier: 5.1.0
@@ -1088,6 +1097,9 @@ importers:
       react-i18next:
         specifier: 15.4.1
         version: 15.4.1(i18next@24.2.2)(react-dom@19.2.8)(react@19.2.8)
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.2.8)(react@19.2.8)
     devDependencies:
       '@eslint/js':
         specifier: ^9.19.0
@@ -3219,6 +3231,10 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  /@libreaudio/la-call@0.1.4:
+    resolution: {integrity: sha512-yaqlYGpvZbfpr1h2p1jSGOKPUy7NsfpoJN9gXvHmJu5MB8nN/qfx6LQ2a0hbua3H8rargFKROOv4VZ5WuTKNsA==}
+    dev: false
 
   /@livekit/components-core@0.12.13(livekit-client@2.19.1)(tslib@2.8.1):
     resolution: {integrity: sha512-DQmi84afHoHjZ62wm8y+XPNIDHTwFHAltjd3lmyXj8UZHOY7wcza4vFt1xnghJOD5wLRY58L1dkAgAw59MgWvw==}

@@ -1,5 +1,6 @@
 import { createContext, useContext, ReactNode, useMemo } from 'react';
 import { Room, RoomOptions, ConnectionQuality, Track, VideoPresets } from 'livekit-client';
+import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 
 type RoomContextTypeT = {
   room: Room;
@@ -39,6 +40,7 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
       // это часто приводит к NegotiationError: negotiation timed out
       dynacast: false,
       disconnectOnPageLeave: false,
+      audioCaptureDefaults: getBaselineAudioCaptureOptions(),
       // Раз adaptiveStream выключен, подписчик всегда берёт верхний simulcast-слой,
       // независимо от размера плитки. На 720p это ~1.7 Мбит/с на каждого участника:
       // группа из 4 человек упирается в домашний канал и рвёт соединение. 540p

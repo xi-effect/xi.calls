@@ -161,7 +161,7 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
             </div>
           )}
           <div
-            className="mb-16 flex min-h-0 flex-1 flex-col"
+            className="flex min-h-0 flex-1 flex-col"
             style={{ marginTop: mobileContentMarginTop }}
           >
             {children}

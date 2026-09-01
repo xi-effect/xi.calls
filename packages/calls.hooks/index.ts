@@ -25,9 +25,18 @@ export {
   useWatchPermissions,
   useSortedTracks,
   useNoiseCancellation,
+  useVoiceEnhancement,
   useParticipantSounds,
   useUmamiActivityHeartbeat,
   useVisualViewportHeight,
   ModeSyncProvider,
   type UseNoiseCancellationResult,
+  type UseVoiceEnhancementResult,
+  type VoiceEnhancementStatus,
 } from './src';
+
+export { VoiceEnhancementProcessor } from './src/audio/VoiceEnhancementProcessor';
+export {
+  getVoiceEnhancementAudioContext,
+} from './src/audio/audioContext';
+export { isVoiceEnhancementSupported } from './src/audio/voiceEnhancementSupport';

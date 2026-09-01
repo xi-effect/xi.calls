@@ -1,8 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { LocalAudioTrack } from 'livekit-client';
 import { useUserChoicesStore } from '@xipkg/calls-store';
 import { MicrophoneGainProcessor } from './microphoneGainProcessor';
-import { claimMicProcessorSlot, releaseMicProcessorSlot } from './micProcessorOwnership';
+import {
+  claimMicProcessorSlot,
+  currentMicProcessorOwner,
+  releaseMicProcessorSlot,
+  subscribeMicProcessorSlot,
+} from './micProcessorOwnership';
 
 const GAIN_PROCESSOR_OWNER = 'xi-microphone-gain';
 
@@ -49,6 +54,16 @@ export function useMicrophoneVolume(audioTrack: LocalAudioTrack | null | undefin
   const volumeRef = useRef(volume);
   volumeRef.current = volume;
   const hasCustomVolume = volume !== 1;
+  const [processorSlotRevision, setProcessorSlotRevision] = useState(0);
+
+  useEffect(() => {
+    if (!audioTrack) return;
+    return subscribeMicProcessorSlot(audioTrack, () => {
+      if (currentMicProcessorOwner(audioTrack) !== GAIN_PROCESSOR_OWNER) {
+        setProcessorSlotRevision((revision) => revision + 1);
+      }
+    });
+  }, [audioTrack]);
 
   useEffect(() => {
     if (!audioTrack || !hasCustomVolume) return;
@@ -107,7 +122,7 @@ export function useMicrophoneVolume(audioTrack: LocalAudioTrack | null | undefin
       }
       releaseMicProcessorSlot(audioTrack, GAIN_PROCESSOR_OWNER);
     };
-  }, [audioTrack, hasCustomVolume]);
+  }, [audioTrack, hasCustomVolume, processorSlotRevision]);
 
   useEffect(() => {
     processorRef.current?.setVolume(volume);

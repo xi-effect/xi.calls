@@ -14,7 +14,7 @@ import {
 } from '@xipkg/calls-hooks';
 import { useCallStore, usePermissionsStore } from '@xipkg/calls-store';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
-import { NoiseCancellationSettings } from '@xipkg/calls-ui';
+import { NoiseCancellationSettings, VoiceEnhancementSettings } from '@xipkg/calls-ui';
 import { useTranslation } from 'react-i18next';
 
 interface MediaDevicesProps {
@@ -221,6 +221,9 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
               <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
             </div>
           )}
+          <div className="border-border-default my-4 border-t pt-4">
+            <VoiceEnhancementSettings />
+          </div>
         </div>
         <Button
           onClick={() => (hasActiveCallSession ? returnToFullCall() : handleJoin())}

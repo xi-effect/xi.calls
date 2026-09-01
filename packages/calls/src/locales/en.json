@@ -99,6 +99,16 @@
       "krispUnavailable": "Krisp unavailable"
     }
   },
+  "voiceEnhancement": {
+    "sectionTitle": "Microphone processing",
+    "title": "Voice enhancement",
+    "description": "Reduces noise and makes speech easier to understand.",
+    "localProcessing": "Processing is performed on your device.",
+    "loading": "Enabling voice enhancement…",
+    "unsupported": "Voice enhancement is not supported in this browser.",
+    "errorTitle": "Could not enable voice enhancement.",
+    "errorDescription": "Standard microphone processing is being used."
+  },
   "permissions": {
     "title": "Camera and microphone access",
     "description": "For video calls, the site needs access to the <camera>camera</camera> and <mic>microphone</mic> so others can see and hear you. Permissions are requested only for the call — you can turn off the camera or microphone anytime in the call UI.",

@@ -24,6 +24,7 @@ import { openPermissionsDialog, usePermissionsStore } from '@xipkg/calls-store';
 import { playSpeakerTestTone } from '@xipkg/calls-utils';
 import { useTranslation } from 'react-i18next';
 import { NoiseCancellationSettings } from '../NoiseCancellationSettings';
+import { VoiceEnhancementSettings } from '../VoiceEnhancementSettings';
 import { CameraPreview } from './CameraPreview';
 import { DeviceSelect } from './DeviceSelect';
 import { MicLevelMeter } from './MicLevelMeter';
@@ -329,6 +330,9 @@ export const SoundAndVideoSettings = ({ className }: SoundAndVideoSettingsProps)
                 <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
               </div>
             )}
+            <div className="border-border-default border-t pt-4">
+              <VoiceEnhancementSettings />
+            </div>
           </div>
         </section>
 

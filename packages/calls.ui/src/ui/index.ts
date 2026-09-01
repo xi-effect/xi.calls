@@ -11,6 +11,7 @@ export {
   PermissionsDialog,
   RaisedHandIndicator,
   NoiseCancellationSettings,
+  VoiceEnhancementSettings,
   SoundAndVideoSettings,
   EmojiGlyph,
   ReactionIndicator,

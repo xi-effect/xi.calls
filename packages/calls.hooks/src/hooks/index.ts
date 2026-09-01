@@ -21,6 +21,11 @@ export { useCallBackNavigation } from './useCallBackNavigation';
 export { useClassroomPins } from './useClassroomPins';
 export { useCurrentClassroomId } from './useCurrentClassroomId';
 export { useNoiseCancellation } from './useNoiseCancellation';
+export {
+  useVoiceEnhancement,
+  type UseVoiceEnhancementResult,
+  type VoiceEnhancementStatus,
+} from './useVoiceEnhancement';
 export { useParticipantSounds } from './useParticipantSounds';
 export { useUmamiActivityHeartbeat } from './useUmamiActivityHeartbeat';
 export { useVisualViewportHeight } from './useVisualViewportHeight';

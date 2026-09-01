@@ -1,6 +1,6 @@
 {
   "name": "@xipkg/calls-ui",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "type": "module",
   "exports": {
     ".": {
@@ -39,14 +39,15 @@
     "@xipkg/toggle": "4.2.0",
     "@xipkg/scrollarea": "2.3.0",
     "@xipkg/slider": "2.3.0",
-    "@xipkg/calls-store": "^0.1.28",
-    "@xipkg/calls-hooks": "^0.1.28",
-    "@xipkg/calls-providers": "^0.1.28",
-    "@xipkg/calls-config": "^0.1.28",
-    "@xipkg/calls-utils": "^0.1.28",
-    "@xipkg/calls-types": "^0.1.28",
+    "@xipkg/calls-store": "^0.1.37",
+    "@xipkg/calls-hooks": "^0.1.37",
+    "@xipkg/calls-providers": "^0.1.37",
+    "@xipkg/calls-config": "^0.1.37",
+    "@xipkg/calls-utils": "^0.1.37",
+    "@xipkg/calls-types": "^0.1.37",
     "@xipkg/utils": "^1.8.0",
-    "livekit-client": "2.19.1"
+    "livekit-client": "2.19.1",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
