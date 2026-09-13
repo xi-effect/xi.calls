@@ -34,7 +34,8 @@ export const RoomProvider = ({ children }: RoomProviderProps) => {
       stopLocalTrackOnUnpublish: false,
       // AdaptiveStream нельзя включать «чтобы видео жило в фоне»: он глушит
       // удалённый поток, когда <video> не виден или нулевого размера (compact,
-      // свёрнутая вкладка). Фон/расфокус держит KeepVideosPlaying.
+      // свёрнутая вкладка). Фон/расфокус и локальную камеру на iPad держит
+      // KeepVideosPlaying — без adaptiveStream.
       adaptiveStream: false,
       // Dynacast вызывает частые renegotiation при смене подписок — на локальном сервере
       // это часто приводит к NegotiationError: negotiation timed out

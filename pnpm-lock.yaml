@@ -184,17 +184,17 @@ importers:
         specifier: 3.2.2
         version: 3.2.2(react@19.2.8)
       '@livekit/components-core':
-        specifier: 0.12.13
-        version: 0.12.13(livekit-client@2.19.1)(tslib@2.8.1)
+        specifier: 0.12.15
+        version: 0.12.15(livekit-client@2.22.3)(tslib@2.8.1)
       '@livekit/components-react':
-        specifier: 2.9.21
-        version: 2.9.21(@livekit/krisp-noise-filter@0.3.4)(livekit-client@2.19.1)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1)
+        specifier: 2.9.24
+        version: 2.9.24(@livekit/krisp-noise-filter@0.4.4)(livekit-client@2.22.3)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1)
       '@livekit/krisp-noise-filter':
-        specifier: 0.3.4
-        version: 0.3.4(livekit-client@2.19.1)
+        specifier: 0.4.4
+        version: 0.4.4(livekit-client@2.22.3)
       '@livekit/track-processors':
-        specifier: 0.7.2
-        version: 0.7.2(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.19.1)
+        specifier: 0.8.0
+        version: 0.8.0(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.22.3)
       '@react-hook/latest':
         specifier: 1.0.3
         version: 1.0.3(react@19.2.8)
@@ -211,34 +211,34 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-reactions':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.reactions
       '@xipkg/calls-risehand':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -268,8 +268,8 @@ importers:
         specifier: 24.2.2
         version: 24.2.2(typescript@5.7.3)
       livekit-client:
-        specifier: 2.19.1
-        version: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+        specifier: 2.22.3
+        version: 2.22.3(@types/dom-mediacapture-record@1.0.22)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -350,25 +350,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -450,31 +450,31 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -595,26 +595,26 @@ importers:
         specifier: 10.67.0
         version: 10.67.0
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       i18next:
         specifier: 24.2.2
         version: 24.2.2(typescript@5.7.3)
       livekit-client:
-        specifier: 2.19.1
-        version: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+        specifier: 2.22.3
+        version: 2.22.3(@types/dom-mediacapture-record@1.0.22)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -671,13 +671,13 @@ importers:
   packages/calls.providers:
     dependencies:
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -738,25 +738,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/dropdown':
         specifier: 3.1.0
@@ -835,19 +835,19 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.0
@@ -908,7 +908,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -1014,11 +1014,11 @@ importers:
         specifier: 17.1.0
         version: 17.1.0
       '@livekit/components-react':
-        specifier: 2.9.21
-        version: 2.9.21(@livekit/krisp-noise-filter@0.3.4)(livekit-client@2.19.1)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1)
+        specifier: 2.9.24
+        version: 2.9.24(@livekit/krisp-noise-filter@0.4.4)(livekit-client@2.22.3)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1)
       '@livekit/track-processors':
-        specifier: 0.7.2
-        version: 0.7.2(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.19.1)
+        specifier: 0.8.0
+        version: 0.8.0(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.22.3)
       '@xipkg/badge':
         specifier: 2.1.0
         version: 2.1.0(react@19.2.8)
@@ -1026,22 +1026,22 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.37
+        specifier: ^0.1.39
         version: link:../calls.utils
       '@xipkg/checkbox':
         specifier: 5.1.0
@@ -1089,8 +1089,8 @@ importers:
         specifier: 24.2.2
         version: 24.2.2(typescript@5.7.3)
       livekit-client:
-        specifier: 2.19.1
-        version: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+        specifier: 2.22.3
+        version: 2.22.3(@types/dom-mediacapture-record@1.0.22)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -3135,13 +3135,6 @@ packages:
       '@floating-ui/utils': 0.2.11
     dev: false
 
-  /@floating-ui/dom@1.7.4:
-    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
-    dependencies:
-      '@floating-ui/core': 1.7.5
-      '@floating-ui/utils': 0.2.11
-    dev: false
-
   /@floating-ui/dom@1.7.6:
     resolution: {integrity: sha512-9gZSAI5XM36880PPMm//9dfiEngYoC6Am2izES1FF406YFsjvyBMmeJ2g4SAju3xWwtuynNRFL2s9hgxpLI5SQ==}
     dependencies:
@@ -3236,26 +3229,26 @@ packages:
     resolution: {integrity: sha512-yaqlYGpvZbfpr1h2p1jSGOKPUy7NsfpoJN9gXvHmJu5MB8nN/qfx6LQ2a0hbua3H8rargFKROOv4VZ5WuTKNsA==}
     dev: false
 
-  /@livekit/components-core@0.12.13(livekit-client@2.19.1)(tslib@2.8.1):
-    resolution: {integrity: sha512-DQmi84afHoHjZ62wm8y+XPNIDHTwFHAltjd3lmyXj8UZHOY7wcza4vFt1xnghJOD5wLRY58L1dkAgAw59MgWvw==}
+  /@livekit/components-core@0.12.15(livekit-client@2.22.3)(tslib@2.8.1):
+    resolution: {integrity: sha512-bDkK+jkPMgyT4a5lZmdcuc/hZ8fZUrXW+qQPNHVeSpXCBMzk5q9QWzx+HPtTsPJ8hnncWGfoT81RnXHBsy+Z8g==}
     engines: {node: '>=18'}
     peerDependencies:
-      livekit-client: ^2.17.2
+      livekit-client: ^2.20.1
       tslib: ^2.6.2
     dependencies:
-      '@floating-ui/dom': 1.7.4
-      livekit-client: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+      '@floating-ui/dom': 1.7.6
+      livekit-client: 2.22.3(@types/dom-mediacapture-record@1.0.22)
       loglevel: 1.9.1
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
 
-  /@livekit/components-react@2.9.21(@livekit/krisp-noise-filter@0.3.4)(livekit-client@2.19.1)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1):
-    resolution: {integrity: sha512-6hU9VucJJL+gAhilNGe4MBCDCZVk64qyjP9Ck86krvOIdVU76WeWksddg1MYUP10AlUwwrfD7davz41pJTcMJw==}
+  /@livekit/components-react@2.9.24(@livekit/krisp-noise-filter@0.4.4)(livekit-client@2.22.3)(react-dom@19.2.8)(react@19.2.8)(tslib@2.8.1):
+    resolution: {integrity: sha512-qw5Oy1EfPg1f/xrKYrFielSrmtxY8BZ9mDt6299G5aikotQIztmldBfTNosrVS7VSNit7qeYfOFSyKaML20W6Q==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@livekit/krisp-noise-filter': ^0.2.12 || ^0.3.0
-      livekit-client: ^2.18.2
+      '@livekit/krisp-noise-filter': ^0.2.12 || ^0.3.0 || ^0.4.0
+      livekit-client: ^2.20.1
       react: '>=18'
       react-dom: '>=18'
       tslib: ^2.6.2
@@ -3263,25 +3256,26 @@ packages:
       '@livekit/krisp-noise-filter':
         optional: true
     dependencies:
-      '@livekit/components-core': 0.12.13(livekit-client@2.19.1)(tslib@2.8.1)
-      '@livekit/krisp-noise-filter': 0.3.4(livekit-client@2.19.1)
+      '@livekit/components-core': 0.12.15(livekit-client@2.22.3)(tslib@2.8.1)
+      '@livekit/krisp-noise-filter': 0.4.4(livekit-client@2.22.3)
       clsx: 2.1.1
       events: 3.3.0
       jose: 6.2.3
-      livekit-client: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+      livekit-client: 2.22.3(@types/dom-mediacapture-record@1.0.22)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       tslib: 2.8.1
       usehooks-ts: 3.1.1(react@19.2.8)
     dev: false
 
-  /@livekit/krisp-noise-filter@0.3.4(livekit-client@2.19.1):
-    resolution: {integrity: sha512-gvC0OevzIPBAr8f2S4P/BdUxVJYp7rvDoORHAmU6yppK6NKn+GNbkMosz0NpsI+Te18etBBOjaKmhoD7/PoXVA==}
+  /@livekit/krisp-noise-filter@0.4.4(livekit-client@2.22.3):
+    resolution: {integrity: sha512-ljnNPRE0W0IPuMcgRruQZaIz/zWCfqt9vQYXgX0WmojIbHlRrak7BW+FXW4KtXZKi+/dZPNuEL0c2v1wIHR5Cg==}
     peerDependencies:
-      livekit-client: ^2.0.8
+      livekit-client: ^2.18.7
     dependencies:
       '@livekit/mutex': 1.1.1
-      livekit-client: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+      '@livekit/protocol': 1.45.8
+      livekit-client: 2.22.3(@types/dom-mediacapture-record@1.0.22)
     dev: false
 
   /@livekit/mutex@1.1.1:
@@ -3294,15 +3288,21 @@ packages:
       '@bufbuild/protobuf': 1.10.1
     dev: false
 
-  /@livekit/track-processors@0.7.2(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.19.1):
-    resolution: {integrity: sha512-lzARBKTbBwqycdR/SwTu6//N0l20BzfDd7grxCXl07676SwRApNtZAK1GJjL1m3dCM3KBqH1aVxjMpNcbOw5uQ==}
+  /@livekit/protocol@1.50.4:
+    resolution: {integrity: sha512-L1uggNQAqyY21smQY8AllyOYbcv9Me9TaxwuLytL1R8ck9nbYPmQLNwEDi3pOFGAMa5F8I2nUi2Jc59W5awxlA==}
+    dependencies:
+      '@bufbuild/protobuf': 1.10.1
+    dev: false
+
+  /@livekit/track-processors@0.8.0(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.22.3):
+    resolution: {integrity: sha512-P24RXYodZqcJ5lXYbOp0er1b7WUisHFd267i3cgleQQOGt2jHBqwgRo0V9koEIEAR8J45zSr6zK3IuLUOwwNfA==}
     peerDependencies:
       '@types/dom-mediacapture-transform': ^0.1.9
       livekit-client: ^1.12.0 || ^2.1.0
     dependencies:
       '@mediapipe/tasks-vision': 0.10.14
       '@types/dom-mediacapture-transform': 0.1.11
-      livekit-client: 2.19.1(@types/dom-mediacapture-record@1.0.22)
+      livekit-client: 2.22.3(@types/dom-mediacapture-record@1.0.22)
     dev: false
 
   /@mediapipe/tasks-vision@0.10.14:
@@ -7806,21 +7806,22 @@ packages:
     resolution: {integrity: sha512-P8aEP5U/D1/IlTY2OeYsErdwh9bGuLE30NcXtKEjgdHcahveQoQwM2yZNsioQHsWFz0P7KKudisbrzCgR0sDHg==}
     dev: false
 
-  /livekit-client@2.19.1(@types/dom-mediacapture-record@1.0.22):
-    resolution: {integrity: sha512-knwEuozt3d7optuUMvw+0PGrV/68GWXrTdAefezOM51Dk8QLb28qOm73UMSSQET58gUqelxqU1afchd2YyPKnQ==}
+  /livekit-client@2.22.3(@types/dom-mediacapture-record@1.0.22):
+    resolution: {integrity: sha512-jw9zBKXY5Gtr5MZ7vEON3QhMNccuDvYHck1PFSyG1aaateQPqgKZFBMgZkFZaXHIf9RV4MDW5xpTK2b/+qbwOg==}
     peerDependencies:
       '@types/dom-mediacapture-record': ^1
     dependencies:
       '@livekit/mutex': 1.1.1
-      '@livekit/protocol': 1.45.8
+      '@livekit/protocol': 1.50.4
       '@types/dom-mediacapture-record': 1.0.22
       events: 3.3.0
       jose: 6.2.3
       loglevel: 1.9.2
+      machina: 7.0.1
       sdp-transform: 2.15.0
       tslib: 2.8.1
       typed-emitter: 2.1.0
-      webrtc-adapter: 9.0.5
+      webrtc-adapter: 9.0.6
     dev: false
 
   /load-tsconfig@0.2.5:
@@ -7919,6 +7920,11 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
     dependencies:
       react: 19.2.8
+    dev: false
+
+  /machina@7.0.1:
+    resolution: {integrity: sha512-0Xkgs8NeBvO2hW6bjJT8ewLWrMfh1haMPstaghpASWjXkLjRhtDiaJG1Kb7mslaOHxZYxpH7PIjpmirRVYbMMA==}
+    engines: {node: '>=22.22'}
     dev: false
 
   /magic-string@0.30.21:
@@ -9522,8 +9528,8 @@ packages:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
     dev: true
 
-  /webrtc-adapter@9.0.5:
-    resolution: {integrity: sha512-U9vjByy/sK2OMXu5mmfuZFKTMIUQe34c0JXRO+oDrxJTsntdYT2iIFwYMOV7HhMTuktcZLGf2W1N/OcSf9ssWg==}
+  /webrtc-adapter@9.0.6:
+    resolution: {integrity: sha512-CHbl2ZQbxx164IgWRgzJno4hWtM4tFbRam1QfI3Yxhs3w/DvqluVxVWeXs3oL5/fbGkSNLKo0Ty5MgUWceNhog==}
     engines: {node: '>=6.0.0', npm: '>=3.10.0'}
     dependencies:
       sdp: 3.2.2
