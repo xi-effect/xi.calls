@@ -157,7 +157,7 @@ export function PiPProvider({ children }: PiPProviderProps) {
       {children}
       {pipWindow &&
         createPortal(
-          <div className="h-full min-h-0">
+          <div className="bg-background-page h-full min-h-0">
             <PiPCompactCall pipWindow={pipWindow} resizePiPTo={resizePiPTo} />
           </div>,
           pipWindow.document.body,

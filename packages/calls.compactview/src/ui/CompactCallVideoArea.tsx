@@ -117,7 +117,7 @@ export function CompactCallVideoArea({
     <div
       {...(isMobile ? {} : { ...dragAttributes, ...dragListeners })}
       className={cn(
-        'group relative mb-2 flex overflow-hidden rounded-2xl',
+        'bg-background-subtle group relative mb-2 flex overflow-hidden rounded-2xl',
         withOutShadows ? '' : 'shadow-lg',
         isMobile ? 'h-auto w-full items-center justify-center' : 'w-[360px] cursor-move flex-col',
         !isMobile && compactViewMode === 'basic' && 'shrink-0',

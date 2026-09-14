@@ -91,15 +91,22 @@ export function getPipWindowHeight(mode: CompactViewModeT, tileCount = 1): numbe
   return getPipContentHeight(mode, tileCount) + PIP_DOCUMENT_WINDOW_FRAME_PX;
 }
 
-/** Минимальная высота области чата внутри PiP (поверх видео) */
+/** Минимальная высота области чата внутри PiP */
 export const PIP_CHAT_AREA_MIN_HEIGHT_PX = 360;
 
-/** Высота окна PiP, когда открыт чат: не меньше видео-раскладки и не меньше удобной высоты чата */
+/**
+ * Высота окна PiP при открытом чате.
+ * audio/basic — чат под видео/аудио-полосой (высоты складываются).
+ * expanded — чат вместо плиток (не меньше удобной высоты чата).
+ */
 export function getPipWindowHeightWithChat(mode: CompactViewModeT, tileCount = 1): number {
-  const videoHeight = getPipWindowHeight(mode, tileCount);
-  const chatHeight =
-    PIP_CHROME_HEIGHT_PX + PIP_CHAT_AREA_MIN_HEIGHT_PX + PIP_DOCUMENT_WINDOW_FRAME_PX;
-  return Math.max(videoHeight, chatHeight);
+  if (mode === 'expanded') {
+    const tilesHeight = getPipWindowHeight(mode, tileCount);
+    const chatOnly =
+      PIP_CHROME_HEIGHT_PX + PIP_CHAT_AREA_MIN_HEIGHT_PX + PIP_DOCUMENT_WINDOW_FRAME_PX;
+    return Math.max(tilesHeight, chatOnly);
+  }
+  return getPipWindowHeight(mode, 1) + PIP_VIDEO_BAR_GAP_PX + PIP_CHAT_AREA_MIN_HEIGHT_PX;
 }
 
 /** Минимальный innerHeight для n плиток в expanded */
