@@ -4,8 +4,14 @@ import { Toggle } from '@xipkg/toggle';
 import { useVoiceEnhancement } from '@xipkg/calls-hooks';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@xipkg/utils';
 
-export function VoiceEnhancementSettings() {
+type VoiceEnhancementSettingsProps = {
+  /** Без заголовка секции — как соседние тумблеры на PreJoin */
+  compact?: boolean;
+};
+
+export function VoiceEnhancementSettings({ compact = false }: VoiceEnhancementSettingsProps) {
   const { t } = useTranslation('calls');
   const voiceEnhancement = useVoiceEnhancement();
   const lastToastedError = useRef<string | null>(null);
@@ -25,10 +31,15 @@ export function VoiceEnhancementSettings() {
   }, [t, voiceEnhancement.error, voiceEnhancement.status]);
 
   return (
-    <section aria-labelledby="voice-enhancement-title" className="space-y-3">
-      <h3 id="voice-enhancement-title" className="text-text-primary text-sm font-semibold">
-        {t('voiceEnhancement.sectionTitle')}
-      </h3>
+    <section
+      aria-labelledby={compact ? undefined : 'voice-enhancement-title'}
+      className={cn(compact ? 'space-y-1' : 'space-y-3')}
+    >
+      {!compact && (
+        <h3 id="voice-enhancement-title" className="text-text-primary text-sm font-semibold">
+          {t('voiceEnhancement.sectionTitle')}
+        </h3>
+      )}
       <div className="flex items-center justify-between gap-4">
         <Label className="text-text-primary font-medium">{t('voiceEnhancement.title')}</Label>
         <Toggle
@@ -45,7 +56,6 @@ export function VoiceEnhancementSettings() {
         />
       </div>
       <p className="text-text-secondary text-xs">{t('voiceEnhancement.description')}</p>
-      <p className="text-text-secondary text-xs">{t('voiceEnhancement.localProcessing')}</p>
       {isLoading && (
         <p className="text-text-secondary text-xs" role="status">
           {t('voiceEnhancement.loading')}

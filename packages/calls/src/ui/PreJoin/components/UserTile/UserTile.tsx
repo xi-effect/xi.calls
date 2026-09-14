@@ -131,7 +131,7 @@ const UserTileUI = ({
     if (videoTrack && !videoTrack.isMuted && !isCameraDeniedOrPrompted) return null;
 
     return (
-      <div className="bg-background-subtle flex items-center justify-center rounded-[16px]">
+      <div className="bg-background-subtle flex h-full w-full items-center justify-center rounded-[16px]">
         <Avatar size="xxl">
           <AvatarImage
             src={`https://api.sovlium.ru/files/users/${userId}/avatar.webp`}
@@ -144,7 +144,7 @@ const UserTileUI = ({
   }, [videoTrack, userId, isCameraDeniedOrPrompted]);
 
   return (
-    <div className="bg-background-subtle relative flex aspect-video h-full w-full items-center justify-center overflow-hidden rounded-[16px]">
+    <div className="bg-background-subtle relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-[16px]">
       <div className="relative h-full w-full">
         {renderVideo}
         {renderAvatar}

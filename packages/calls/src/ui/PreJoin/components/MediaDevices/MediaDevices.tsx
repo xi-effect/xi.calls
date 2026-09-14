@@ -12,7 +12,7 @@ import {
   useCallBackNavigation,
   usePersistentUserChoices,
 } from '@xipkg/calls-hooks';
-import { useCallStore, usePermissionsStore } from '@xipkg/calls-store';
+import { openPermissionsDialog, useCallStore, usePermissionsStore } from '@xipkg/calls-store';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
 import { NoiseCancellationSettings, VoiceEnhancementSettings } from '@xipkg/calls-ui';
 import { useTranslation } from 'react-i18next';
@@ -184,7 +184,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
               />
             </div>
           </div>
-          <div className="my-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Label className="text-text-primary font-medium">{t('preJoin.mirror')}</Label>
@@ -205,29 +205,21 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
               </div>
               <Toggle checked={mirrorVideo ?? true} onCheckedChange={saveMirrorVideo} />
             </div>
-          </div>
-          {isBlurSupported && (
-            <div className="my-4">
+            {isBlurSupported && (
               <div className="flex items-center justify-between">
                 <Label className="text-text-primary font-medium">
                   {t('preJoin.backgroundBlur')}
                 </Label>
                 <Toggle checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
-            </div>
-          )}
-          {noiseCancellation && (
-            <div className="my-4">
-              <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
-            </div>
-          )}
-          <div className="border-border-default my-4 border-t pt-4">
-            <VoiceEnhancementSettings />
+            )}
+            {noiseCancellation && <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />}
+            <VoiceEnhancementSettings compact />
           </div>
         </div>
         <Button
           onClick={() => (hasActiveCallSession ? returnToFullCall() : handleJoin())}
-          className="w-full"
+          className="mt-6 w-full"
           disabled={isConnecting && !hasActiveCallSession}
         >
           {hasActiveCallSession
@@ -242,7 +234,16 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           <InfoCircle className="fill-icon-brand" />
         </AlertIcon>
         <AlertContainer className="h-full">
-          <AlertDescription>{t('preJoin.devicesHint')}</AlertDescription>
+          <AlertDescription>
+            {t('preJoin.devicesHint')}{' '}
+            <button
+              type="button"
+              className="text-text-link inline bg-transparent p-0 font-medium underline-offset-2 hover:underline"
+              onClick={openPermissionsDialog}
+            >
+              {t('preJoin.devicesHintLink')}
+            </button>
+          </AlertDescription>
         </AlertContainer>
       </Alert>
     </div>

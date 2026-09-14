@@ -20,6 +20,8 @@ import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import {
+  COMPACT_AUDIO_BAR_HEIGHT_PX,
+  PIP_BAR_HEIGHT_PX,
   PIP_TILE_HEIGHT_16_9_PX,
   TILE_GAP_PX,
   getNextCompactViewMode,
@@ -177,7 +179,18 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   const showAudioBar = compactViewMode === 'audio';
   const showSingleParticipant = compactViewMode === 'basic';
+  /** В мульти чат заменяет плитки; в basic/audio плитка/полоса остаются. */
   const showMultiTiles = compactViewMode === 'expanded' && !isChatOpen;
+
+  const gridTemplateRows = [
+    showAudioBar ? `${COMPACT_AUDIO_BAR_HEIGHT_PX}px` : null,
+    showSingleParticipant ? 'auto' : null,
+    showMultiTiles ? 'minmax(0, 1fr)' : null,
+    isChatOpen ? 'minmax(0, 1fr)' : null,
+    `${PIP_BAR_HEIGHT_PX}px`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const singleParticipantTile = currentParticipant ? (
     <>
@@ -203,32 +216,26 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   return (
     <div
-      className="compact-call-container bg-background-page flex min-h-0 flex-col gap-1 p-1"
-      style={{ height: pipSize.height }}
+      className="compact-call-container bg-background-page grid min-h-0 gap-1 overflow-hidden p-1"
+      style={{ height: pipSize.height, gridTemplateRows }}
     >
       {showAudioBar && (
         <CompactCallCollapsedBar
           participant={currentParticipant?.participant ?? null}
           audioTrack={currentAudioTrack ?? null}
           onExpand={() => setViewMode('basic')}
-          className="h-12 w-full shrink-0 shadow-none"
+          className="h-full w-full min-h-0 shadow-none"
         />
       )}
 
       {showSingleParticipant && (
-        <div
-          className={cn(
-            'group relative w-full overflow-hidden rounded-2xl',
-            isChatOpen ? 'shrink-0' : 'min-h-0 flex-1',
-          )}
-          style={isChatOpen ? { height: PIP_TILE_HEIGHT_16_9_PX } : undefined}
-        >
+        <div className="group relative aspect-video w-full overflow-hidden rounded-2xl">
           {singleParticipantTile}
         </div>
       )}
 
       {showMultiTiles && (
-        <div className="group relative min-h-0 flex-1 overflow-hidden rounded-2xl">
+        <div className="group relative min-h-0 overflow-hidden rounded-2xl">
           <div
             className="relative flex h-full flex-col justify-start overflow-hidden rounded-2xl p-0.5"
             style={{ gap: TILE_GAP_PX }}
@@ -261,7 +268,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
       )}
 
       {isChatOpen && (
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="flex min-h-0 flex-col overflow-hidden">
           <Chat embedded />
         </div>
       )}
