@@ -14,6 +14,7 @@ import { useMemo } from 'react';
 import { cn } from '@xipkg/utils';
 import { useCannotUseDevice } from '@xipkg/calls-hooks';
 import { openPermissionsDialog } from '@xipkg/calls-store';
+import { DeviceHoverMenu } from '../DeviceHoverMenu';
 
 interface ExtendedTrackToggleProps extends TrackToggleProps<any> {
   microTrack?: LocalAudioTrack;
@@ -24,6 +25,9 @@ interface ExtendedTrackToggleProps extends TrackToggleProps<any> {
   screenShareEnabled?: boolean;
   showIcon?: boolean;
   className?: string;
+  devices?: MediaDeviceInfo[];
+  activeDeviceId?: string;
+  onSelectDevice?: (deviceId: string) => void;
 }
 
 export const TrackToggle = ({
@@ -37,6 +41,9 @@ export const TrackToggle = ({
   showIcon = true,
   onChange,
   className,
+  devices,
+  activeDeviceId,
+  onSelectDevice,
   ...props
 }: ExtendedTrackToggleProps) => {
   const isMicPermissionBlocked = useCannotUseDevice('audioinput');
@@ -149,8 +156,8 @@ export const TrackToggle = ({
     ? 'bg-status-error-background border-2 border-border-error shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] hover:bg-status-error-background'
     : '';
 
-  if (source === Track.Source.Microphone) {
-    return (
+  const buttonElement =
+    source === Track.Source.Microphone ? (
       <motion.button
         type="button"
         onClick={handleClick}
@@ -179,33 +186,40 @@ export const TrackToggle = ({
       >
         {buttonContent}
       </motion.button>
+    ) : (
+      <button
+        type="button"
+        onClick={handleClick}
+        className={cn(
+          'relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors',
+          !permissionBlocked && 'bg-background-surface hover:bg-background-page',
+          !permissionBlocked &&
+            iconEnabled &&
+            'bg-status-success-background hover:bg-status-success-background',
+          permissionBlockedStyles,
+          className,
+        )}
+        data-umami-event={
+          source === Track.Source.Camera
+            ? 'call-toggle-camera'
+            : source === Track.Source.ScreenShare
+              ? 'call-toggle-screenshare'
+              : 'call-toggle-track'
+        }
+        data-umami-event-state={enabled ? 'on' : 'off'}
+        {...props}
+      >
+        {buttonContent}
+      </button>
     );
-  }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={cn(
-        'relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors',
-        !permissionBlocked && 'bg-background-surface hover:bg-background-page',
-        !permissionBlocked &&
-          iconEnabled &&
-          'bg-status-success-background hover:bg-status-success-background',
-        permissionBlockedStyles,
-        className,
-      )}
-      data-umami-event={
-        source === Track.Source.Camera
-          ? 'call-toggle-camera'
-          : source === Track.Source.ScreenShare
-            ? 'call-toggle-screenshare'
-            : 'call-toggle-track'
-      }
-      data-umami-event-state={enabled ? 'on' : 'off'}
-      {...props}
+    <DeviceHoverMenu
+      devices={devices}
+      activeDeviceId={activeDeviceId}
+      onSelectDevice={onSelectDevice}
     >
-      {buttonContent}
-    </button>
+      {buttonElement}
+    </DeviceHoverMenu>
   );
 };

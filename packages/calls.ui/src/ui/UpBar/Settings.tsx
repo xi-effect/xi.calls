@@ -28,7 +28,12 @@ import {
   openPermissionsDialog,
 } from '@xipkg/calls-store';
 import { useRoom, useCallsNavigation, useCallsRuntimeConfig } from '@xipkg/calls-providers';
-import { useNoiseCancellation, useCannotUseDevice } from '@xipkg/calls-hooks';
+import {
+  useNoiseCancellation,
+  useCannotUseDevice,
+  useSwitchDevice,
+  useResolvedActiveDeviceId,
+} from '@xipkg/calls-hooks';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
 import { VoiceEnhancementSettings } from '../shared/VoiceEnhancementSettings';
 import { Button } from '@xipkg/button';
@@ -41,19 +46,31 @@ type SettingsPropsT = {
 // Компонент для выбора устройства (перемонтируется по key при смене разрешения, чтобы обновить список)
 const DeviceSelector = ({
   kind,
-  currentDeviceId,
+  track,
+  pendingDeviceId,
+  fallbackDeviceId,
   onDeviceChange,
   icon,
   disabled,
 }: {
   kind: 'videoinput' | 'audioinput' | 'audiooutput';
-  currentDeviceId?: string;
+  track?: LocalAudioTrack | LocalVideoTrack;
+  pendingDeviceId?: string;
+  fallbackDeviceId?: string;
   onDeviceChange: (deviceId: string) => void;
   icon: React.ReactNode;
   disabled?: boolean;
 }) => {
   const { t } = useTranslation('calls');
-  const { devices } = useMediaDeviceSelect({ kind });
+  // activeDeviceId — реально активное устройство (из useMediaDeviceSelect), а не
+  // персистентный выбор пользователя: они могут разойтись (первый вход без
+  // сохранённого выбора, устройство недоступно и т.п.).
+  const { devices, activeDeviceId } = useMediaDeviceSelect({ kind });
+  const resolvedDeviceId = useResolvedActiveDeviceId(devices, activeDeviceId, {
+    track,
+    pendingDeviceId,
+    fallbackDeviceId,
+  });
 
   const placeholders = {
     audioinput: t('settings.device.builtinMic'),
@@ -61,14 +78,14 @@ const DeviceSelector = ({
     videoinput: t('settings.device.builtinCamera'),
   };
 
-  const currentDevice = devices?.find((device) => device.deviceId === currentDeviceId);
+  const currentDevice = devices?.find((device) => device.deviceId === resolvedDeviceId);
   const displayValue = currentDevice?.label || placeholders[kind];
   const hasDevices = devices && devices.length > 0 && devices[0].deviceId !== '';
 
   return (
     <Select
       onValueChange={onDeviceChange}
-      value={currentDeviceId || undefined}
+      value={resolvedDeviceId || undefined}
       disabled={disabled || !hasDevices}
     >
       <SelectTrigger
@@ -103,6 +120,12 @@ export const Settings = ({ children }: SettingsPropsT) => {
   const { microphoneTrack, cameraTrack, isMicrophoneEnabled, isCameraEnabled } =
     useLocalParticipant();
   const noiseCancellation = useNoiseCancellation(room);
+  // Дублирует enumerate/devicechange-подписку, которую DeviceSelector ниже уже
+  // делает для тех же kind — нужен здесь только activeDeviceId, чтобы
+  // useSwitchDevice мог сбросить pendingDeviceId по подтверждению от
+  // комнаты (см. useSwitchDevice.ts).
+  const { activeDeviceId: activeAudioDeviceId } = useMediaDeviceSelect({ kind: 'audioinput' });
+  const { activeDeviceId: activeVideoDeviceId } = useMediaDeviceSelect({ kind: 'videoinput' });
   const {
     userChoices: { audioDeviceId, videoDeviceId },
     saveAudioInputDeviceId,
@@ -174,47 +197,33 @@ export const Settings = ({ children }: SettingsPropsT) => {
   });
 
   // Обработчики смены устройств с применением к трекам
-  const handleAudioDeviceChange = useCallback(
-    async (deviceId: string) => {
-      try {
-        saveAudioInputDeviceId(deviceId);
-        if (audioTrack) {
-          await audioTrack.setDeviceId({ exact: deviceId });
-          const isActuallyEnabled = !audioTrack.isMuted;
-          saveAudioInputEnabled(isActuallyEnabled);
-          console.log('Audio device changed to:', deviceId);
-        }
-      } catch (err) {
-        console.error('Failed to switch microphone device', err);
-      }
-    },
-    [audioTrack, saveAudioInputDeviceId, saveAudioInputEnabled],
-  );
+  const { switchDeviceHandler: handleAudioDeviceChange, pendingDeviceId: pendingAudioDeviceId } =
+    useSwitchDevice({
+      track: audioTrack,
+      activeDeviceId: activeAudioDeviceId,
+      saveDeviceId: saveAudioInputDeviceId,
+      saveEnabled: saveAudioInputEnabled,
+      errorMessage: 'Failed to switch microphone device',
+    });
 
-  const handleVideoDeviceChange = useCallback(
-    async (deviceId: string) => {
-      try {
-        saveVideoInputDeviceId(deviceId);
-        if (videoTrack) {
-          await videoTrack.setDeviceId({ exact: deviceId });
-          const isActuallyEnabled = !videoTrack.isMuted;
-          saveVideoInputEnabled(isActuallyEnabled);
-          console.log('Video device changed to:', deviceId);
-        }
-      } catch (err) {
-        console.error('Failed to switch camera device', err);
-      }
-    },
-    [videoTrack, saveVideoInputDeviceId, saveVideoInputEnabled],
-  );
+  const { switchDeviceHandler: handleVideoDeviceChange, pendingDeviceId: pendingVideoDeviceId } =
+    useSwitchDevice({
+      track: videoTrack,
+      activeDeviceId: activeVideoDeviceId,
+      saveDeviceId: saveVideoInputDeviceId,
+      saveEnabled: saveVideoInputEnabled,
+      errorMessage: 'Failed to switch camera device',
+    });
 
+  // У динамиков нет track/isMuted — переключение идёт через room.switchActiveDevice,
+  // поэтому это отдельная логика, а не useSwitchDevice.
   const handleAudioOutputDeviceChange = useCallback(
     async (deviceId: string) => {
       try {
-        saveAudioOutputDeviceId(deviceId);
-        // LiveKitProvider также слушает store; здесь применяем сразу для отзывчивости UI
         await room.switchActiveDevice('audiooutput', deviceId);
-        console.log('Audio output device changed to:', deviceId);
+        // Сохраняем выбор только после успешного переключения, иначе при ошибке
+        // (устройство отключено/занято) UI покажет активным нерабочее устройство.
+        saveAudioOutputDeviceId(deviceId);
       } catch (err) {
         console.error('Failed to switch audio output device', err);
       }
@@ -262,7 +271,9 @@ export const Settings = ({ children }: SettingsPropsT) => {
             <DeviceSelector
               key={videoSelectorKey}
               kind="videoinput"
-              currentDeviceId={videoDeviceId}
+              track={videoTrack}
+              pendingDeviceId={pendingVideoDeviceId}
+              fallbackDeviceId={videoDeviceId}
               onDeviceChange={handleVideoDeviceChange}
               icon={<Conference className="h-4 w-4" />}
               disabled={!isCameraGranted}
@@ -307,7 +318,9 @@ export const Settings = ({ children }: SettingsPropsT) => {
             <DeviceSelector
               key={audioInputSelectorKey}
               kind="audioinput"
-              currentDeviceId={audioDeviceId}
+              track={audioTrack}
+              pendingDeviceId={pendingAudioDeviceId}
+              fallbackDeviceId={audioDeviceId}
               onDeviceChange={handleAudioDeviceChange}
               icon={<Microphone className="h-4 w-4" />}
               disabled={!isMicrophoneGranted}
@@ -334,7 +347,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
             <DeviceSelector
               key={audioOutputSelectorKey}
               kind="audiooutput"
-              currentDeviceId={audioOutputDeviceId}
+              fallbackDeviceId={audioOutputDeviceId}
               onDeviceChange={handleAudioOutputDeviceChange}
               icon={<SoundTwo className="h-4 w-4" />}
               disabled={!isMicrophoneGranted}

@@ -24,14 +24,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const { room } = useRoom();
   const navigation = useCallsNavigation();
   const { clearConferenceUiState } = useCallsSession();
-  const {
-    audioEnabled,
-    audioDeviceId,
-    videoEnabled,
-    connect,
-    token,
-    updateStore,
-  } = useCallStore();
+  const { audioEnabled, audioDeviceId, videoEnabled, connect, token, updateStore } = useCallStore();
   const callId = navigation.getCallId();
   const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
   const audioOutputDeviceId = useUserChoicesStore((s) => s.audioOutputDeviceId);

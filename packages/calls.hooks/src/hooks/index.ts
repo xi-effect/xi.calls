@@ -5,6 +5,8 @@ export { useModeSync, useSyncModeToOthers } from './useModeSync';
 export { usePersistentUserChoices } from './usePersistentUserChoices';
 export { useResolveInitiallyDefaultDeviceId } from './useResolveInitiallyDefaultDeviceId';
 export { useCannotUseDevice } from './useCannotUseDevice';
+export { useSwitchDevice } from './useSwitchDevice';
+export { useResolvedActiveDeviceId } from './useResolvedActiveDeviceId';
 export { useWatchPermissions } from './useWatchPermissions';
 export { useStartCall } from './useStartCall';
 export { useResponsiveGrid, useAdaptiveGrid } from './useResponsiveGrid';

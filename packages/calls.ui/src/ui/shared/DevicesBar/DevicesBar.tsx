@@ -5,6 +5,9 @@ type TrackToggleType = {
   source: Track.Source;
   onChange?: (enabled: boolean, isUserInitiated: boolean) => void;
   showIcon?: boolean;
+  devices?: MediaDeviceInfo[];
+  activeDeviceId?: string;
+  onSelectDevice?: (deviceId: string) => void;
 };
 
 type DevicesBarPropsT = {
@@ -45,6 +48,9 @@ export const DevicesBar = ({
           source={microTrackToggle.source}
           onChange={microTrackToggle.onChange}
           showIcon={microTrackToggle.showIcon}
+          devices={microTrackToggle.devices}
+          activeDeviceId={microTrackToggle.activeDeviceId}
+          onSelectDevice={microTrackToggle.onSelectDevice}
         />
       )}
       {videoTrackToggle && (
@@ -55,6 +61,9 @@ export const DevicesBar = ({
           source={videoTrackToggle.source}
           onChange={videoTrackToggle.onChange}
           showIcon={videoTrackToggle.showIcon}
+          devices={videoTrackToggle.devices}
+          activeDeviceId={videoTrackToggle.activeDeviceId}
+          onSelectDevice={videoTrackToggle.onSelectDevice}
         />
       )}
     </>

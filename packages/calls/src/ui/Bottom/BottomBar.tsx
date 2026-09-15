@@ -1,12 +1,14 @@
 import {
   ControlBarProps,
   useLocalParticipant,
+  useMediaDeviceSelect,
   usePersistentUserChoices,
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback } from 'react';
 import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
+import { useSwitchDevice, useResolvedActiveDeviceId } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { useCallStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
@@ -20,12 +22,54 @@ import { useTranslation } from 'react-i18next';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { t } = useTranslation('calls');
-  const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
+  const {
+    saveAudioInputEnabled,
+    saveVideoInputEnabled,
+    saveAudioInputDeviceId,
+    saveVideoInputDeviceId,
+  } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
   });
 
   const { isMicrophoneEnabled, isCameraEnabled, microphoneTrack, cameraTrack } =
     useLocalParticipant();
+
+  const audioTrack = microphoneTrack?.track as LocalAudioTrack | undefined;
+  const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
+
+  const { devices: audioDevices, activeDeviceId: activeAudioDeviceId } = useMediaDeviceSelect({
+    kind: 'audioinput',
+  });
+  const { devices: videoDevices, activeDeviceId: activeVideoDeviceId } = useMediaDeviceSelect({
+    kind: 'videoinput',
+  });
+
+  const { switchDeviceHandler: handleSelectAudioDevice, pendingDeviceId: pendingAudioDeviceId } =
+    useSwitchDevice({
+      track: audioTrack,
+      activeDeviceId: activeAudioDeviceId,
+      saveDeviceId: saveAudioInputDeviceId,
+      saveEnabled: saveAudioInputEnabled,
+      errorMessage: 'Failed to switch microphone device',
+    });
+
+  const { switchDeviceHandler: handleSelectVideoDevice, pendingDeviceId: pendingVideoDeviceId } =
+    useSwitchDevice({
+      track: videoTrack,
+      activeDeviceId: activeVideoDeviceId,
+      saveDeviceId: saveVideoInputDeviceId,
+      saveEnabled: saveVideoInputEnabled,
+      errorMessage: 'Failed to switch camera device',
+    });
+
+  const resolvedAudioDeviceId = useResolvedActiveDeviceId(audioDevices, activeAudioDeviceId, {
+    track: audioTrack,
+    pendingDeviceId: pendingAudioDeviceId,
+  });
+  const resolvedVideoDeviceId = useResolvedActiveDeviceId(videoDevices, activeVideoDeviceId, {
+    track: videoTrack,
+    pendingDeviceId: pendingVideoDeviceId,
+  });
 
   const microphoneToggle = useTrackToggle({
     source: Track.Source.Microphone,
@@ -108,19 +152,25 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
         <div className="flex flex-row gap-4">
           <div className="bg-background-surface border-border-default flex h-[48px] w-[92px] items-center justify-center gap-1 rounded-[16px] border">
             <DevicesBar
-              microTrack={microphoneTrack?.track as LocalAudioTrack}
+              microTrack={audioTrack}
               microEnabled={isMicrophoneEnabled}
               microTrackToggle={{
                 showIcon: true,
                 source: Track.Source.Microphone,
                 onChange: handleMicrophoneToggle,
+                devices: audioDevices,
+                activeDeviceId: resolvedAudioDeviceId,
+                onSelectDevice: handleSelectAudioDevice,
               }}
-              videoTrack={cameraTrack?.track as unknown as LocalVideoTrack}
+              videoTrack={videoTrack}
               videoEnabled={isCameraEnabled}
               videoTrackToggle={{
                 showIcon: true,
                 source: Track.Source.Camera,
                 onChange: handleCameraToggle,
+                devices: videoDevices,
+                activeDeviceId: resolvedVideoDeviceId,
+                onSelectDevice: handleSelectVideoDevice,
               }}
               className="relative"
             />
