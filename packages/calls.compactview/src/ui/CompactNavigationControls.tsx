@@ -32,7 +32,7 @@ export function CompactNavigationControls({
     <div className="pointer-events-none absolute inset-0">
       {/* Индикатор участников вверху */}
       <div className="pointer-events-auto absolute top-2 left-1/2 -translate-x-1/2">
-        <div className="bg-background-subtle/80 flex gap-1 rounded-full px-2 py-1 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+        <div className="bg-background-subtle/80 flex gap-1 rounded-full px-2 py-1 backdrop-blur-sm transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
           {Array.from({ length: totalParticipants }, (_, index) => (
             <button
               key={index}
@@ -43,8 +43,8 @@ export function CompactNavigationControls({
               }}
               className={`h-1.5 w-1.5 rounded-full transition-colors ${
                 index === currentIndex
-                  ? 'bg-background-canvas'
-                  : 'bg-background-canvas/50 hover:bg-background-canvas/75'
+                  ? 'bg-text-primary'
+                  : 'bg-text-primary/40 hover:bg-text-primary/70'
               }`}
               aria-label={t('compactView.participant', { index: index + 1 })}
             />

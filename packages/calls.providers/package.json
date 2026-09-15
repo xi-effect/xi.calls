@@ -17,9 +17,9 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@xipkg/calls-config": "^0.1.39",
-    "@xipkg/calls-types": "^0.1.39",
-    "@xipkg/calls-store": "^0.1.39"
+    "@xipkg/calls-config": "^0.1.43",
+    "@xipkg/calls-types": "^0.1.43",
+    "@xipkg/calls-store": "^0.1.43"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "5.101.4",

@@ -49,6 +49,32 @@ type UseDocumentPiPOptions = {
   cameraActive?: boolean;
 };
 
+function applyDocumentTheme(sourceDoc: Document, targetDoc: Document) {
+  const sourceEl = sourceDoc.documentElement;
+  const targetEl = targetDoc.documentElement;
+  const theme = sourceEl.getAttribute('data-theme');
+  if (theme) {
+    targetEl.setAttribute('data-theme', theme);
+  } else {
+    targetEl.removeAttribute('data-theme');
+  }
+  targetEl.className = sourceEl.className;
+  const colorScheme = getComputedStyle(sourceEl).colorScheme;
+  if (colorScheme) {
+    targetEl.style.colorScheme = colorScheme;
+    targetDoc.body.style.colorScheme = colorScheme;
+  }
+  const pageBg =
+    getComputedStyle(sourceEl).getPropertyValue('--xi-background-page').trim() ||
+    (theme === 'dark' ? '#1a1a1a' : '#ffffff');
+  targetEl.style.height = '100%';
+  targetEl.style.background = pageBg;
+  targetDoc.body.style.margin = '0';
+  targetDoc.body.style.height = '100%';
+  targetDoc.body.style.overflow = 'hidden';
+  targetDoc.body.style.background = pageBg;
+}
+
 function copyStylesToWindow(targetWindow: Window) {
   [...document.styleSheets].forEach((styleSheet) => {
     try {
@@ -128,17 +154,15 @@ export function useDocumentPiP({
         });
 
         copyStylesToWindow(pip);
+        applyDocumentTheme(document, pip.document);
 
-        const theme = document.documentElement.getAttribute('data-theme');
-        if (theme) {
-          pip.document.documentElement.setAttribute('data-theme', theme);
-        }
-
-        pip.document.documentElement.style.height = '100%';
-        pip.document.body.style.margin = '0';
-        pip.document.body.style.height = '100%';
-        pip.document.body.style.overflow = 'hidden';
-        pip.document.body.style.background = 'var(--xi-gray-0, #fff)';
+        const themeObserver = new MutationObserver(() => {
+          applyDocumentTheme(document, pip.document);
+        });
+        themeObserver.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['data-theme', 'class', 'style'],
+        });
 
         pipWindowRef.current = pip;
         setPipWindow(pip);
@@ -150,6 +174,7 @@ export function useDocumentPiP({
         }
 
         pip.addEventListener('pagehide', () => {
+          themeObserver.disconnect();
           pipWindowRef.current = null;
           setPipWindow(null);
         });

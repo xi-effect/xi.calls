@@ -20,6 +20,8 @@ import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import {
+  COMPACT_AUDIO_BAR_HEIGHT_PX,
+  PIP_BAR_HEIGHT_PX,
   PIP_TILE_HEIGHT_16_9_PX,
   TILE_GAP_PX,
   getNextCompactViewMode,
@@ -130,24 +132,15 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
 
   const pipContentHeight = pipWindowHeight - PIP_DOCUMENT_WINDOW_FRAME_PX;
 
-  // Видео-раскладка сама задаёт высоту окна. Чат занимает текущий innerHeight
-  // (как плитки при ручном ресайзе PiP) — не пережимаем окно формулой чата.
   useLayoutEffect(() => {
-    if (isChatOpen) return;
     resizePiPTo?.(pipWindowHeight);
-  }, [resizePiPTo, pipWindowHeight, isChatOpen]);
+  }, [resizePiPTo, pipWindowHeight]);
 
   useEffect(() => {
-    if (isChatOpen) {
-      if (pipSize.height + 2 < pipContentHeight) {
-        resizePiPTo?.(pipWindowHeight);
-      }
-      return;
-    }
-    if (pipSize.height < pipContentHeight - 2) {
+    if (pipSize.height + 2 < pipContentHeight) {
       resizePiPTo?.(pipWindowHeight);
     }
-  }, [resizePiPTo, pipWindowHeight, pipContentHeight, pipSize.height, isChatOpen]);
+  }, [resizePiPTo, pipWindowHeight, pipContentHeight, pipSize.height]);
 
   const multiVisibleParticipants = useMemo(
     () => participants.slice(multiScrollIndex, multiScrollIndex + multiVisibleCount),
@@ -184,75 +177,99 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
     'bg-background-surface border-border-default flex items-center justify-center rounded-2xl border p-0.5',
   );
 
+  const showAudioBar = compactViewMode === 'audio';
+  const showSingleParticipant = compactViewMode === 'basic';
+  /** В мульти чат заменяет плитки; в basic/audio плитка/полоса остаются. */
+  const showMultiTiles = compactViewMode === 'expanded' && !isChatOpen;
+
+  const gridTemplateRows = [
+    showAudioBar ? `${COMPACT_AUDIO_BAR_HEIGHT_PX}px` : null,
+    showSingleParticipant ? 'auto' : null,
+    showMultiTiles ? 'minmax(0, 1fr)' : null,
+    isChatOpen ? 'minmax(0, 1fr)' : null,
+    `${PIP_BAR_HEIGHT_PX}px`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const singleParticipantTile = currentParticipant ? (
+    <>
+      <ParticipantTile
+        trackRef={currentParticipant}
+        participant={currentParticipant.participant}
+        className="h-full w-full"
+      />
+      {totalParticipants > 1 && (
+        <CompactNavigationControls
+          canPrev={canGoPrev}
+          canNext={canGoNext}
+          onPrev={goToPrev}
+          onNext={goToNext}
+          currentIndex={currentIndex}
+          totalParticipants={totalParticipants}
+        />
+      )}
+    </>
+  ) : (
+    emptyState
+  );
+
   return (
     <div
-      className="compact-call-container flex min-h-0 flex-col gap-1 p-1"
-      style={{ height: pipSize.height }}
+      className="compact-call-container bg-background-page grid min-h-0 gap-1 overflow-hidden p-1"
+      style={{ height: pipSize.height, gridTemplateRows }}
     >
-      {compactViewMode === 'audio' && !isChatOpen ? (
+      {showAudioBar && (
         <CompactCallCollapsedBar
           participant={currentParticipant?.participant ?? null}
           audioTrack={currentAudioTrack ?? null}
           onExpand={() => setViewMode('basic')}
-          className="h-12 w-full shrink-0"
+          className="h-full min-h-0 w-full shadow-none"
         />
-      ) : (
-        <div className="group relative min-h-0 flex-1 overflow-hidden rounded-2xl">
-          {compactViewMode === 'expanded' ? (
-            <div
-              className="relative flex h-full flex-col justify-start overflow-hidden rounded-2xl p-0.5"
-              style={{ gap: TILE_GAP_PX }}
-            >
-              {multiVisibleParticipants.length === 0
-                ? emptyState
-                : multiVisibleParticipants.map((trackRef) => (
-                    <div
-                      key={`${trackRef.participant.identity}-${trackRef.source}`}
-                      className="aspect-video w-full shrink-0 overflow-hidden rounded-xl"
-                      style={{ minHeight: PIP_TILE_HEIGHT_16_9_PX }}
-                    >
-                      <ParticipantTile
-                        trackRef={trackRef}
-                        participant={trackRef.participant}
-                        className="h-full w-full [&_video]:object-cover"
-                      />
-                    </div>
-                  ))}
-              <CompactMultiViewControls
-                canPrev={multiCanPrev}
-                canNext={multiCanNext}
-                onPrev={() => setMultiScrollIndex((i) => Math.max(0, i - 1))}
-                onNext={() =>
-                  setMultiScrollIndex((i) => Math.min(totalParticipants - multiVisibleCount, i + 1))
-                }
-              />
-            </div>
-          ) : compactViewMode === 'audio' ? null : currentParticipant ? (
-            <>
-              <ParticipantTile
-                trackRef={currentParticipant}
-                participant={currentParticipant.participant}
-                className="h-full w-full"
-              />
-              {totalParticipants > 1 && (
-                <CompactNavigationControls
-                  canPrev={canGoPrev}
-                  canNext={canGoNext}
-                  onPrev={goToPrev}
-                  onNext={goToNext}
-                  currentIndex={currentIndex}
-                  totalParticipants={totalParticipants}
-                />
-              )}
-            </>
-          ) : (
-            emptyState
-          )}
-          {isChatOpen && (
-            <div className="absolute inset-0 z-10 flex h-full min-h-0 flex-col">
-              <Chat embedded />
-            </div>
-          )}
+      )}
+
+      {showSingleParticipant && (
+        <div className="group relative aspect-video w-full overflow-hidden rounded-2xl">
+          {singleParticipantTile}
+        </div>
+      )}
+
+      {showMultiTiles && (
+        <div className="group relative min-h-0 overflow-hidden rounded-2xl">
+          <div
+            className="relative flex h-full flex-col justify-start overflow-hidden rounded-2xl p-0.5"
+            style={{ gap: TILE_GAP_PX }}
+          >
+            {multiVisibleParticipants.length === 0
+              ? emptyState
+              : multiVisibleParticipants.map((trackRef) => (
+                  <div
+                    key={`${trackRef.participant.identity}-${trackRef.source}`}
+                    className="aspect-video w-full shrink-0 overflow-hidden rounded-xl"
+                    style={{ minHeight: PIP_TILE_HEIGHT_16_9_PX }}
+                  >
+                    <ParticipantTile
+                      trackRef={trackRef}
+                      participant={trackRef.participant}
+                      className="h-full w-full [&_video]:object-cover"
+                    />
+                  </div>
+                ))}
+            <CompactMultiViewControls
+              canPrev={multiCanPrev}
+              canNext={multiCanNext}
+              onPrev={() => setMultiScrollIndex((i) => Math.max(0, i - 1))}
+              onNext={() =>
+                setMultiScrollIndex((i) => Math.min(totalParticipants - multiVisibleCount, i + 1))
+              }
+            />
+          </div>
+        </div>
+      )}
+
+      {isChatOpen && (
+        <div className="flex min-h-0 flex-col overflow-hidden">
+          <Chat embedded />
         </div>
       )}
 

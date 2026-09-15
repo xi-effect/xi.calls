@@ -19,11 +19,11 @@
   "dependencies": {
     "zustand": "5.0.14",
     "livekit-client": "2.22.3",
-    "@xipkg/calls-store": "^0.1.39",
-    "@xipkg/calls-providers": "^0.1.39",
-    "@xipkg/calls-types": "^0.1.39",
-    "@xipkg/calls-utils": "^0.1.39",
-    "@xipkg/calls-config": "^0.1.39",
+    "@xipkg/calls-store": "^0.1.43",
+    "@xipkg/calls-providers": "^0.1.43",
+    "@xipkg/calls-types": "^0.1.43",
+    "@xipkg/calls-utils": "^0.1.43",
+    "@xipkg/calls-config": "^0.1.43",
     "@libreaudio/la-call": "^0.1.4",
     "@sentry/browser": "10.67.0"
   },
@@ -43,7 +43,7 @@
     "globals": "^15.14.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.65.0",
-    "@xipkg/calls-providers": "^0.1.39"
+    "@xipkg/calls-providers": "^0.1.43"
   },
   "peerDependencies": {
     "i18next": "24.2.2",

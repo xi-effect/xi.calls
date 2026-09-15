@@ -29,12 +29,12 @@ export function CompactCallCollapsedBar({
   return (
     <div
       className={cn(
-        'bg-action-secondary-background-pressed flex items-center gap-2 rounded-2xl px-2 py-2 shadow-lg',
+        'bg-background-surface border-border-default flex items-center gap-2 rounded-2xl border px-2 py-2 shadow-lg',
         className,
       )}
     >
       {/* Тот же блок, что и в плитке участника ВКС: микрофон + имя */}
-      <div className="bg-background-surface/80 flex h-6 max-w-[45%] min-w-0 shrink gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
+      <div className="bg-background-page/80 flex h-6 max-w-[45%] min-w-0 shrink gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
         {participant ? (
           <>
             <TrackMutedIndicator
