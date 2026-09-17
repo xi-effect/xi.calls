@@ -1,16 +1,16 @@
 import React from 'react';
-import { computeMenuPosition, wasClickOutside } from '@livekit/components-core';
 import { Select, SelectContent, SelectGroup, SelectTrigger, SelectValue } from '@xipkg/select';
 import { Conference, Microphone, SoundTwo } from '@xipkg/icons';
 import { useMediaDeviceSelect } from '@livekit/components-react';
+import { excludeOsDefaultDevices } from '@xipkg/calls-utils';
 import { useTranslation } from 'react-i18next';
 import { MediaDeviceKind, MediaDeviceSelect } from './MediaDeviceSelect';
 
-export interface MediaDeviceMenuProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface MediaDeviceMenuProps {
   disabled?: boolean;
   kind: MediaDeviceKind;
   initialSelection: string | undefined;
-  onActiveDeviceChange?: (kind: MediaDeviceKind, deviceId: string) => void;
+  onDeviceSelected?: (kind: MediaDeviceKind, deviceId: string) => void;
   warnDisable?: boolean;
   requestPermissions?: boolean;
 }
@@ -19,16 +19,11 @@ export const MediaDeviceMenu = ({
   warnDisable,
   kind,
   initialSelection,
-  onActiveDeviceChange,
+  onDeviceSelected,
   disabled,
   requestPermissions = false,
 }: MediaDeviceMenuProps) => {
   const { t } = useTranslation('calls');
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [updateRequired, setUpdateRequired] = React.useState<boolean>(true);
-  const [, setNeedPermissions] = React.useState(requestPermissions);
-  const button = React.useRef<HTMLButtonElement>(null);
-  const tooltip = React.useRef<HTMLDivElement>(null);
 
   const placeholders = {
     audioinput: t('preJoin.device.builtinMic'),
@@ -40,78 +35,35 @@ export const MediaDeviceMenu = ({
   const handleError = React.useCallback((e: Error) => {
     console.error('Media device error:', e);
   }, []);
-  const { devices, setActiveMediaDevice } = useMediaDeviceSelect({
+  const { devices: rawDevices, setActiveMediaDevice } = useMediaDeviceSelect({
     kind,
     room: undefined, // Для PreJoin не нужна комната
     requestPermissions,
     onError: handleError,
   });
+  const devices = React.useMemo(() => excludeOsDefaultDevices(rawDevices), [rawDevices]);
 
-  React.useLayoutEffect(() => {
-    if (isOpen) {
-      setNeedPermissions(true);
-    }
-  }, [isOpen]);
-
-  React.useLayoutEffect(() => {
-    if (button.current && tooltip.current && (devices || updateRequired)) {
-      const handlePositionChange = (x: number, y: number) => {
-        if (tooltip.current) {
-          tooltip.current.style.left = `${x}px`;
-          tooltip.current.style.top = `${y}px`;
-        }
-      };
-
-      computeMenuPosition(button.current, tooltip.current, handlePositionChange);
-    }
-    setUpdateRequired(false);
-  }, [button, tooltip, updateRequired, devices]);
-
-  const handleClickOutside = React.useCallback(
-    (event: MouseEvent) => {
-      if (!tooltip.current) {
-        return;
-      }
-      if (event.target === button.current) {
-        return;
-      }
-      if (isOpen && wasClickOutside(tooltip.current, event)) {
-        setIsOpen(false);
-      }
-    },
-    [isOpen, tooltip, button],
-  );
-
-  React.useEffect(() => {
-    document.addEventListener<'click'>('click', handleClickOutside);
-    window.addEventListener<'resize'>('resize', () => setUpdateRequired(true));
-    return () => {
-      document.removeEventListener<'click'>('click', handleClickOutside);
-      window.removeEventListener<'resize'>('resize', () => setUpdateRequired(true));
-    };
-  }, [handleClickOutside, setUpdateRequired]);
-
+  // 'default' — реальный сентинел ("используется устройство ОС"), для него
+  // и только для него уместна подпись "По умолчанию". Во всех остальных
+  // случаях — нет выбора вовсе (undefined/'') или сохранён конкретный
+  // deviceId, которого сейчас нет среди устройств (отключили/сменили) —
+  // показываем подпись по типу устройства, а не вводящее в заблуждение "default".
   const getPlaceholder = () => {
-    if (initialSelection === '') return placeholders.default;
-    if (!initialSelection && kind) {
-      return placeholders[kind] || placeholders.default;
-    }
-    return placeholders.default;
+    if (initialSelection === 'default') return placeholders.default;
+    return placeholders[kind] || placeholders.default;
   };
-  async function handleActiveChange(deviceId: string, kind: MediaDeviceKind) {
-    setIsOpen(false);
-    onActiveDeviceChange?.(kind, deviceId);
+
+  const handleActiveChange = async (deviceId: string) => {
+    onDeviceSelected?.(kind, deviceId);
     await setActiveMediaDevice(deviceId);
-  }
+  };
 
   return (
     <div className={`${warnDisable ? 'border-tag-orange-accent rounded-lg border-2' : null}`}>
       <Select
-        onValueChange={(value) => handleActiveChange(value, kind)}
-        defaultValue={devices?.length > 0 ? initialSelection : undefined}
-        disabled={
-          disabled || warnDisable || !devices || devices.length === 0 || devices[0].deviceId === ''
-        }
+        onValueChange={handleActiveChange}
+        value={devices.length > 0 ? initialSelection : undefined}
+        disabled={disabled || warnDisable || devices.length === 0 || devices[0].deviceId === ''}
       >
         <SelectTrigger
           className="text-text-primary flex w-full flex-row"
@@ -131,10 +83,7 @@ export const MediaDeviceMenu = ({
         >
           <SelectValue placeholder={getPlaceholder()} />
         </SelectTrigger>
-        <SelectContent
-          ref={(ref) => ref?.addEventListener('touchend', (e) => e.preventDefault())}
-          className="w-full"
-        >
+        <SelectContent className="w-full" onTouchEnd={(event) => event.preventDefault()}>
           {devices.length !== 0 && devices[0].deviceId !== '' && (
             <SelectGroup>
               <MediaDeviceSelect devices={devices} />
