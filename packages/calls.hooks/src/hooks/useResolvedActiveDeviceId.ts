@@ -18,15 +18,26 @@ type UseResolvedActiveDeviceIdOptions = {
   fallbackDeviceId?: string;
 };
 
+/** Сентинел LiveKit/браузера — "устройство ОС по умолчанию", а не конкретный физический девайс. */
+const DEFAULT_SENTINEL = 'default';
+
 /**
  * Резолвит реальный активный `deviceId` для отображения (галочка в
  * `DeviceHoverMenu`, выбранное значение в `DeviceSelector`).
  *
  * `useMediaDeviceSelect` инициализирует `activeDeviceId` литералом `"default"`
- * до первого события об активном устройстве от комнаты. У аудио такой id
- * часто действительно совпадает с реальным устройством (браузер сам добавляет
- * `"default"`-запись) — но для видео такой записи не бывает никогда, и подбор
- * по `activeDeviceId` молча проваливается.
+ * до первого события об активном устройстве от комнаты. Для видео такой записи
+ * в списке устройств не бывает вовсе, и подбор по `activeDeviceId` там просто
+ * молча проваливается. Для аудио — хуже: `"default"` почти всегда СУЩЕСТВУЕТ
+ * как реальная запись в списке (браузер сам её добавляет), но это не значит,
+ * что оно достоверно указывает на конкретное устройство. На Linux/Chrome
+ * `track.getSettings().deviceId` (а значит и то, что дальше узнаёт комната)
+ * может вернуть буквально `"default"` даже когда мы запросили конкретный
+ * `exact`-deviceId, если он на момент запроса совпадал с системным дефолтом —
+ * это особенность браузера, не наша логика. Поэтому `"default"` — это в лучшем
+ * случае неоднозначное подтверждение: и `activeDeviceId`, и `track.getDeviceId()`
+ * могут "застрять" на нём даже после успешного переключения на конкретное
+ * устройство, если оно просто совпадает с текущим дефолтом ОС.
  *
  * Приоритет разрешения:
  * 1. `pendingDeviceId`, пока он не подтверждён ни `activeDeviceId`, ни самим
@@ -36,10 +47,14 @@ type UseResolvedActiveDeviceIdOptions = {
  *    (`Room.onLocalTrackRestarted` сам ждёт `track.getDeviceId()`, прежде чем
  *    заэмитить `ActiveDeviceChanged`). Само подтверждение и сброс — на стороне
  *    `useSwitchDevice`.
- * 2. `activeDeviceId`, если он ссылается на реальное устройство из списка.
- * 3. Устройство, о котором сообщил сам трек через `track.getDeviceId()` (тот
- *    же приём, что и в `useResolveInitiallyDefaultDeviceId`).
- * 4. `fallbackDeviceId`, если он есть в списке устройств.
+ * 2. `activeDeviceId` / `track.getDeviceId()`, если это КОНКРЕТНОЕ устройство
+ *    из списка (не сентинел `"default"`) — однозначное подтверждение.
+ * 3. `fallbackDeviceId` (обычно — то, что пользователь явно выбрал и что было
+ *    запрошено при создании трека), если он есть в списке устройств — сильнее
+ *    неоднозначного `"default"`, потому что отражает явное намерение
+ *    пользователя, а не догадку браузера.
+ * 4. `activeDeviceId` / `track.getDeviceId()` даже если это `"default"` —
+ *    когда лучшего сигнала нет, показать хоть что-то лучше, чем ничего.
  * 5. Первое устройство из списка — последний резерв.
  *
  * @param devices - список устройств нужного kind (из `useMediaDeviceSelect`).
@@ -53,10 +68,20 @@ export const useResolvedActiveDeviceId = (
 ): string | undefined => {
   const { track, pendingDeviceId, fallbackDeviceId } = options;
   const [trackDeviceId, setTrackDeviceId] = useState<string | undefined>(undefined);
-  const matchesRealDevice = !!devices?.some((device) => device.deviceId === activeDeviceId);
+
+  const isRealDevice = (id: string | undefined) =>
+    !!id && !!devices?.some((d) => d.deviceId === id);
+  const isUnambiguousMatch = (id: string | undefined) =>
+    isRealDevice(id) && id !== DEFAULT_SENTINEL;
+  // Булево значение, а не сама функция — в deps эффекта нужен стабильный
+  // примитив, а не новая на каждый рендер isUnambiguousMatch.
+  const hasUnambiguousActiveDevice = isUnambiguousMatch(activeDeviceId);
 
   useEffect(() => {
-    if (matchesRealDevice || !track) {
+    // "default" — неоднозначный сигнал (см. комментарий выше), поэтому он НЕ
+    // должен останавливать опрос track.getDeviceId(): именно в этом случае
+    // трек — единственный шанс узнать, какое устройство активно на самом деле.
+    if (hasUnambiguousActiveDevice || !track) {
       setTrackDeviceId(undefined);
       return;
     }
@@ -71,18 +96,16 @@ export const useResolvedActiveDeviceId = (
     // принудительно перезапросить getDeviceId() после каждого нового выбора:
     // restart() может заменить MediaStreamTrack внутри того же объекта
     // LocalTrack, не меняя его identity, так что одного track недостаточно.
-  }, [matchesRealDevice, track, pendingDeviceId]);
+  }, [hasUnambiguousActiveDevice, track, pendingDeviceId]);
 
   if (pendingDeviceId && pendingDeviceId !== activeDeviceId && pendingDeviceId !== trackDeviceId) {
     return pendingDeviceId;
   }
 
-  if (matchesRealDevice) return activeDeviceId;
-  if (trackDeviceId && devices?.some((device) => device.deviceId === trackDeviceId)) {
-    return trackDeviceId;
-  }
-  if (fallbackDeviceId && devices?.some((device) => device.deviceId === fallbackDeviceId)) {
-    return fallbackDeviceId;
-  }
+  if (hasUnambiguousActiveDevice) return activeDeviceId;
+  if (isUnambiguousMatch(trackDeviceId)) return trackDeviceId;
+  if (isRealDevice(fallbackDeviceId)) return fallbackDeviceId;
+  if (isRealDevice(activeDeviceId)) return activeDeviceId;
+  if (isRealDevice(trackDeviceId)) return trackDeviceId;
   return devices?.[0]?.deviceId;
 };

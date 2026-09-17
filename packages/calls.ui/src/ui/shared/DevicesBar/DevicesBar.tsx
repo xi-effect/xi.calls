@@ -1,5 +1,13 @@
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
+import { useCallback, useState } from 'react';
 import { TrackToggle } from '../TrackToggle';
+
+// Мик и камера показывают DeviceHoverMenu по долгому тапу/hover, но это два
+// независимых компонента, ничего не знающих друг о друге — на тачскринах
+// (нет hover, нет native outside-click, закрывающего оба сразу) открытие
+// одного не закрывает другой. DevicesBar — общий владелец обоих TrackToggle,
+// поэтому именно здесь и держим взаимоисключающий стейт "какое меню открыто".
+type DeviceMenuType = 'audio' | 'video';
 
 type TrackToggleType = {
   source: Track.Source;
@@ -29,14 +37,19 @@ export const DevicesBar = ({
   videoTrackToggle,
   className,
 }: DevicesBarPropsT) => {
-  // console.log('DevicesBar props:', {
-  //   microTrack: !!microTrack,
-  //   microEnabled,
-  //   microTrackToggle: !!microTrackToggle,
-  //   videoTrack: !!videoTrack,
-  //   videoEnabled,
-  //   videoTrackToggle: !!videoTrackToggle,
-  // });
+  const [openDeviceMenu, setOpenDeviceMenu] = useState<DeviceMenuType | null>(null);
+
+  // Стабильные ссылки, а не инлайн-стрелки в JSX: DeviceHoverMenu держит
+  // selectDeviceHandler/deviceItems в useMemo/useCallback именно ради того,
+  // чтобы не пересчитывать список при каждом чужом ре-рендере — нестабильный
+  // onOpenChange свёл бы эту мемоизацию на нет.
+  const handleAudioOpenChange = useCallback((open: boolean) => {
+    setOpenDeviceMenu((prev) => (open ? 'audio' : prev === 'audio' ? null : prev));
+  }, []);
+
+  const handleVideoOpenChange = useCallback((open: boolean) => {
+    setOpenDeviceMenu((prev) => (open ? 'video' : prev === 'video' ? null : prev));
+  }, []);
 
   return (
     <>
@@ -51,6 +64,8 @@ export const DevicesBar = ({
           devices={microTrackToggle.devices}
           activeDeviceId={microTrackToggle.activeDeviceId}
           onSelectDevice={microTrackToggle.onSelectDevice}
+          open={openDeviceMenu === 'audio'}
+          onOpenChange={handleAudioOpenChange}
         />
       )}
       {videoTrackToggle && (
@@ -64,6 +79,8 @@ export const DevicesBar = ({
           devices={videoTrackToggle.devices}
           activeDeviceId={videoTrackToggle.activeDeviceId}
           onSelectDevice={videoTrackToggle.onSelectDevice}
+          open={openDeviceMenu === 'video'}
+          onOpenChange={handleVideoOpenChange}
         />
       )}
     </>

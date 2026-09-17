@@ -6,12 +6,13 @@ import {
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
 import { useSwitchDevice, useResolvedActiveDeviceId } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { useCallStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
+import { excludeOsDefaultDevices } from '@xipkg/calls-utils';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
@@ -23,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { t } = useTranslation('calls');
   const {
+    userChoices: { audioDeviceId, videoDeviceId },
     saveAudioInputEnabled,
     saveVideoInputEnabled,
     saveAudioInputDeviceId,
@@ -37,12 +39,14 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const audioTrack = microphoneTrack?.track as LocalAudioTrack | undefined;
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
 
-  const { devices: audioDevices, activeDeviceId: activeAudioDeviceId } = useMediaDeviceSelect({
+  const { devices: rawAudioDevices, activeDeviceId: activeAudioDeviceId } = useMediaDeviceSelect({
     kind: 'audioinput',
   });
-  const { devices: videoDevices, activeDeviceId: activeVideoDeviceId } = useMediaDeviceSelect({
+  const { devices: rawVideoDevices, activeDeviceId: activeVideoDeviceId } = useMediaDeviceSelect({
     kind: 'videoinput',
   });
+  const audioDevices = useMemo(() => excludeOsDefaultDevices(rawAudioDevices), [rawAudioDevices]);
+  const videoDevices = useMemo(() => excludeOsDefaultDevices(rawVideoDevices), [rawVideoDevices]);
 
   const { switchDeviceHandler: handleSelectAudioDevice, pendingDeviceId: pendingAudioDeviceId } =
     useSwitchDevice({
@@ -65,10 +69,12 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const resolvedAudioDeviceId = useResolvedActiveDeviceId(audioDevices, activeAudioDeviceId, {
     track: audioTrack,
     pendingDeviceId: pendingAudioDeviceId,
+    fallbackDeviceId: audioDeviceId,
   });
   const resolvedVideoDeviceId = useResolvedActiveDeviceId(videoDevices, activeVideoDeviceId, {
     track: videoTrack,
     pendingDeviceId: pendingVideoDeviceId,
+    fallbackDeviceId: videoDeviceId,
   });
 
   const microphoneToggle = useTrackToggle({

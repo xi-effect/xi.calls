@@ -10,7 +10,7 @@ import {
   Screenshare,
   RedLine,
 } from '@xipkg/icons';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { cn } from '@xipkg/utils';
 import { useCannotUseDevice } from '@xipkg/calls-hooks';
 import { openPermissionsDialog } from '@xipkg/calls-store';
@@ -28,6 +28,8 @@ interface ExtendedTrackToggleProps extends TrackToggleProps<any> {
   devices?: MediaDeviceInfo[];
   activeDeviceId?: string;
   onSelectDevice?: (deviceId: string) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const TrackToggle = ({
@@ -44,8 +46,16 @@ export const TrackToggle = ({
   devices,
   activeDeviceId,
   onSelectDevice,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
   ...props
 }: ExtendedTrackToggleProps) => {
+  // Раскрыто наружу (см. пропсы open/onOpenChange) только когда родитель явно
+  // координирует несколько TrackToggle между собой; иначе — свой стейт, как раньше.
+  const [internalMenuOpen, setInternalMenuOpen] = useState(false);
+  const isMenuOpen = controlledOpen ?? internalMenuOpen;
+  const handleMenuOpenChange = controlledOnOpenChange ?? setInternalMenuOpen;
+
   const isMicPermissionBlocked = useCannotUseDevice('audioinput');
   const isCameraPermissionBlocked = useCannotUseDevice('videoinput');
   const permissionBlocked =
@@ -81,15 +91,7 @@ export const TrackToggle = ({
       openPermissionsDialog();
       return;
     }
-    // Раньше здесь ЖЕ вызывали track.mute()/unmute() и ЖЕ пробрасывали onChange, а
-    // onChange у всех вызывающих (BottomBar/CompactCall/PiPCompactCall/Settings) сам
-    // дёргает useTrackToggle().toggle() -> localParticipant.setMicrophoneEnabled(...),
-    // который внутри тоже вызывает track.unmute()/mute(). Из-за этого один клик запускал
-    // ДВА параллельных unmute()/mute() на одном и том же треке — они гонялись за
-    // getUserMedia/restart, и трек мог остаться опубликованным, но "тихим" (без звука
-    // на входе). В PreJoin обработчик onChange (Controls.tsx) сам мутит трек напрямую —
-    // там тоже была бы такая же гонка. Теперь TrackToggle только сообщает намерение
-    // через onChange, а кто именно и как применяет его к треку — решает вызывающий код.
+    // TrackToggle только сообщает намерение через onChange, а кто именно и как применяет его к треку — решает вызывающий код.
     onChange?.(!enabled, true);
   };
 
@@ -218,6 +220,8 @@ export const TrackToggle = ({
       devices={devices}
       activeDeviceId={activeDeviceId}
       onSelectDevice={onSelectDevice}
+      open={isMenuOpen}
+      onOpenChange={handleMenuOpenChange}
     >
       {buttonElement}
     </DeviceHoverMenu>

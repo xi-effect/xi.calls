@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { Popover, PopoverContent } from '@xipkg/popover';
 import { Check, Conference, Microphone } from '@xipkg/icons';
@@ -10,14 +10,18 @@ const HOVER_OPEN_DELAY_MS = 1000;
 // Даёт курсору время "перепрыгнуть" зазор между кнопкой и попапом (sideOffset),
 // не закрывая меню раньше, чем пользователь успеет навести на него.
 const HOVER_CLOSE_DELAY_MS = 300;
+// На планшетах/телефонах нет hover — открываем тем же попапом по долгому тапу
+// (стандартный порог long-press в мобильных UI).
+const LONG_PRESS_DELAY_MS = 500;
+
+const isMousePointer = (event: PointerEvent) => event.pointerType === 'mouse';
 
 type DeviceHoverMenuPropsT = {
   devices?: MediaDeviceInfo[];
   activeDeviceId?: string;
-  // useSwitchDevice.handler возвращает Promise<void> — мы его сознательно не
-  // ждём (см. selectDeviceHandler): закрыть попап сразу по клику правильнее,
-  // чем дожидаться завершения переключения устройства.
   onSelectDevice?: (deviceId: string) => void | Promise<void>;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   children: ReactNode;
 };
 
@@ -25,13 +29,18 @@ export const DeviceHoverMenu = ({
   devices,
   activeDeviceId,
   onSelectDevice,
+  open,
+  onOpenChange,
   children,
 }: DeviceHoverMenuPropsT) => {
   const { t } = useTranslation('calls');
-  const [isOpen, setIsOpen] = useState(false);
   // Открытие и закрытие никогда не ждут одновременно: каждый обработчик сначала
   // отменяет то, что уже запланировано, так что одного таймера достаточно.
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // true между тем, как long-press реально открыл попап, и последующим pointerup
+  // на том же тапе — нужен, чтобы погасить синтетический click, который браузер
+  // шлёт после touch, иначе он тут же переключит мьют/анмьют следом за открытием.
+  const longPressOpenedRef = useRef(false);
 
   const clearPendingTimeoutHandler = useCallback(() => {
     if (timeoutRef.current !== undefined) {
@@ -44,10 +53,10 @@ export const DeviceHoverMenu = ({
 
   const selectDeviceHandler = useCallback(
     (deviceId: string) => {
-      setIsOpen(false);
+      onOpenChange(false);
       onSelectDevice?.(deviceId);
     },
-    [onSelectDevice],
+    [onSelectDevice, onOpenChange],
   );
 
   // TrackToggle ре-рендерится ~30 раз/сек (индикатор громкости микрофона),
@@ -88,16 +97,18 @@ export const DeviceHoverMenu = ({
   const hasSelectableDevices = !!devices && devices.length > 1 && devices[0].deviceId !== '';
 
   // Компонент не размонтируется при переходе hasSelectableDevices -> false (это
-  // тот же экземпляр, просто с другим return), поэтому isOpen сам не сбросится.
+  // тот же экземпляр, просто с другим return), поэтому open сам не сбросится.
   // Без этого при кратковременном схлопывании списка (например, дребезг
   // Bluetooth/USB-устройства) и последующем восстановлении попап может
-  // открыться сразу, минуя задержку на hover.
+  // открыться сразу, минуя задержку на hover. Шлём onOpenChange(false) только
+  // если это меню сейчас и есть открытое — иначе, будучи уже закрытым, оно
+  // затёрло бы общий "какое меню открыто" стейт и закрыло бы соседа.
   useEffect(() => {
-    if (!hasSelectableDevices) {
+    if (!hasSelectableDevices && open) {
       clearPendingTimeoutHandler();
-      setIsOpen(false);
+      onOpenChange(false);
     }
-  }, [hasSelectableDevices, clearPendingTimeoutHandler]);
+  }, [hasSelectableDevices, open, onOpenChange, clearPendingTimeoutHandler]);
 
   if (!hasSelectableDevices) {
     return children;
@@ -106,23 +117,64 @@ export const DeviceHoverMenu = ({
   // Наведение и на кнопку, и на сам попап держат меню открытым: курсору нужно
   // время, чтобы "перепрыгнуть" зазор между ними (sideOffset у PopoverContent),
   // а сам попап рендерится порталом вне DOM обёртки, поэтому его наведение
-  // нужно отслеживать отдельно.
-  const schedulePopoverOpenHandler = () => {
+  // нужно отслеживать отдельно. Актуально только для мыши: touch/pen "enter"
+  // срабатывает в момент касания одновременно с pointerdown, и это не hover —
+  // им занимается отдельная long-press-логика ниже.
+  const schedulePopoverOpenHandler = (event: PointerEvent) => {
+    if (!isMousePointer(event)) return;
     clearPendingTimeoutHandler();
-    if (!isOpen) {
+    if (!open) {
       timeoutRef.current = setTimeout(() => {
         timeoutRef.current = undefined;
-        setIsOpen(true);
+        onOpenChange(true);
       }, HOVER_OPEN_DELAY_MS);
     }
   };
 
-  const schedulePopoverCloseHandler = () => {
+  const schedulePopoverCloseHandler = (event: PointerEvent) => {
+    if (!isMousePointer(event)) {
+      // Палец соскользнул с кнопки/попапа или отпущен раньше LONG_PRESS_DELAY_MS —
+      // просто гасим отложенное открытие, никакой задержки на закрытие для touch нет:
+      // если попап уже открыт, он остаётся открытым до тапа по пункту или мимо.
+      clearPendingTimeoutHandler();
+      return;
+    }
     clearPendingTimeoutHandler();
     timeoutRef.current = setTimeout(() => {
       timeoutRef.current = undefined;
-      setIsOpen(false);
+      onOpenChange(false);
     }, HOVER_CLOSE_DELAY_MS);
+  };
+
+  // Долгий тап — открытие попапа на устройствах без hover (планшеты/телефоны).
+  const startLongPressHandler = (event: PointerEvent) => {
+    if (isMousePointer(event) || open) return;
+    // Сбрасываем на случай, если предыдущий тап так и не получил свой
+    // синтетический click (см. suppressGhostClickHandler) — иначе флаг
+    // мог бы застрять и погасить клик уже от совсем другого нажатия.
+    longPressOpenedRef.current = false;
+    clearPendingTimeoutHandler();
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = undefined;
+      longPressOpenedRef.current = true;
+      onOpenChange(true);
+    }, LONG_PRESS_DELAY_MS);
+  };
+
+  const endLongPressHandler = (event: PointerEvent) => {
+    if (isMousePointer(event)) return;
+    clearPendingTimeoutHandler();
+  };
+
+  // Мобильные браузеры шлют обычный click вслед за touch/pen-нажатием
+  // независимо от pointer-событий (в спеке это завязано на preventDefault на
+  // pointerdown/pointerup, что не везде надёжно) — поэтому гасим его сами на
+  // capture-фазе, раньше, чем он дойдёт до onClick кнопки мьюта/анмьюта.
+  const suppressGhostClickHandler = (event: MouseEvent) => {
+    if (!longPressOpenedRef.current) return;
+    event.preventDefault();
+    event.stopPropagation();
+    longPressOpenedRef.current = false;
   };
 
   // onOpenChange не про hover: Anchor (не Trigger) не даёт Radix открыть попап
@@ -131,29 +183,33 @@ export const DeviceHoverMenu = ({
   // случае корректно (осознанный уход, а не отвод курсора). Чистим таймер на
   // всякий случай: если в этот момент как раз тикал наш CLOSE-таймер, он не
   // должен вхолостую сработать позже поверх уже закрытого попапа.
-  const updatePopoverOpenStateHandler = (open: boolean) => {
-    if (!open) {
+  const updatePopoverOpenStateHandler = (nextOpen: boolean) => {
+    if (!nextOpen) {
       clearPendingTimeoutHandler();
     }
-    setIsOpen(open);
+    onOpenChange(nextOpen);
   };
 
   return (
     <div
       className="relative"
-      onMouseEnter={schedulePopoverOpenHandler}
-      onMouseLeave={schedulePopoverCloseHandler}
+      onPointerEnter={schedulePopoverOpenHandler}
+      onPointerLeave={schedulePopoverCloseHandler}
+      onPointerDown={startLongPressHandler}
+      onPointerUp={endLongPressHandler}
+      onPointerCancel={endLongPressHandler}
+      onClickCapture={suppressGhostClickHandler}
     >
-      <Popover open={isOpen} onOpenChange={updatePopoverOpenStateHandler}>
+      <Popover open={open} onOpenChange={updatePopoverOpenStateHandler}>
         <PopoverPrimitive.Anchor asChild>{children}</PopoverPrimitive.Anchor>
         <PopoverContent
           side="top"
           align="center"
           sideOffset={8}
-          className="w-56 rounded-xl p-1"
+          className="w-80 rounded-xl p-1"
           onOpenAutoFocus={(event) => event.preventDefault()}
-          onMouseEnter={schedulePopoverOpenHandler}
-          onMouseLeave={schedulePopoverCloseHandler}
+          onPointerEnter={schedulePopoverOpenHandler}
+          onPointerLeave={schedulePopoverCloseHandler}
         >
           <ul className="flex flex-col gap-0.5">{deviceItems}</ul>
         </PopoverContent>

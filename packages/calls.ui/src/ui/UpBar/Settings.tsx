@@ -34,6 +34,7 @@ import {
   useSwitchDevice,
   useResolvedActiveDeviceId,
 } from '@xipkg/calls-hooks';
+import { excludeOsDefaultDevices } from '@xipkg/calls-utils';
 import { NoiseCancellationSettings } from '../shared/NoiseCancellationSettings';
 import { VoiceEnhancementSettings } from '../shared/VoiceEnhancementSettings';
 import { Button } from '@xipkg/button';
@@ -65,7 +66,8 @@ const DeviceSelector = ({
   // activeDeviceId — реально активное устройство (из useMediaDeviceSelect), а не
   // персистентный выбор пользователя: они могут разойтись (первый вход без
   // сохранённого выбора, устройство недоступно и т.п.).
-  const { devices, activeDeviceId } = useMediaDeviceSelect({ kind });
+  const { devices: rawDevices, activeDeviceId } = useMediaDeviceSelect({ kind });
+  const devices = useMemo(() => excludeOsDefaultDevices(rawDevices), [rawDevices]);
   const resolvedDeviceId = useResolvedActiveDeviceId(devices, activeDeviceId, {
     track,
     pendingDeviceId,
@@ -78,9 +80,9 @@ const DeviceSelector = ({
     videoinput: t('settings.device.builtinCamera'),
   };
 
-  const currentDevice = devices?.find((device) => device.deviceId === resolvedDeviceId);
+  const currentDevice = devices.find((device) => device.deviceId === resolvedDeviceId);
   const displayValue = currentDevice?.label || placeholders[kind];
-  const hasDevices = devices && devices.length > 0 && devices[0].deviceId !== '';
+  const hasDevices = devices.length > 0 && devices[0].deviceId !== '';
 
   return (
     <Select
@@ -97,7 +99,7 @@ const DeviceSelector = ({
         <SelectValue placeholder={placeholders[kind]}>{displayValue}</SelectValue>
       </SelectTrigger>
       <SelectContent className="w-full">
-        {devices?.map((device) => (
+        {devices.map((device) => (
           <SelectItem
             key={device.deviceId}
             className="text-text-primary h-auto"
