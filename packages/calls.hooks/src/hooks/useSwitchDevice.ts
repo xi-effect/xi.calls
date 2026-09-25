@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
+import { queuedSetDeviceId } from './trackDeviceSwitchQueue';
 
 type UseSwitchDeviceParams = {
   track?: LocalAudioTrack | LocalVideoTrack;
@@ -34,17 +35,18 @@ type UseSwitchDeviceResult = {
  * комнатой, отдавая промежуточное состояние как `pendingDeviceId`.
  *
  * Гарантии:
- * - `saveDeviceId`/`saveEnabled` вызываются только после успешного
- *   `setDeviceId()` — при ошибке (устройство отключено/занято) UI не покажет
- *   активным нерабочее устройство.
- * - Устаревший ответ не перезаписывает состояние: если пока ждали `setDeviceId()`
- *   пользователь успел выбрать другое устройство, результат более раннего
- *   вызова `switchDeviceHandler()` отбрасывается (защита от гонки через `requestIdRef`).
- * - `pendingDeviceId` сбрасывается, как только `activeDeviceId` подтвердит
- *   именно этот выбор. Если подтверждения от комнаты не будет (например, нет
- *   Room-контекста), `pendingDeviceId` останется актуальным дольше — это не
- *   баг: `useResolvedActiveDeviceId` всё равно перестаёт его использовать,
- *   как только `track.getDeviceId()` совпадёт с ним напрямую.
+ * - `saveDeviceId`/`saveEnabled` вызываются только после подтверждённого
+ *   успеха `setDeviceId()` (включая его булев результат, не только отсутствие
+ *   исключения) — иначе можно запомнить нерабочее устройство.
+ * - Вызовы `setDeviceId()` на одном треке сериализованы через
+ *   `queuedSetDeviceId` — без этого быстрое переключение A→B может физически
+ *   оставить трек на A, см. `trackDeviceSwitchQueue.ts`.
+ * - Устаревший ответ не перезаписывает состояние: `requestIdRef` отбрасывает
+ *   результат более раннего `switchDeviceHandler()`, если пользователь уже
+ *   выбрал другое устройство.
+ * - `pendingDeviceId` держится, пока `activeDeviceId` не подтвердит именно
+ *   его; если подтверждения не будет, `useResolvedActiveDeviceId` всё равно
+ *   перестанет его показывать, как только трек сам сообщит другое устройство.
  *
  * @param params.track - трек, на котором меняем устройство (микрофон/камера).
  * @param params.activeDeviceId - сырое `activeDeviceId` из `useMediaDeviceSelect`, см. описание поля типа.
@@ -74,7 +76,11 @@ export const useSwitchDevice = ({
       const requestId = ++requestIdRef.current;
       try {
         if (track) {
-          await track.setDeviceId({ exact: deviceId });
+          // Сериализация вызовов на треке — см. trackDeviceSwitchQueue.ts.
+          const succeeded = await queuedSetDeviceId(track, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
         }
         // Пока ждали, мог прийти более новый выбор — не затираем его
         // результатом устаревшего запроса.

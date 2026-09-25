@@ -58,11 +58,16 @@ export const MediaDeviceMenu = ({
     await setActiveMediaDevice(deviceId);
   };
 
+  // Radix Select показывает placeholder только для пустого value — если
+  // initialSelection не найден среди devices (например 'default', которого
+  // здесь уже нет), нужно явно передать undefined, а не значение как есть.
+  const hasInitialSelection = devices.some((device) => device.deviceId === initialSelection);
+
   return (
     <div className={`${warnDisable ? 'border-tag-orange-accent rounded-lg border-2' : null}`}>
       <Select
         onValueChange={handleActiveChange}
-        value={devices.length > 0 ? initialSelection : undefined}
+        value={hasInitialSelection ? initialSelection : undefined}
         disabled={disabled || warnDisable || devices.length === 0 || devices[0].deviceId === ''}
       >
         <SelectTrigger

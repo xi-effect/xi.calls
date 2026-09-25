@@ -2,6 +2,7 @@ export {
   useAdaptiveGrid,
   useCannotUseDevice,
   useSwitchDevice,
+  queuedSetDeviceId,
   useResolvedActiveDeviceId,
   useEmptyItemContainerOfUser,
   useInitUserDevices,

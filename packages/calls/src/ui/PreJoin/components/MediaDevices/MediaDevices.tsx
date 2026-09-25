@@ -11,6 +11,7 @@ import {
   UseNoiseCancellationResult,
   useCallBackNavigation,
   usePersistentUserChoices,
+  queuedSetDeviceId,
 } from '@xipkg/calls-hooks';
 import { openPermissionsDialog, useCallStore, usePermissionsStore } from '@xipkg/calls-store';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
@@ -95,17 +96,20 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
     }
   };
 
-  // Обработчики переключения устройств с обработкой ошибок
+  // saveXInputDeviceId — только после подтверждённого переключения (иначе при
+  // неудаче запомним нерабочий deviceId); сериализация вызовов на треке — см.
+  // trackDeviceSwitchQueue.ts.
   const handleAudioDeviceChange = useMemo(
     () => async (_kind: MediaDeviceKind, deviceId: string) => {
       try {
-        saveAudioInputDeviceId(deviceId);
         if (audioTrack) {
-          await audioTrack.setDeviceId({ exact: deviceId });
-          // Синхронизируем состояние после смены устройства
-          const isActuallyEnabled = !audioTrack.isMuted;
-          saveAudioInputEnabled(isActuallyEnabled);
+          const succeeded = await queuedSetDeviceId(audioTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
+          saveAudioInputEnabled(!audioTrack.isMuted);
         }
+        saveAudioInputDeviceId(deviceId);
       } catch (err) {
         console.error('Failed to switch microphone device', err);
       }
@@ -116,13 +120,14 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
   const handleVideoDeviceChange = useMemo(
     () => async (_kind: MediaDeviceKind, deviceId: string) => {
       try {
-        saveVideoInputDeviceId(deviceId);
         if (videoTrack) {
-          await videoTrack.setDeviceId({ exact: deviceId });
-          // Синхронизируем состояние после смены устройства
-          const isActuallyEnabled = !videoTrack.isMuted;
-          saveVideoInputEnabled(isActuallyEnabled);
+          const succeeded = await queuedSetDeviceId(videoTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
+          saveVideoInputEnabled(!videoTrack.isMuted);
         }
+        saveVideoInputDeviceId(deviceId);
       } catch (err) {
         console.error('Failed to switch camera device', err);
       }

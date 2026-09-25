@@ -6,6 +6,7 @@ export { usePersistentUserChoices } from './usePersistentUserChoices';
 export { useResolveInitiallyDefaultDeviceId } from './useResolveInitiallyDefaultDeviceId';
 export { useCannotUseDevice } from './useCannotUseDevice';
 export { useSwitchDevice } from './useSwitchDevice';
+export { queuedSetDeviceId } from './trackDeviceSwitchQueue';
 export { useResolvedActiveDeviceId } from './useResolvedActiveDeviceId';
 export { useWatchPermissions } from './useWatchPermissions';
 export { useStartCall } from './useStartCall';
