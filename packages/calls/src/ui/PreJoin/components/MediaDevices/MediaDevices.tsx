@@ -11,6 +11,7 @@ import {
   UseNoiseCancellationResult,
   useCallBackNavigation,
   usePersistentUserChoices,
+  queuedSetDeviceId,
 } from '@xipkg/calls-hooks';
 import { openPermissionsDialog, useCallStore, usePermissionsStore } from '@xipkg/calls-store';
 import { supportsBackgroundProcessors } from '@livekit/track-processors';
@@ -55,7 +56,6 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
     }
 
     if (isConnecting) {
-      // console.log('Already connecting to room...');
       return;
     }
 
@@ -72,21 +72,11 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
       updateStore('audioEnabled', audioTrack ? !audioTrack.isMuted : false);
       updateStore('videoEnabled', videoTrack ? !videoTrack.isMuted : false);
 
-      // console.log('Preparing to join room...');
-
       // LiveKitRoom автоматически управляет подключением
       // Нам нужно только установить флаг подключения
       updateStore('connect', true);
       updateStore('isStarted', true);
       updateStore('isConnecting', false);
-
-      // console.log('Successfully joined room with devices:', {
-      //   audioDeviceId,
-      //   audioOutputDeviceId,
-      //   videoDeviceId,
-      //   audioEnabled: audioTrack ? !audioTrack.isMuted : false,
-      //   videoEnabled: videoTrack ? !videoTrack.isMuted : false,
-      // });
     } catch (error) {
       console.error('Failed to join room:', error);
 
@@ -106,22 +96,20 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
     }
   };
 
-  // Обработчики переключения устройств с обработкой ошибок
+  // saveXInputDeviceId — только после подтверждённого переключения (иначе при
+  // неудаче запомним нерабочий deviceId); сериализация вызовов на треке — см.
+  // trackDeviceSwitchQueue.ts.
   const handleAudioDeviceChange = useMemo(
     () => async (_kind: MediaDeviceKind, deviceId: string) => {
       try {
-        saveAudioInputDeviceId(deviceId);
         if (audioTrack) {
-          await audioTrack.setDeviceId({ exact: deviceId });
-          // Синхронизируем состояние после смены устройства
-          const isActuallyEnabled = !audioTrack.isMuted;
-          // console.log('MediaDevices: audio device changed, syncing state', {
-          //   deviceId,
-          //   trackMuted: audioTrack.isMuted,
-          //   shouldBeEnabled: isActuallyEnabled,
-          // });
-          saveAudioInputEnabled(isActuallyEnabled);
+          const succeeded = await queuedSetDeviceId(audioTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
+          saveAudioInputEnabled(!audioTrack.isMuted);
         }
+        saveAudioInputDeviceId(deviceId);
       } catch (err) {
         console.error('Failed to switch microphone device', err);
       }
@@ -132,18 +120,14 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
   const handleVideoDeviceChange = useMemo(
     () => async (_kind: MediaDeviceKind, deviceId: string) => {
       try {
-        saveVideoInputDeviceId(deviceId);
         if (videoTrack) {
-          await videoTrack.setDeviceId({ exact: deviceId });
-          // Синхронизируем состояние после смены устройства
-          const isActuallyEnabled = !videoTrack.isMuted;
-          // console.log('MediaDevices: video device changed, syncing state', {
-          //   deviceId,
-          //   trackMuted: videoTrack.isMuted,
-          //   shouldBeEnabled: isActuallyEnabled,
-          // });
-          saveVideoInputEnabled(isActuallyEnabled);
+          const succeeded = await queuedSetDeviceId(videoTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
+          saveVideoInputEnabled(!videoTrack.isMuted);
         }
+        saveVideoInputDeviceId(deviceId);
       } catch (err) {
         console.error('Failed to switch camera device', err);
       }
@@ -161,7 +145,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
               key={videoMenuKey}
               initialSelection={videoDeviceId}
               kind="videoinput"
-              onActiveDeviceChange={handleVideoDeviceChange}
+              onDeviceSelected={handleVideoDeviceChange}
               disabled={cameraPermission !== 'granted'}
             />
           </div>
@@ -172,14 +156,14 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
                 key={audioInputMenuKey}
                 initialSelection={audioDeviceId}
                 kind="audioinput"
-                onActiveDeviceChange={handleAudioDeviceChange}
+                onDeviceSelected={handleAudioDeviceChange}
                 disabled={microphonePermission !== 'granted'}
               />
               <MediaDeviceMenu
                 key={audioOutputMenuKey}
                 initialSelection={audioOutputDeviceId}
                 kind="audiooutput"
-                onActiveDeviceChange={(_, id) => saveAudioOutputDeviceId(id)}
+                onDeviceSelected={(_, id) => saveAudioOutputDeviceId(id)}
                 disabled={microphonePermission !== 'granted'}
               />
             </div>
@@ -213,7 +197,9 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
                 <Toggle checked={blurEnabled} onCheckedChange={saveBlurEnabled} />
               </div>
             )}
-            {noiseCancellation && <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />}
+            {noiseCancellation && (
+              <NoiseCancellationSettings nc={noiseCancellation} hideOffOption />
+            )}
             <VoiceEnhancementSettings compact />
           </div>
         </div>

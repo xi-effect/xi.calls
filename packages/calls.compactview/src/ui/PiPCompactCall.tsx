@@ -224,7 +224,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
           participant={currentParticipant?.participant ?? null}
           audioTrack={currentAudioTrack ?? null}
           onExpand={() => setViewMode('basic')}
-          className="h-full w-full min-h-0 shadow-none"
+          className="h-full min-h-0 w-full shadow-none"
         />
       )}
 

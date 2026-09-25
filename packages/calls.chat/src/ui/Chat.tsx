@@ -148,7 +148,9 @@ export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps =
   );
 
   if (embedded) {
-    return <div className={cn(chatPanelClassName, 'h-full min-h-0 w-full min-w-0')}>{chatContent}</div>;
+    return (
+      <div className={cn(chatPanelClassName, 'h-full min-h-0 w-full min-w-0')}>{chatContent}</div>
+    );
   }
 
   if (isMobile) {
