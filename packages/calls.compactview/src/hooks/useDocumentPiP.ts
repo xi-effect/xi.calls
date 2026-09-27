@@ -124,15 +124,17 @@ export function useDocumentPiP({
   useEffect(() => {
     if (!enabled) return;
 
-    const mediaSession = navigator.mediaSession as MediaSession;
+    const mediaSession = navigator.mediaSession;
+    if (!mediaSession) return;
+
     setMediaSessionCaptureState(
-      'setMicrophoneActive' in mediaSession
+      typeof mediaSession.setMicrophoneActive === 'function'
         ? mediaSession.setMicrophoneActive.bind(mediaSession)
         : undefined,
       microphoneActive,
     );
     setMediaSessionCaptureState(
-      'setCameraActive' in mediaSession
+      typeof mediaSession.setCameraActive === 'function'
         ? mediaSession.setCameraActive.bind(mediaSession)
         : undefined,
       cameraActive,

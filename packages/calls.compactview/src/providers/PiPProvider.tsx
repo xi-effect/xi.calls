@@ -127,8 +127,11 @@ export function PiPProvider({ children }: PiPProviderProps) {
     if (!isSupported || isMobile) return;
 
     const action = 'enterpictureinpicture' as MediaSessionAction;
+    const mediaSession = navigator.mediaSession;
+    if (!mediaSession) return;
+
     try {
-      navigator.mediaSession.setActionHandler(action, () => {
+      mediaSession.setActionHandler(action, () => {
         void openPiPRef.current();
       });
     } catch {
@@ -137,7 +140,7 @@ export function PiPProvider({ children }: PiPProviderProps) {
 
     return () => {
       try {
-        navigator.mediaSession.setActionHandler(action, null);
+        mediaSession.setActionHandler(action, null);
       } catch {
         // ignore
       }
