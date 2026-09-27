@@ -1,6 +1,9 @@
 export {
   useAdaptiveGrid,
   useCannotUseDevice,
+  useSwitchDevice,
+  queuedSetDeviceId,
+  useResolvedActiveDeviceId,
   useEmptyItemContainerOfUser,
   useInitUserDevices,
   useLiveKitDataChannel,
@@ -36,7 +39,5 @@ export {
 } from './src';
 
 export { VoiceEnhancementProcessor } from './src/audio/VoiceEnhancementProcessor';
-export {
-  getVoiceEnhancementAudioContext,
-} from './src/audio/audioContext';
+export { getVoiceEnhancementAudioContext } from './src/audio/audioContext';
 export { isVoiceEnhancementSupported } from './src/audio/voiceEnhancementSupport';
