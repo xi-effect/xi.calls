@@ -127,7 +127,7 @@ export function CompactCallVideoArea({
     >
       {isMobile ? (
         currentParticipant ? (
-          <div className="relative h-full w-full min-h-0 min-w-0">
+          <div className="relative h-full min-h-0 w-full min-w-0">
             <ParticipantTile
               trackRef={currentParticipant}
               participant={currentParticipant.participant}
@@ -167,7 +167,7 @@ export function CompactCallVideoArea({
           />
         </div>
       ) : currentParticipant ? (
-        <div className="relative h-full w-full min-h-0 min-w-0">
+        <div className="relative h-full min-h-0 w-full min-w-0">
           <ParticipantTile
             trackRef={currentParticipant}
             participant={currentParticipant.participant}

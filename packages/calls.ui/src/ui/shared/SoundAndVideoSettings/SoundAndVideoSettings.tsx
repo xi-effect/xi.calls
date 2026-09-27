@@ -18,6 +18,7 @@ import {
   useNoiseCancellation,
   usePersistentUserChoices,
   useVideoBlur,
+  queuedSetDeviceId,
 } from '@xipkg/calls-hooks';
 import { useCallsRuntimeConfig } from '@xipkg/calls-providers';
 import { openPermissionsDialog, usePermissionsStore } from '@xipkg/calls-store';
@@ -173,13 +174,19 @@ export const SoundAndVideoSettings = ({ className }: SoundAndVideoSettingsProps)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cameraPermission]);
 
+  // saveXInputDeviceId — только после подтверждённого переключения (тот же
+  // паттерн, что в PreJoin/MediaDevices.tsx); сериализация вызовов на треке —
+  // см. trackDeviceSwitchQueue.ts.
   const handleAudioDeviceChange = useCallback(
     async (deviceId: string) => {
-      saveAudioInputDeviceId(deviceId);
       try {
         if (audioTrack) {
-          await audioTrack.setDeviceId({ exact: deviceId });
+          const succeeded = await queuedSetDeviceId(audioTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
         }
+        saveAudioInputDeviceId(deviceId);
       } catch (error) {
         console.error('Failed to switch microphone device', error);
       }
@@ -189,11 +196,14 @@ export const SoundAndVideoSettings = ({ className }: SoundAndVideoSettingsProps)
 
   const handleVideoDeviceChange = useCallback(
     async (deviceId: string) => {
-      saveVideoInputDeviceId(deviceId);
       try {
         if (videoTrack) {
-          await videoTrack.setDeviceId({ exact: deviceId });
+          const succeeded = await queuedSetDeviceId(videoTrack, deviceId);
+          if (!succeeded) {
+            throw new Error(`Device did not switch to ${deviceId}`);
+          }
         }
+        saveVideoInputDeviceId(deviceId);
       } catch (error) {
         console.error('Failed to switch camera device', error);
       }
