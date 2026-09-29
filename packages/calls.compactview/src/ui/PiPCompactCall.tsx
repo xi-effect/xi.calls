@@ -10,7 +10,7 @@ import { Button } from '@xipkg/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { cn } from '@xipkg/utils';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
-import { useClassroomPins } from '@xipkg/calls-hooks';
+import { useClassroomPins, useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { useTranslation } from 'react-i18next';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
 import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
@@ -83,6 +83,8 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
     (enabled: boolean) => cameraToggle.toggle(enabled),
     [cameraToggle],
   );
+
+  const { microphoneGroups, cameraGroups } = useDeviceMenuGroups();
 
   const {
     currentParticipant,
@@ -283,6 +285,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
               showIcon: true,
               source: Track.Source.Microphone,
               onChange: handleMicrophoneToggle,
+              deviceGroups: microphoneGroups,
             }}
             videoTrack={cameraTrack?.track as unknown as LocalVideoTrack}
             videoEnabled={isCameraEnabled}
@@ -290,6 +293,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
               showIcon: true,
               source: Track.Source.Camera,
               onChange: handleCameraToggle,
+              deviceGroups: cameraGroups,
             }}
           />
         </div>

@@ -12,7 +12,7 @@ import {
 } from '@xipkg/icons';
 import { useMemo, useState } from 'react';
 import { cn } from '@xipkg/utils';
-import { useCannotUseDevice } from '@xipkg/calls-hooks';
+import { useCannotUseDevice, type DeviceMenuGroupT } from '@xipkg/calls-hooks';
 import { openPermissionsDialog } from '@xipkg/calls-store';
 import { DeviceHoverMenu } from '../DeviceHoverMenu';
 
@@ -25,9 +25,8 @@ interface ExtendedTrackToggleProps extends TrackToggleProps<any> {
   screenShareEnabled?: boolean;
   showIcon?: boolean;
   className?: string;
-  devices?: MediaDeviceInfo[];
-  activeDeviceId?: string;
-  onSelectDevice?: (deviceId: string) => void;
+  /** Секции попапа выбора устройств; пусто/undefined — попапа нет. */
+  deviceGroups?: DeviceMenuGroupT[];
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -43,9 +42,7 @@ export const TrackToggle = ({
   showIcon = true,
   onChange,
   className,
-  devices,
-  activeDeviceId,
-  onSelectDevice,
+  deviceGroups,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   ...props
@@ -216,13 +213,7 @@ export const TrackToggle = ({
     );
 
   return (
-    <DeviceHoverMenu
-      devices={devices}
-      activeDeviceId={activeDeviceId}
-      onSelectDevice={onSelectDevice}
-      open={isMenuOpen}
-      onOpenChange={handleMenuOpenChange}
-    >
+    <DeviceHoverMenu groups={deviceGroups} open={isMenuOpen} onOpenChange={handleMenuOpenChange}>
       {buttonElement}
     </DeviceHoverMenu>
   );

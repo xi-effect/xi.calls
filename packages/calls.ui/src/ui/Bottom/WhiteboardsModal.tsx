@@ -12,7 +12,7 @@ import { ScrollArea } from '@xipkg/scrollarea';
 import { Badge } from '@xipkg/badge';
 import { Checkbox } from '@xipkg/checkbox';
 import { useEffect, useState } from 'react';
-import { Close, Search } from '@xipkg/icons';
+import { Search } from '@xipkg/icons';
 import { useCallStore } from '@xipkg/calls-store';
 import { useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
@@ -145,11 +145,9 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         }
         aria-describedby={undefined}
       >
-        <ModalCloseButton>
-          <Close className="fill-icon-primary" />
-        </ModalCloseButton>
+        <ModalCloseButton />
         <ModalHeader className="border-border-default shrink-0 border-b">
-          <ModalTitle className="text-m-base sm:text-l-base text-text-primary">
+          <ModalTitle className="text-m-base sm:text-l-base text-text-primary max-w-[calc(100%-48px)] sm:max-w-full">
             {t('whiteboards.title')}
           </ModalTitle>
           <Input

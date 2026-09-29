@@ -8,6 +8,8 @@ export { useCannotUseDevice } from './useCannotUseDevice';
 export { useSwitchDevice } from './useSwitchDevice';
 export { queuedSetDeviceId } from './trackDeviceSwitchQueue';
 export { useResolvedActiveDeviceId } from './useResolvedActiveDeviceId';
+export { useDeviceMenuGroups } from './useDeviceMenuGroups';
+export type { DeviceMenuGroupT, DeviceMenuGroupKindT } from './useDeviceMenuGroups';
 export { useWatchPermissions } from './useWatchPermissions';
 export { useStartCall } from './useStartCall';
 export { useResponsiveGrid, useAdaptiveGrid } from './useResponsiveGrid';

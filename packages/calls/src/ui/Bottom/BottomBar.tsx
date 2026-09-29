@@ -1,18 +1,16 @@
 import {
   ControlBarProps,
   useLocalParticipant,
-  useMediaDeviceSelect,
   usePersistentUserChoices,
   useTrackToggle,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
-import { useSwitchDevice, useResolvedActiveDeviceId } from '@xipkg/calls-hooks';
+import { useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { useCallStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
-import { excludeOsDefaultDevices } from '@xipkg/calls-utils';
 import { WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
@@ -23,13 +21,7 @@ import { useTranslation } from 'react-i18next';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { t } = useTranslation('calls');
-  const {
-    userChoices: { audioDeviceId, videoDeviceId },
-    saveAudioInputEnabled,
-    saveVideoInputEnabled,
-    saveAudioInputDeviceId,
-    saveVideoInputDeviceId,
-  } = usePersistentUserChoices({
+  const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
   });
 
@@ -39,43 +31,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const audioTrack = microphoneTrack?.track as LocalAudioTrack | undefined;
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
 
-  const { devices: rawAudioDevices, activeDeviceId: activeAudioDeviceId } = useMediaDeviceSelect({
-    kind: 'audioinput',
-  });
-  const { devices: rawVideoDevices, activeDeviceId: activeVideoDeviceId } = useMediaDeviceSelect({
-    kind: 'videoinput',
-  });
-  const audioDevices = useMemo(() => excludeOsDefaultDevices(rawAudioDevices), [rawAudioDevices]);
-  const videoDevices = useMemo(() => excludeOsDefaultDevices(rawVideoDevices), [rawVideoDevices]);
-
-  const { switchDeviceHandler: handleSelectAudioDevice, pendingDeviceId: pendingAudioDeviceId } =
-    useSwitchDevice({
-      track: audioTrack,
-      activeDeviceId: activeAudioDeviceId,
-      saveDeviceId: saveAudioInputDeviceId,
-      saveEnabled: saveAudioInputEnabled,
-      errorMessage: 'Failed to switch microphone device',
-    });
-
-  const { switchDeviceHandler: handleSelectVideoDevice, pendingDeviceId: pendingVideoDeviceId } =
-    useSwitchDevice({
-      track: videoTrack,
-      activeDeviceId: activeVideoDeviceId,
-      saveDeviceId: saveVideoInputDeviceId,
-      saveEnabled: saveVideoInputEnabled,
-      errorMessage: 'Failed to switch camera device',
-    });
-
-  const resolvedAudioDeviceId = useResolvedActiveDeviceId(audioDevices, activeAudioDeviceId, {
-    track: audioTrack,
-    pendingDeviceId: pendingAudioDeviceId,
-    fallbackDeviceId: audioDeviceId,
-  });
-  const resolvedVideoDeviceId = useResolvedActiveDeviceId(videoDevices, activeVideoDeviceId, {
-    track: videoTrack,
-    pendingDeviceId: pendingVideoDeviceId,
-    fallbackDeviceId: videoDeviceId,
-  });
+  const { microphoneGroups, cameraGroups } = useDeviceMenuGroups();
 
   const microphoneToggle = useTrackToggle({
     source: Track.Source.Microphone,
@@ -164,9 +120,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                 showIcon: true,
                 source: Track.Source.Microphone,
                 onChange: handleMicrophoneToggle,
-                devices: audioDevices,
-                activeDeviceId: resolvedAudioDeviceId,
-                onSelectDevice: handleSelectAudioDevice,
+                deviceGroups: microphoneGroups,
               }}
               videoTrack={videoTrack}
               videoEnabled={isCameraEnabled}
@@ -174,9 +128,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                 showIcon: true,
                 source: Track.Source.Camera,
                 onChange: handleCameraToggle,
-                devices: videoDevices,
-                activeDeviceId: resolvedVideoDeviceId,
-                onSelectDevice: handleSelectVideoDevice,
+                deviceGroups: cameraGroups,
               }}
               className="relative"
             />

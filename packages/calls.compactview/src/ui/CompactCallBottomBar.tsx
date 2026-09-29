@@ -11,27 +11,27 @@ import {
 import { Account, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
 import type { CompactViewModeT } from '@xipkg/calls-store';
+import type { DeviceMenuGroupT } from '@xipkg/calls-hooks';
 import { useTranslation } from 'react-i18next';
 import { getNextCompactViewMode } from '../constants';
 import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
 import { ChatButton } from '@xipkg/calls-chat';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 
+type CompactCallTrackTogglePropsT = {
+  showIcon: boolean;
+  source: import('livekit-client').Track.Source;
+  onChange: (enabled: boolean) => void;
+  deviceGroups?: DeviceMenuGroupT[];
+};
+
 type CompactCallDevicesPropsT = {
   microTrack: LocalAudioTrack | undefined;
   microEnabled: boolean;
-  microTrackToggle: {
-    showIcon: boolean;
-    source: import('livekit-client').Track.Source;
-    onChange: (enabled: boolean) => void;
-  };
+  microTrackToggle: CompactCallTrackTogglePropsT;
   videoTrack: LocalVideoTrack | undefined;
   videoEnabled: boolean;
-  videoTrackToggle: {
-    showIcon: boolean;
-    source: import('livekit-client').Track.Source;
-    onChange: (enabled: boolean) => void;
-  };
+  videoTrackToggle: CompactCallTrackTogglePropsT;
 };
 
 type CompactCallBottomBarPropsT = {

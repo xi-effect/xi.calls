@@ -1,5 +1,6 @@
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback, useState } from 'react';
+import type { DeviceMenuGroupT } from '@xipkg/calls-hooks';
 import { TrackToggle } from '../TrackToggle';
 
 // Мик и камера показывают DeviceHoverMenu по долгому тапу/hover, но это два
@@ -13,9 +14,7 @@ type TrackToggleType = {
   source: Track.Source;
   onChange?: (enabled: boolean, isUserInitiated: boolean) => void;
   showIcon?: boolean;
-  devices?: MediaDeviceInfo[];
-  activeDeviceId?: string;
-  onSelectDevice?: (deviceId: string) => void;
+  deviceGroups?: DeviceMenuGroupT[];
 };
 
 type DevicesBarPropsT = {
@@ -61,9 +60,7 @@ export const DevicesBar = ({
           source={microTrackToggle.source}
           onChange={microTrackToggle.onChange}
           showIcon={microTrackToggle.showIcon}
-          devices={microTrackToggle.devices}
-          activeDeviceId={microTrackToggle.activeDeviceId}
-          onSelectDevice={microTrackToggle.onSelectDevice}
+          deviceGroups={microTrackToggle.deviceGroups}
           open={openDeviceMenu === 'audio'}
           onOpenChange={handleAudioOpenChange}
         />
@@ -76,9 +73,7 @@ export const DevicesBar = ({
           source={videoTrackToggle.source}
           onChange={videoTrackToggle.onChange}
           showIcon={videoTrackToggle.showIcon}
-          devices={videoTrackToggle.devices}
-          activeDeviceId={videoTrackToggle.activeDeviceId}
-          onSelectDevice={videoTrackToggle.onSelectDevice}
+          deviceGroups={videoTrackToggle.deviceGroups}
           open={openDeviceMenu === 'video'}
           onOpenChange={handleVideoOpenChange}
         />

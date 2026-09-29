@@ -11,7 +11,7 @@ import { Button } from '@xipkg/button';
 import { usePermissionsStore, closePermissionsDialog } from '@xipkg/calls-store';
 import { useWatchPermissions } from '@xipkg/calls-hooks';
 import { isSafari, isFireFox } from '@xipkg/calls-utils';
-import { Settings, Close } from '@xipkg/icons';
+import { Settings } from '@xipkg/icons';
 import { Trans, useTranslation } from 'react-i18next';
 
 /** Ссылки на официальные инструкции по выдаче прав в браузерах */
@@ -61,11 +61,9 @@ export const PermissionsDialog = () => {
   return (
     <Modal open={isPermissionDialogOpen} onOpenChange={closePermissionsDialog}>
       <ModalContent>
-        <ModalCloseButton>
-          <Close className="fill-icon-primary" />
-        </ModalCloseButton>
+        <ModalCloseButton />
         <ModalHeader className="border-border-default border-b">
-          <ModalTitle className="text-text-primary text-xl font-semibold">
+          <ModalTitle className="text-text-primary max-w-[calc(100%-48px)] text-xl font-semibold sm:max-w-full">
             {t('permissions.title')}
           </ModalTitle>
         </ModalHeader>

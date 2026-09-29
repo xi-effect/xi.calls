@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { Popover, PopoverContent } from '@xipkg/popover';
-import { Check, Conference, Microphone } from '@xipkg/icons';
+import { Check } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
 import { useTranslation } from 'react-i18next';
+import type { DeviceMenuGroupT, DeviceMenuGroupKindT } from '@xipkg/calls-hooks';
 
-const HOVER_OPEN_DELAY_MS = 1000;
+const HOVER_OPEN_DELAY_MS = 700;
 // Даёт курсору время "перепрыгнуть" зазор между кнопкой и попапом (sideOffset),
 // не закрывая меню раньше, чем пользователь успеет навести на него.
 const HOVER_CLOSE_DELAY_MS = 300;
@@ -16,19 +17,31 @@ const LONG_PRESS_DELAY_MS = 500;
 
 const isMousePointer = (event: PointerEvent) => event.pointerType === 'mouse';
 
+const GROUP_LABEL_KEYS: Record<DeviceMenuGroupKindT, string> = {
+  audioinput: 'settings.microphone',
+  audiooutput: 'settings.speakers',
+  videoinput: 'settings.camera',
+};
+
+// Без разрешения на устройство браузер анонимизирует deviceId у ВСЕХ записей
+// одного kind сразу (все '' или все реальные) — смешанного списка
+// enumerateDevices не отдаёт, так что проверки первого элемента достаточно.
+const hasRealDeviceIds = (devices: MediaDeviceInfo[] | undefined) =>
+  !!devices && devices.length > 0 && devices[0].deviceId !== '';
+
 type DeviceHoverMenuPropsT = {
-  devices?: MediaDeviceInfo[];
-  activeDeviceId?: string;
-  onSelectDevice?: (deviceId: string) => void | Promise<void>;
+  /**
+   * Секции попапа: у микрофона это сам микрофон + динамики, у камеры — только
+   * камера. Секции без доступных устройств отсеиваются здесь же.
+   */
+  groups?: DeviceMenuGroupT[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
 };
 
 export const DeviceHoverMenu = ({
-  devices,
-  activeDeviceId,
-  onSelectDevice,
+  groups,
   open,
   onOpenChange,
   children,
@@ -41,6 +54,16 @@ export const DeviceHoverMenu = ({
   // на том же тапе — нужен, чтобы погасить синтетический click, который браузер
   // шлёт после touch, иначе он тут же переключит мьют/анмьют следом за открытием.
   const longPressOpenedRef = useRef(false);
+  // Нажатие по кнопке — это команда мьюта, а не запрос списка устройств.
+  // Держим hover-открытие заблокированным до тех пор, пока курсор не уйдёт с
+  // кнопки и не вернётся осознанно: иначе попап всплывёт поверх только что
+  // нажатой кнопки просто потому, что курсор на ней задержался.
+  const hoverOpenSuppressedRef = useRef(false);
+  // Попап рендерится порталом. В Document PiP портал по умолчанию уходит в
+  // document основного окна, где его не видно, — поэтому берём document той
+  // кнопки, рядом с которой стоим.
+  const [anchorNode, setAnchorNode] = useState<HTMLDivElement | null>(null);
+  const portalContainer = anchorNode?.ownerDocument?.body;
 
   const clearPendingTimeoutHandler = useCallback(() => {
     if (timeoutRef.current !== undefined) {
@@ -52,49 +75,65 @@ export const DeviceHoverMenu = ({
   useEffect(() => clearPendingTimeoutHandler, [clearPendingTimeoutHandler]);
 
   const selectDeviceHandler = useCallback(
-    (deviceId: string) => {
+    (group: DeviceMenuGroupT, deviceId: string) => {
       onOpenChange(false);
-      onSelectDevice?.(deviceId);
+      group.onSelectDevice?.(deviceId);
     },
-    [onSelectDevice, onOpenChange],
+    [onOpenChange],
   );
+
+  const visibleGroups = useMemo(
+    () => groups?.filter((group) => hasRealDeviceIds(group.devices)) ?? [],
+    [groups],
+  );
+  // Смысл есть, только если хоть в одной секции есть между чем выбирать:
+  // один микрофон + один динамик переключать не на что, а один микрофон и три
+  // динамика — уже повод показать попап (раньше он в этом случае не всплывал).
+  const hasSelectableDevices = visibleGroups.some((group) => group.devices.length > 1);
 
   // TrackToggle ре-рендерится ~30 раз/сек (индикатор громкости микрофона),
   // поэтому список пересчитываем только при смене устройств/активного id,
   // а не на каждый такой ре-рендер.
-  const deviceItems = useMemo(
+  const groupItems = useMemo(
     () =>
-      devices?.map((device) => {
-        const isActive = device.deviceId === activeDeviceId;
-        const DeviceIcon = device.kind === 'videoinput' ? Conference : Microphone;
-        return (
-          <li key={device.deviceId}>
-            <button
-              type="button"
-              onClick={() => selectDeviceHandler(device.deviceId)}
-              className={cn(
-                'text-text-primary hover:bg-selection-background flex w-full items-center gap-2 rounded-lg bg-white p-2 text-left text-sm transition-colors',
-                isActive && 'bg-selection-background',
-              )}
-            >
-              <DeviceIcon width={14} className="fill-icon-primary shrink-0" />
-              <span className="flex-1 truncate">
-                {device.label ||
-                  t('settings.device.unnamed', { shortId: device.deviceId.slice(0, 8) })}
-              </span>
-              {isActive && <Check className="fill-selection-icon size-5 shrink-0" />}
-            </button>
+      visibleGroups.map((group, groupIndex) => (
+        <Fragment key={group.kind}>
+          {/* Заголовок показываем всегда, в том числе у единственной секции:
+              иконки в строках только дублировали бы его для каждого устройства. */}
+          <li
+            className={cn(
+              'text-text-secondary px-2 pt-1.5 pb-1 text-xs',
+              groupIndex > 0 && 'border-border-default mt-1.5 border-t pt-2.5',
+            )}
+            aria-hidden
+          >
+            {t(GROUP_LABEL_KEYS[group.kind])}
           </li>
-        );
-      }),
-    [devices, activeDeviceId, selectDeviceHandler, t],
+          {group.devices.map((device) => {
+            const isActive = device.deviceId === group.activeDeviceId;
+            return (
+              <li key={`${group.kind}-${device.deviceId}`}>
+                <button
+                  type="button"
+                  onClick={() => selectDeviceHandler(group, device.deviceId)}
+                  className={cn(
+                    'text-text-primary hover:bg-selection-background flex w-full items-center gap-2 rounded-lg bg-transparent px-2 py-1.5 text-left text-sm transition-colors',
+                    isActive && 'bg-selection-background',
+                  )}
+                >
+                  <span className="flex-1 truncate">
+                    {device.label ||
+                      t('settings.device.unnamed', { shortId: device.deviceId.slice(0, 8) })}
+                  </span>
+                  {isActive && <Check className="fill-selection-icon size-4 shrink-0" />}
+                </button>
+              </li>
+            );
+          })}
+        </Fragment>
+      )),
+    [visibleGroups, selectDeviceHandler, t],
   );
-
-  // devices[0] как индикатор для всего списка: без разрешения на устройство
-  // браузер анонимизирует deviceId у ВСЕХ записей сразу (все '' или все
-  // реальные) — смешанного списка enumerateDevices не отдаёт, так что
-  // проверки первого элемента достаточно.
-  const hasSelectableDevices = !!devices && devices.length > 1 && devices[0].deviceId !== '';
 
   // Компонент не размонтируется при переходе hasSelectableDevices -> false (это
   // тот же экземпляр, просто с другим return), поэтому open сам не сбросится.
@@ -114,6 +153,11 @@ export const DeviceHoverMenu = ({
     return children;
   }
 
+  // События из PopoverContent всплывают сюда по дереву React, хотя в DOM портал
+  // лежит отдельно. Для обработчиков самой кнопки это чужие события.
+  const isInsideAnchor = (event: PointerEvent | MouseEvent) =>
+    event.currentTarget instanceof Node && event.currentTarget.contains(event.target as Node);
+
   // Наведение и на кнопку, и на сам попап держат меню открытым: курсору нужно
   // время, чтобы "перепрыгнуть" зазор между ними (sideOffset у PopoverContent),
   // а сам попап рендерится порталом вне DOM обёртки, поэтому его наведение
@@ -123,15 +167,16 @@ export const DeviceHoverMenu = ({
   const schedulePopoverOpenHandler = (event: PointerEvent) => {
     if (!isMousePointer(event)) return;
     clearPendingTimeoutHandler();
-    if (!open) {
-      timeoutRef.current = setTimeout(() => {
-        timeoutRef.current = undefined;
-        onOpenChange(true);
-      }, HOVER_OPEN_DELAY_MS);
-    }
+    if (open || hoverOpenSuppressedRef.current) return;
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = undefined;
+      onOpenChange(true);
+    }, HOVER_OPEN_DELAY_MS);
   };
 
   const schedulePopoverCloseHandler = (event: PointerEvent) => {
+    // Курсор ушёл с кнопки — следующее наведение снова считается осознанным.
+    hoverOpenSuppressedRef.current = false;
     if (!isMousePointer(event)) {
       // Палец соскользнул с кнопки/попапа или отпущен раньше LONG_PRESS_DELAY_MS —
       // просто гасим отложенное открытие, никакой задержки на закрытие для touch нет:
@@ -147,8 +192,23 @@ export const DeviceHoverMenu = ({
   };
 
   // Долгий тап — открытие попапа на устройствах без hover (планшеты/телефоны).
-  const startLongPressHandler = (event: PointerEvent) => {
-    if (isMousePointer(event) || open) return;
+  const pointerDownHandler = (event: PointerEvent) => {
+    if (!isInsideAnchor(event)) return;
+
+    if (isMousePointer(event)) {
+      // Правая кнопка — это запрос меню (см. contextMenuHandler), её гасить нельзя.
+      if (event.button !== 0) return;
+      // Пользователь целится в мьют, а не в список: снимаем уже запущенный
+      // отсчёт и не начинаем новый, пока курсор не покинет кнопку.
+      clearPendingTimeoutHandler();
+      hoverOpenSuppressedRef.current = true;
+      // Открытый попап при этом закрываем — клик по кнопке завершает
+      // взаимодействие, оставлять список висеть поверх неё незачем.
+      if (open) onOpenChange(false);
+      return;
+    }
+
+    if (open) return;
     // Сбрасываем на случай, если предыдущий тап так и не получил свой
     // синтетический click (см. suppressGhostClickHandler) — иначе флаг
     // мог бы застрять и погасить клик уже от совсем другого нажатия.
@@ -162,8 +222,18 @@ export const DeviceHoverMenu = ({
   };
 
   const endLongPressHandler = (event: PointerEvent) => {
-    if (isMousePointer(event)) return;
+    if (isMousePointer(event) || !isInsideAnchor(event)) return;
     clearPendingTimeoutHandler();
+  };
+
+  // Правый клик по кнопке — привычный способ попросить список, не дожидаясь
+  // задержки на hover (и единственный, если hover только что был подавлен кликом).
+  const contextMenuHandler = (event: MouseEvent) => {
+    if (!isInsideAnchor(event)) return;
+    event.preventDefault();
+    clearPendingTimeoutHandler();
+    hoverOpenSuppressedRef.current = false;
+    onOpenChange(true);
   };
 
   // Мобильные браузеры шлют обычный click вслед за touch/pen-нажатием
@@ -192,12 +262,14 @@ export const DeviceHoverMenu = ({
 
   return (
     <div
+      ref={setAnchorNode}
       className="relative"
       onPointerEnter={schedulePopoverOpenHandler}
       onPointerLeave={schedulePopoverCloseHandler}
-      onPointerDown={startLongPressHandler}
+      onPointerDown={pointerDownHandler}
       onPointerUp={endLongPressHandler}
       onPointerCancel={endLongPressHandler}
+      onContextMenu={contextMenuHandler}
       onClickCapture={suppressGhostClickHandler}
     >
       <Popover open={open} onOpenChange={updatePopoverOpenStateHandler}>
@@ -206,12 +278,13 @@ export const DeviceHoverMenu = ({
           side="top"
           align="center"
           sideOffset={8}
-          className="w-80 rounded-xl p-1"
+          container={portalContainer}
+          className="z-1000 w-80 max-w-[calc(100vw-16px)] rounded-xl p-1"
           onOpenAutoFocus={(event) => event.preventDefault()}
           onPointerEnter={schedulePopoverOpenHandler}
           onPointerLeave={schedulePopoverCloseHandler}
         >
-          <ul className="flex flex-col gap-0.5">{deviceItems}</ul>
+          <ul className="flex max-h-[50vh] flex-col gap-0.5 overflow-y-auto">{groupItems}</ul>
         </PopoverContent>
       </Popover>
     </div>

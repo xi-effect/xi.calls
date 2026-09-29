@@ -8,7 +8,7 @@ import {
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
-import { useClassroomPins } from '@xipkg/calls-hooks';
+import { useClassroomPins, useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useSyncModeToOthers } from '@xipkg/calls-hooks';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
@@ -64,6 +64,8 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
     (enabled: boolean) => cameraToggle.toggle(enabled),
     [cameraToggle],
   );
+
+  const { microphoneGroups, cameraGroups } = useDeviceMenuGroups();
 
   const compactNavigation = useCompactNavigation();
   const {
@@ -235,6 +237,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
             showIcon: true,
             source: Track.Source.Microphone,
             onChange: handleMicrophoneToggle,
+            deviceGroups: microphoneGroups,
           },
           videoTrack: cameraTrack?.track as unknown as LocalVideoTrack,
           videoEnabled: isCameraEnabled,
@@ -242,6 +245,7 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
             showIcon: true,
             source: Track.Source.Camera,
             onChange: handleCameraToggle,
+            deviceGroups: cameraGroups,
           },
         }}
         isMobile={isMobile}
