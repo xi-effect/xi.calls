@@ -68,9 +68,19 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
       updateStore('audioOutputDeviceId', audioOutputDeviceId);
       updateStore('videoDeviceId', videoDeviceId);
 
-      // Сохраняем состояние аудио и видео
+      // Сохраняем состояние аудио и видео до stop(): он может пометить трек mute.
       updateStore('audioEnabled', audioTrack ? !audioTrack.isMuted : false);
       updateStore('videoEnabled', videoTrack ? !videoTrack.isMuted : false);
+
+      // Превью держит камеру до размонтирования PreJoin, а комната запрашивает
+      // её сразу после connect. Отпускаем устройство синхронно, иначе
+      // getUserMedia в звонке падает с NotReadableError и камера так и не включается.
+      try {
+        audioTrack?.stop();
+        videoTrack?.stop();
+      } catch (releaseError) {
+        console.warn('Failed to release preview tracks before join', releaseError);
+      }
 
       // LiveKitRoom автоматически управляет подключением
       // Нам нужно только установить флаг подключения

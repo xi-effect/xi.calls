@@ -77,26 +77,28 @@ const getLocalCameraTrack = (room: Room) => {
 
 const userWantsLocalCamera = (room: Room) => {
   const track = getLocalCameraTrack(room);
-  // SDK-mute = пользователь выключил камеру. OS-mute это поле не трогает.
-  if (track && !track.isMuted) return true;
+  // isMuted ставит только явный mute. Фоновый OS-mute это поле не трогает —
+  // такую камеру как раз нужно поднимать. videoEnabled в callStore пишется
+  // один раз при входе и не обновляется кнопкой в звонке, поэтому при живом
+  // треке доверяем только isMuted, иначе «восстановление» снова включает
+  // камеру, которую ученик выключил, или гасит ту, которую только что включил.
+  if (track) return !track.isMuted;
   if (useCallStore.getState().videoEnabled) return true;
   if (useUserChoicesStore.getState().videoEnabled) return true;
   return false;
 };
 
-const isLocalCameraSending = (room: Room) => {
+/**
+ * Захват реально умер: трека нет, upstream на паузе, дорожка ended или
+ * LiveKit выставил mediaStreamTrack.enabled = false.
+ * media.muted сюда не входит: у камеры он true, пока нет первого кадра,
+ * и рестарт в этот момент роняет публикацию.
+ */
+const isLocalCameraCaptureDead = (room: Room) => {
   const track = getLocalCameraTrack(room);
-  const media = track?.mediaStreamTrack;
-
-  return (
-    !!track &&
-    !track.isMuted &&
-    !track.isUpstreamPaused &&
-    !!media &&
-    media.readyState === 'live' &&
-    !media.muted &&
-    media.enabled
-  );
+  if (!track) return true;
+  const media = track.mediaStreamTrack;
+  return track.isUpstreamPaused || !media || media.readyState !== 'live' || !media.enabled;
 };
 
 /**
@@ -160,30 +162,40 @@ const snapshotLocalCamera = (
   return { canvas, ctx, still, sourceVideo: video };
 };
 
-const restoreLocalCamera = async (room: Room) => {
-  if (!userWantsLocalCamera(room)) return;
-  if (room.state !== 'connected') return;
+const restoreLocalCamera = async (room: Room, forceRestart: boolean) => {
+  if (!userWantsLocalCamera(room)) return false;
+  if (room.state !== 'connected') return false;
 
   const participant = room.localParticipant;
-  const track = getLocalCameraTrack(room);
 
-  try {
+  const restart = async () => {
+    if (!userWantsLocalCamera(room)) return;
+    const track = getLocalCameraTrack(room);
     if (track && !track.isMuted) {
+      const captureDead = isLocalCameraCaptureDead(room);
+      if (!captureDead && !forceRestart) return;
       await track.restartTrack();
       if (track.isUpstreamPaused) {
         await track.resumeUpstream();
       }
       return;
     }
-
     await participant.setCameraEnabled(true);
+  };
+
+  try {
+    await restart();
+    return true;
   } catch (error) {
     console.warn('LiveKit: failed to restore camera after tab became visible', error);
     try {
-      await participant.setCameraEnabled(false);
-      await participant.setCameraEnabled(true);
+      // Не вызываем setCameraEnabled(false): если повторное включение тоже
+      // падает, камера остаётся выключенной на весь урок, и кнопка её не держит.
+      await restart();
+      return true;
     } catch (retryError) {
       console.warn('LiveKit: camera republish after background failed', retryError);
+      return false;
     }
   }
 };
@@ -375,17 +387,22 @@ export const KeepVideosPlaying = () => {
       }
     };
 
-    const runForegroundRestore = async (forceCameraRestart: boolean) => {
+    const resumePlayback = async () => {
       if (document.visibilityState === 'hidden') return;
-
       await restoreRemotePlayback(room);
       playAllCallVideos();
+    };
 
-      const shouldRestart = forceCameraRestart || cameraFrozen || !isLocalCameraSending(room);
-      if (!shouldRestart) return;
+    const runForegroundRestore = async (forceCameraRestart: boolean) => {
+      await resumePlayback();
 
-      await restoreLocalCamera(room);
-      stopFreeze();
+      const shouldRestart = forceCameraRestart || cameraFrozen || isLocalCameraCaptureDead(room);
+      if (!shouldRestart || !userWantsLocalCamera(room)) return;
+
+      const restored = await restoreLocalCamera(room, forceCameraRestart || cameraFrozen);
+      // Замороженный кадр снимаем только после удачного захвата, иначе stop()
+      // оборвёт единственную опубликованную картинку.
+      if (restored) stopFreeze();
       bindLocalCameraHold();
       syncKeepAlives();
       playAllCallVideos();
@@ -419,8 +436,10 @@ export const KeepVideosPlaying = () => {
       const returningFromBackground = wasHidden;
       wasHidden = false;
 
+      // Обычный focus (клик по окну, не возврат из фона) камеру не трогает:
+      // media.muted ещё true, пока нет кадра, и рестарт в этот момент её гасил.
       if (!returningFromBackground) {
-        void runForegroundRestore(false);
+        void resumePlayback();
         return;
       }
 

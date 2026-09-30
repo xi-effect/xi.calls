@@ -2,7 +2,7 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { useCallStore, useUserChoicesStore } from '@xipkg/calls-store';
 import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { DisconnectReason, Track, type RemoteTrackPublication } from 'livekit-client';
+import { DisconnectReason, Track, VideoPresets, type RemoteTrackPublication } from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { KeepVideosPlaying } from './KeepVideosPlaying';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
@@ -24,7 +24,8 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   const { room } = useRoom();
   const navigation = useCallsNavigation();
   const { clearConferenceUiState } = useCallsSession();
-  const { audioEnabled, audioDeviceId, videoEnabled, connect, token, updateStore } = useCallStore();
+  const { audioEnabled, audioDeviceId, videoEnabled, videoDeviceId, connect, token, updateStore } =
+    useCallStore();
   const callId = navigation.getCallId();
   const speakerVolume = useUserChoicesStore((s) => s.speakerVolume ?? 1);
   const audioOutputDeviceId = useUserChoicesStore((s) => s.audioOutputDeviceId);
@@ -35,9 +36,30 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     }),
     [audioDeviceId],
   );
+  // Та же камера, что в превью. Без deviceId LiveKit берёт системную по
+  // умолчанию: в лобби картинка есть, а публикация в звонке падает.
+  // Разрешение обязано совпасть с videoCaptureDefaults: объект в пропе video
+  // подменяет дефолты комнаты целиком, и без 540p группа снова упирается в канал.
+  const videoCaptureOptions = useMemo(
+    () => ({
+      resolution: VideoPresets.h540.resolution,
+      deviceId: videoDeviceId || undefined,
+    }),
+    [videoDeviceId],
+  );
 
   const { isStarted } = useCallStore();
   const disconnectGraceTimeoutRef = useRef<number | null>(null);
+
+  // Повторное включение камеры кнопкой идёт через room.options, а не через проп
+  // LiveKitRoom: useTrackToggle вызывает setCameraEnabled без своих options.
+  useEffect(() => {
+    room.options.videoCaptureDefaults = {
+      ...room.options.videoCaptureDefaults,
+      resolution: room.options.videoCaptureDefaults?.resolution ?? VideoPresets.h540.resolution,
+      deviceId: videoDeviceId || undefined,
+    };
+  }, [room, videoDeviceId]);
 
   // Устройство вывода — прямо здесь, чтобы не плодить цикл calls.providers ↔ calls.hooks
   useEffect(() => {
@@ -336,7 +358,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       onDisconnected={handleDisconnect}
       onError={handleError}
       audio={audioEnabled ? audioCaptureOptions : false}
-      video={videoEnabled || false}
+      video={videoEnabled ? videoCaptureOptions : false}
     >
       {/*
        * Единственный рендерер удалённого аудио на весь звонок.
