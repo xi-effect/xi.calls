@@ -88,7 +88,7 @@ export const MediaDeviceMenu = ({
         >
           <SelectValue placeholder={getPlaceholder()} />
         </SelectTrigger>
-        <SelectContent className="w-full" onTouchEnd={(event) => event.preventDefault()}>
+        <SelectContent className="w-full">
           {devices.length !== 0 && devices[0].deviceId !== '' && (
             <SelectGroup>
               <MediaDeviceSelect devices={devices} />
