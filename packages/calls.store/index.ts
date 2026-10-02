@@ -9,6 +9,7 @@ export {
   useFocusModeStore,
   useReactionsStore,
   PARTICIPANT_REACTION_TTL_MS,
+  useLessonRecordingStore,
 } from './src';
 
 export type {
@@ -20,6 +21,7 @@ export type {
   FeatureKey,
   FloatingReactionT,
   ParticipantReactionT,
+  LessonRecordingPresenceT,
 } from './src';
 export {
   getParticipantUserId,

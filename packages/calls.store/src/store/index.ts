@@ -21,3 +21,5 @@ export type { FeatureKey } from './featuresStore';
 export { useFocusModeStore } from './useFocusModeStore';
 export { useReactionsStore, PARTICIPANT_REACTION_TTL_MS } from './reactionsStore';
 export type { FloatingReactionT, ParticipantReactionT } from './reactionsStore';
+export { useLessonRecordingStore } from './lessonRecordingStore';
+export type { LessonRecordingPresenceT } from './lessonRecordingStore';

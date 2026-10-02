@@ -35,10 +35,17 @@ export {
   useParticipantSounds,
   useUmamiActivityHeartbeat,
   useVisualViewportHeight,
+  useConferenceAudioSources,
+  collectConferenceAudioSources,
+  LessonRecordingPresenceSync,
+  useLessonRecordingPresence,
+  usePublishLessonRecording,
   ModeSyncProvider,
   type UseNoiseCancellationResult,
   type UseVoiceEnhancementResult,
   type VoiceEnhancementStatus,
+  type ConferenceAudioSourceT,
+  type ConferenceAudioSnapshotT,
 } from './src';
 
 export { VoiceEnhancementProcessor } from './src/audio/VoiceEnhancementProcessor';

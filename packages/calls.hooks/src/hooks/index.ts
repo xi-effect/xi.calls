@@ -33,5 +33,15 @@ export {
 } from './useVoiceEnhancement';
 export { useParticipantSounds } from './useParticipantSounds';
 export { useUmamiActivityHeartbeat } from './useUmamiActivityHeartbeat';
+export {
+  useConferenceAudioSources,
+  collectConferenceAudioSources,
+} from './useConferenceAudioSources';
+export type { ConferenceAudioSourceT, ConferenceAudioSnapshotT } from './useConferenceAudioSources';
+export {
+  LessonRecordingPresenceSync,
+  useLessonRecordingPresence,
+  usePublishLessonRecording,
+} from './useLessonRecordingPresence';
 export { useVisualViewportHeight } from './useVisualViewportHeight';
 export type { UseNoiseCancellationResult } from './useNoiseCancellation';
