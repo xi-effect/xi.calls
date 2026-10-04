@@ -23,3 +23,8 @@ export { useReactionsStore, PARTICIPANT_REACTION_TTL_MS } from './reactionsStore
 export type { FloatingReactionT, ParticipantReactionT } from './reactionsStore';
 export { useLessonRecordingStore } from './lessonRecordingStore';
 export type { LessonRecordingPresenceT } from './lessonRecordingStore';
+export { useLessonRecordingControlsStore } from './lessonRecordingControlsStore';
+export type {
+  LessonRecordingPhaseT,
+  LessonRecordingSessionT,
+} from './lessonRecordingControlsStore';

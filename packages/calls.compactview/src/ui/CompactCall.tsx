@@ -18,6 +18,7 @@ import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
 import {
   COMPACT_BOTTOM_BAR_PX,
+  COMPACT_PANEL_WIDTH_PX,
   COMPACT_VIDEO_AREA_MARGIN_PX,
   EXPANDED_VIDEO_PADDING_VERTICAL_PX,
   TILE_GAP_PX,
@@ -199,8 +200,11 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={`compact-call-container flex flex-col ${isMobile ? 'w-full' : 'w-[360px]'}`}
+      style={{
+        ...style,
+        ...(isMobile ? {} : { width: COMPACT_PANEL_WIDTH_PX }),
+      }}
+      className={`compact-call-container flex flex-col ${isMobile ? 'w-full' : ''}`}
     >
       <CompactCallVideoArea
         isMobile={isMobile}

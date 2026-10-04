@@ -14,7 +14,12 @@ import type { CompactViewModeT } from '@xipkg/calls-store';
 import type { DeviceMenuGroupT } from '@xipkg/calls-hooks';
 import { useTranslation } from 'react-i18next';
 import { getNextCompactViewMode } from '../constants';
-import { DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
+import {
+  DevicesBar,
+  DisconnectButton,
+  LessonRecordButton,
+  ScreenShareButton,
+} from '@xipkg/calls-ui';
 import { ChatButton } from '@xipkg/calls-chat';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 
@@ -124,6 +129,7 @@ export function CompactCallBottomBar({
       )}
 
       <div className={cn(barCn, 'ml-auto')}>
+        <LessonRecordButton className="h-8 w-8" />
         <ScreenShareButton className="h-8 w-8" />
         <ChatButton className="h-8 w-8 min-w-8 rounded-xl" />
         <RaiseHandButton className="h-8 w-8 min-w-8" />

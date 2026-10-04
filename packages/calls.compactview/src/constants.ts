@@ -30,12 +30,12 @@ export const COMPACT_VIDEO_AREA_MARGIN_PX = 8;
 /** Нижний отступ compact call на странице доски, соответствует CSS bottom-[72px] */
 export const COMPACT_BOTTOM_OFFSET_BOARD_PX = BOARD_BOTTOM_TOOLBAR_PX + TILE_GAP_PX; // 72
 
-/** Ширина панели компакт-ВКС (с запасом под кнопку чата); высота плитки 16:9 при этой ширине */
-export const COMPACT_PANEL_WIDTH_PX = 360;
-export const TILE_HEIGHT_16_9_PX = Math.round((COMPACT_PANEL_WIDTH_PX * 9) / 16); // 203 при ширине 360
+/** Ширина панели компакт-ВКС: влезает вся нижняя панель, включая запись и завершение звонка. */
+export const COMPACT_PANEL_WIDTH_PX = 448;
+export const TILE_HEIGHT_16_9_PX = Math.round((COMPACT_PANEL_WIDTH_PX * 9) / 16); // 252 при ширине 448
 
 /** Размеры окна PiP Document */
-export const PIP_PANEL_WIDTH_PX = 380;
+export const PIP_PANEL_WIDTH_PX = 448;
 export const PIP_BAR_HEIGHT_PX = 48;
 /** Зазор между областью видео и нижней панелью в PiP (gap-1) */
 export const PIP_VIDEO_BAR_GAP_PX = 4;

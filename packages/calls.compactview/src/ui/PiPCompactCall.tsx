@@ -13,7 +13,13 @@ import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useClassroomPins, useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { useTranslation } from 'react-i18next';
 import { useCompactNavigation } from '../hooks/useCompactNavigation';
-import { ParticipantTile, DevicesBar, DisconnectButton, ScreenShareButton } from '@xipkg/calls-ui';
+import {
+  ParticipantTile,
+  DevicesBar,
+  DisconnectButton,
+  LessonRecordButton,
+  ScreenShareButton,
+} from '@xipkg/calls-ui';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 import { Chat, ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { CompactNavigationControls } from './CompactNavigationControls';
@@ -316,6 +322,7 @@ export function PiPCompactCall({ pipWindow, resizePiPTo }: PiPCompactCallPropsT)
         </div>
 
         <div className={cn(barCn, 'ml-auto')}>
+          <LessonRecordButton className="h-[28px] w-[28px]" />
           <ScreenShareButton className="h-[28px] w-[28px]" />
           <ChatButton className="h-[28px] w-[28px] min-w-[28px] rounded-xl" />
           <RaiseHandButton className="h-[28px] w-[28px]" />

@@ -1,5 +1,10 @@
 export { UpBar } from './UpBar';
-export { WhiteBoardButton, DisconnectButton, ScreenShareButton } from './Bottom';
+export {
+  WhiteBoardButton,
+  DisconnectButton,
+  ScreenShareButton,
+  LessonRecordButton,
+} from './Bottom';
 export {
   FocusToggle,
   ParticipantPinToggle,

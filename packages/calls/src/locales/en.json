@@ -41,7 +41,10 @@
     "toBoardTooltip": "Return to the collaborative board",
     "stopScreenShare": "Stop screen sharing",
     "shareScreen": "Share screen",
-    "selectBoard": "Choose a board for collaboration"
+    "selectBoard": "Choose a board for collaboration",
+    "recordLesson": "Record lesson",
+    "stopRecording": "Stop recording",
+    "recordingNow": "Recording"
   },
   "upBar": {
     "linkCopied": "Link copied. Send it to your students",

@@ -9,7 +9,7 @@ import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
 import { ParticipantTile, ParticipantPinToggle, tileOverlayButtonClassName } from '@xipkg/calls-ui';
-import { TILE_GAP_PX, TILE_HEIGHT_16_9_PX } from '../constants';
+import { COMPACT_PANEL_WIDTH_PX, TILE_GAP_PX, TILE_HEIGHT_16_9_PX } from '../constants';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 
 type CompactCallVideoAreaProps = {
@@ -108,7 +108,8 @@ export function CompactCallVideoArea({
         participant={currentParticipant?.participant ?? null}
         audioTrack={currentAudioTrack ?? null}
         onExpand={onAudioExpand}
-        className={cn('mb-2 w-[360px]', withOutShadows ? '' : 'shadow-lg')}
+        className={cn('mb-2', withOutShadows ? '' : 'shadow-lg')}
+        style={{ width: COMPACT_PANEL_WIDTH_PX }}
       />
     );
   }
@@ -119,11 +120,18 @@ export function CompactCallVideoArea({
       className={cn(
         'bg-background-subtle group relative mb-2 flex overflow-hidden rounded-2xl',
         withOutShadows ? '' : 'shadow-lg',
-        isMobile ? 'h-auto w-full items-center justify-center' : 'w-[360px] cursor-move flex-col',
+        isMobile ? 'h-auto w-full items-center justify-center' : 'cursor-move flex-col',
         !isMobile && compactViewMode === 'basic' && 'shrink-0',
         !isMobile && compactViewMode === 'expanded' && 'h-auto',
       )}
-      style={!isMobile && compactViewMode === 'basic' ? { height: TILE_HEIGHT_16_9_PX } : undefined}
+      style={
+        isMobile
+          ? undefined
+          : {
+              width: COMPACT_PANEL_WIDTH_PX,
+              ...(compactViewMode === 'basic' ? { height: TILE_HEIGHT_16_9_PX } : {}),
+            }
+      }
     >
       {isMobile ? (
         currentParticipant ? (

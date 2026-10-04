@@ -6,7 +6,13 @@ import {
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
 import { useCallback } from 'react';
-import { DisconnectButton, ScreenShareButton, WhiteBoardButton, DevicesBar } from '@xipkg/calls-ui';
+import {
+  DisconnectButton,
+  LessonRecordButton,
+  ScreenShareButton,
+  WhiteBoardButton,
+  DevicesBar,
+} from '@xipkg/calls-ui';
 import { useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
 import { useCallStore } from '@xipkg/calls-store';
@@ -134,6 +140,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
             />
           </div>
           <div className="bg-background-surface border-border-default flex h-[48px] items-center justify-center gap-1 rounded-[16px] border p-1">
+            <LessonRecordButton />
             <ScreenShareButton />
             {isTutor && <WhiteBoardButton />}
             <ChatButton />

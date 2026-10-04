@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { PIP_PANEL_WIDTH_PX } from '../constants';
 
 declare global {
   interface DocumentPictureInPicture {
@@ -104,7 +105,7 @@ function copyStylesToWindow(targetWindow: Window) {
 }
 
 export function useDocumentPiP({
-  width = 380,
+  width = PIP_PANEL_WIDTH_PX,
   height = 270,
   enabled = true,
   microphoneActive = false,

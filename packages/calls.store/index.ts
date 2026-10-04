@@ -10,6 +10,7 @@ export {
   useReactionsStore,
   PARTICIPANT_REACTION_TTL_MS,
   useLessonRecordingStore,
+  useLessonRecordingControlsStore,
 } from './src';
 
 export type {
@@ -22,6 +23,8 @@ export type {
   FloatingReactionT,
   ParticipantReactionT,
   LessonRecordingPresenceT,
+  LessonRecordingPhaseT,
+  LessonRecordingSessionT,
 } from './src';
 export {
   getParticipantUserId,
