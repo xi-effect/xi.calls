@@ -4,11 +4,11 @@ import {
   DragEndEvent,
   useSensor,
   useSensors,
-  PointerSensor,
   useDroppable,
   DragOverlay,
   useDndMonitor,
 } from '@dnd-kit/core';
+import { CompactPointerSensor, CompactTouchSensor } from './compactDragSensors';
 import { useCallsNavigation } from '@xipkg/calls-providers';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { CompactCall } from './CompactCall';
@@ -33,10 +33,7 @@ const OPPOSITE_CORNER: Record<CornerT, CornerT> = {
   'bottom-right': 'bottom-left',
 };
 
-const DroppableCorner = ({ id, className }: { id: string; className: string }) => {
-  const { setNodeRef } = useDroppable({
-    id,
-  });
+const useCompactDragActive = () => {
   const [isDragging, setIsDragging] = useState(false);
 
   useDndMonitor({
@@ -46,31 +43,34 @@ const DroppableCorner = ({ id, className }: { id: string; className: string }) =
     onDragEnd: () => {
       setIsDragging(false);
     },
+    // На планшете жест часто отменяется (pointercancel / resize), а не завершается.
+    // Без этого бирюзовые зоны остаются, хотя перенос уже мёртв.
+    onDragCancel: () => {
+      setIsDragging(false);
+    },
   });
+
+  return isDragging;
+};
+
+const DroppableCorner = ({ id, className }: { id: string; className: string }) => {
+  const { setNodeRef } = useDroppable({
+    id,
+  });
+  const isDragging = useCompactDragActive();
 
   return (
     <div
       ref={setNodeRef}
-      className={`absolute z-100 size-1/3 ${className} pointer-events-none transition-all duration-200 ${
-        isDragging
-          ? 'bg-status-info-background/20 ring-border-selected pointer-events-auto rounded-lg ring-2'
-          : ''
+      className={`pointer-events-none absolute z-100 size-1/3 ${className} transition-all duration-200 ${
+        isDragging ? 'bg-status-info-background/20 ring-border-selected rounded-lg ring-2' : ''
       }`}
     />
   );
 };
 
 const DroppableAreas: FC = () => {
-  const [isDragging, setIsDragging] = useState(false);
-
-  useDndMonitor({
-    onDragStart: () => {
-      setIsDragging(true);
-    },
-    onDragEnd: () => {
-      setIsDragging(false);
-    },
-  });
+  const isDragging = useCompactDragActive();
 
   return (
     <>
@@ -78,7 +78,10 @@ const DroppableAreas: FC = () => {
       <DroppableCorner id="top-right" className="top-16 right-4" />
       <DroppableCorner id="bottom-left" className="bottom-18 left-4" />
       <DroppableCorner id="bottom-right" className="right-4 bottom-18" />
-      <DragOverlay>{isDragging ? <CompactCall /> : null}</DragOverlay>
+      {/* Превью не должно перехватывать касание: на планшете слой под пальцем отменяет жест. */}
+      <DragOverlay style={{ pointerEvents: 'none' }}>
+        {isDragging ? <CompactCall /> : null}
+      </DragOverlay>
     </>
   );
 };
@@ -108,7 +111,12 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   }, [isMobile, hideOverlay]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(CompactPointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(CompactTouchSensor, {
       activationConstraint: {
         distance: 8,
       },

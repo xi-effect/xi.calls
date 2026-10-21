@@ -202,9 +202,9 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
       ref={setNodeRef}
       style={{
         ...style,
-        ...(isMobile ? {} : { width: COMPACT_PANEL_WIDTH_PX }),
+        ...(isMobile ? {} : { width: COMPACT_PANEL_WIDTH_PX, touchAction: 'none' as const }),
       }}
-      className={`compact-call-container flex flex-col ${isMobile ? 'w-full' : ''}`}
+      className={`compact-call-container flex flex-col ${isMobile ? 'w-full' : 'touch-none [&_video]:touch-none'}`}
     >
       <CompactCallVideoArea
         isMobile={isMobile}

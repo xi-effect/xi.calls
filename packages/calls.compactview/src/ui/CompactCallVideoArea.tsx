@@ -120,7 +120,7 @@ export function CompactCallVideoArea({
       className={cn(
         'bg-background-subtle group relative mb-2 flex overflow-hidden rounded-2xl',
         withOutShadows ? '' : 'shadow-lg',
-        isMobile ? 'h-auto w-full items-center justify-center' : 'cursor-move flex-col',
+        isMobile ? 'h-auto w-full items-center justify-center' : 'cursor-move touch-none flex-col',
         !isMobile && compactViewMode === 'basic' && 'shrink-0',
         !isMobile && compactViewMode === 'expanded' && 'h-auto',
       )}
@@ -129,6 +129,7 @@ export function CompactCallVideoArea({
           ? undefined
           : {
               width: COMPACT_PANEL_WIDTH_PX,
+              touchAction: 'none',
               ...(compactViewMode === 'basic' ? { height: TILE_HEIGHT_16_9_PX } : {}),
             }
       }
