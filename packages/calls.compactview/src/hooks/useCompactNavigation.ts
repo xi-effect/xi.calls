@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { RemoteTrackPublication, Track } from 'livekit-client';
 import { useTracks } from '@livekit/components-react';
-import { applyPinsFirst } from '@xipkg/calls-store';
+import { applyPinsFirst, useCallStore } from '@xipkg/calls-store';
 import { useClassroomPins, useScreenShareCleanup, useSortedTracks } from '@xipkg/calls-hooks';
 import { useRoom } from '@xipkg/calls-providers';
 
@@ -47,9 +47,16 @@ export const useCompactNavigation = () => {
   const { pins } = useClassroomPins();
 
   const sorted = useMemo(() => applyPinsFirst(baseSorted, pins), [baseSorted, pins]);
+  const screenShareStageIdentity = useCallStore((state) => state.screenShareStageIdentity);
 
-  const currentParticipant = sorted[currentParticipantIndex] || null;
-  const totalParticipants = sorted.length;
+  // На весь экран уже выведена демонстрация — в панели остаются камеры участников.
+  const visibleSorted = useMemo(() => {
+    if (!screenShareStageIdentity) return sorted;
+    return sorted.filter((trackRef) => trackRef.source !== Track.Source.ScreenShare);
+  }, [screenShareStageIdentity, sorted]);
+
+  const currentParticipant = visibleSorted[currentParticipantIndex] || null;
+  const totalParticipants = visibleSorted.length;
 
   const canGoNext = currentParticipantIndex < totalParticipants - 1;
   const canGoPrev = currentParticipantIndex > 0;
@@ -86,9 +93,14 @@ export const useCompactNavigation = () => {
     }
   }, [pinsKey, pins.length]);
 
+  useEffect(() => {
+    if (!screenShareStageIdentity) return;
+    setCurrentParticipantIndex(0);
+  }, [screenShareStageIdentity]);
+
   return {
     currentParticipant,
-    participants: sorted,
+    participants: visibleSorted,
     currentIndex: currentParticipantIndex,
     totalParticipants,
     canGoNext,

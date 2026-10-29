@@ -10,7 +10,7 @@ import {
 } from '@xipkg/dropdown';
 import { Account, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
-import type { CompactViewModeT } from '@xipkg/calls-store';
+import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import type { DeviceMenuGroupT } from '@xipkg/calls-hooks';
 import { useTranslation } from 'react-i18next';
 import { getNextCompactViewMode } from '../constants';
@@ -63,6 +63,7 @@ export function CompactCallBottomBar({
   isTutor,
 }: CompactCallBottomBarPropsT) {
   const { t } = useTranslation('calls');
+  const screenShareStage = useCallStore((state) => state.screenShareStageIdentity);
   const nextViewMode = getNextCompactViewMode(compactViewMode);
   const viewModeToggleMeta = {
     expanded: { Icon: Users, label: t('compactView.mode.expanded') },
@@ -136,55 +137,56 @@ export function CompactCallBottomBar({
       </div>
 
       <div className={cn(barCn, 'ml-1')}>
-        {isTutor ? (
-          <DropdownMenu>
+        {!screenShareStage &&
+          (isTutor ? (
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="none"
+                      className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
+                    >
+                      <Maximize className="fill-icon-primary" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent side="top" align="end" className="z-1000 min-w-[200px]">
+                <DropdownMenuLabel className="text-text-secondary text-sm">
+                  {t('compactView.returnMenuLabel')}
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onMaximize(false)}
+                  className="text-text-primary cursor-pointer text-sm"
+                >
+                  {t('compactView.returnOnlyMe')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onMaximize(true)}
+                  className="text-text-primary cursor-pointer text-sm"
+                >
+                  {t('compactView.returnEveryone')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
             <Tooltip>
               <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="none"
-                    className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
-                  >
-                    <Maximize className="fill-icon-primary" />
-                  </Button>
-                </DropdownMenuTrigger>
+                <Button
+                  size="icon"
+                  variant="none"
+                  onClick={() => onMaximize(false)}
+                  className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
+                >
+                  <Maximize className="fill-icon-primary" />
+                </Button>
               </TooltipTrigger>
               <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
             </Tooltip>
-            <DropdownMenuContent side="top" align="end" className="z-1000 min-w-[200px]">
-              <DropdownMenuLabel className="text-text-secondary text-sm">
-                {t('compactView.returnMenuLabel')}
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => onMaximize(false)}
-                className="text-text-primary cursor-pointer text-sm"
-              >
-                {t('compactView.returnOnlyMe')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onMaximize(true)}
-                className="text-text-primary cursor-pointer text-sm"
-              >
-                {t('compactView.returnEveryone')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="none"
-                onClick={() => onMaximize(false)}
-                className="hover:bg-background-page text-text-primary relative m-0 h-8 w-8 rounded-xl p-0"
-              >
-                <Maximize className="fill-icon-primary" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
-          </Tooltip>
-        )}
+          ))}
         <DisconnectButton className="h-[32px] w-[32px] rounded-xl" />
       </div>
     </div>

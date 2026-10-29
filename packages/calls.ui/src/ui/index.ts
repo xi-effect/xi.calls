@@ -8,6 +8,7 @@ export {
 export {
   FocusToggle,
   ParticipantPinToggle,
+  ScreenShareStageToggle,
   tileOverlayButtonClassName,
   TrackToggle,
   DevicesBar,
@@ -22,5 +23,10 @@ export {
   ReactionIndicator,
 } from './shared';
 export { VideoGrid } from './VideoGrid';
-export { ParticipantName, ParticipantTile, TrackMutedIndicator } from './Participant';
+export {
+  ParticipantName,
+  ParticipantTile,
+  ScreenShareZoom,
+  TrackMutedIndicator,
+} from './Participant';
 export { CallsOnboarding } from './Onboarding';

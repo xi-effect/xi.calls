@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useAudioWaveform } from '@livekit/components-react';
 import type { LocalAudioTrack, RemoteAudioTrack } from 'livekit-client';
 import { Participant, Track } from 'livekit-client';
@@ -12,6 +13,7 @@ type CompactCallCollapsedBarProps = {
   audioTrack?: LocalAudioTrack | RemoteAudioTrack | null;
   onExpand: () => void;
   className?: string;
+  style?: CSSProperties;
 };
 
 export function CompactCallCollapsedBar({
@@ -19,6 +21,7 @@ export function CompactCallCollapsedBar({
   audioTrack,
   onExpand,
   className,
+  style,
 }: CompactCallCollapsedBarProps) {
   const { t } = useTranslation('calls');
   const { bars } = useAudioWaveform(audioTrack ?? undefined, {
@@ -28,6 +31,7 @@ export function CompactCallCollapsedBar({
   });
   return (
     <div
+      style={style}
       className={cn(
         'bg-background-surface border-border-default flex items-center gap-2 rounded-2xl border px-2 py-2 shadow-lg',
         className,

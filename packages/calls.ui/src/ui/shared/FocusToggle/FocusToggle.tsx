@@ -8,18 +8,21 @@ import {
 import { Participant } from 'livekit-client';
 import React from 'react';
 import { cn } from '@xipkg/utils';
+import { tileOverlayButtonClassName } from '../ParticipantPinToggle';
 
 export type FocusTogglePropsT = {
   trackRef?: TrackReferenceOrPlaceholder;
   /** @deprecated This parameter will be removed in a future version use `trackRef` instead. */
   participant?: Participant;
+  /** В ряду с другими кнопками плитки, без absolute */
+  inline?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 /** Стили кнопки фокуса — Tailwind; в хосте нужен scan @xipkg/calls-ui (см. xi-tutor-local-link.md). */
 const focusToggleClassName =
   'rounded-lg absolute top-2 right-2 z-10 box-border flex h-6 w-6 min-h-6 min-w-6 cursor-pointer appearance-none items-center justify-center border-none bg-background-surface/80 p-0 opacity-80 transition-opacity lg:opacity-0 lg:group-hover:opacity-80';
 
-export const FocusToggle = ({ trackRef, ...props }: FocusTogglePropsT) => {
+export const FocusToggle = ({ trackRef, inline = false, ...props }: FocusTogglePropsT) => {
   const trackRefFromContext = useMaybeTrackRefContext();
 
   const { mergedProps, inFocus } = useFocusToggle({
@@ -37,7 +40,15 @@ export const FocusToggle = ({ trackRef, ...props }: FocusTogglePropsT) => {
         void style;
 
         return (
-          <button type="button" className={cn(focusToggleClassName, className)} {...buttonProps}>
+          <button
+            type="button"
+            className={cn(
+              inline ? tileOverlayButtonClassName : focusToggleClassName,
+              inline && 'lk-screen-share-focus-inline',
+              className,
+            )}
+            {...buttonProps}
+          >
             {props.children
               ? props.children
               : !inFocus && <FocusToggleIcon className="fill-icon-primary" />}

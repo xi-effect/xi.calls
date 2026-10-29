@@ -175,7 +175,10 @@
     "zoomIn": "Zoom in",
     "zoomViewport": "Viewport, drag to pan",
     "zoomOut": "Zoom out",
-    "zoomIncrease": "Zoom in"
+    "zoomIncrease": "Zoom in",
+    "enterStage": "Full screen demonstration",
+    "exitStage": "Exit full screen",
+    "stageTitle": "Screen share"
   },
   "videoGrid": {
     "empty": "No participants to display",

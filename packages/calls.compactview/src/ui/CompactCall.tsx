@@ -26,13 +26,23 @@ import {
   getNextCompactViewMode,
 } from '../constants';
 
-export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) => {
+export const CompactCall = ({
+  saveUserChoices = true,
+  withOutShadows = false,
+  freeDrag = false,
+}: {
+  saveUserChoices?: boolean;
+  withOutShadows?: boolean;
+  /** Панель тащится целиком в любую точку, в том числе на телефоне */
+  freeDrag?: boolean;
+}) => {
   const isMobile = usePhoneLayout();
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: 'draggable-call',
-    disabled: isMobile,
+    id: freeDrag ? 'screen-share-stage-compact' : 'draggable-call',
+    disabled: freeDrag ? false : isMobile,
   });
-  const style = isMobile ? undefined : { transform: CSS.Translate.toString(transform) };
+  const style =
+    !freeDrag && isMobile ? undefined : { transform: CSS.Translate.toString(transform) };
 
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
@@ -200,19 +210,24 @@ export const CompactCall = ({ saveUserChoices = true, withOutShadows = false }) 
   return (
     <div
       ref={setNodeRef}
+      {...(freeDrag ? listeners : {})}
       style={{
         ...style,
-        ...(isMobile ? {} : { width: COMPACT_PANEL_WIDTH_PX, touchAction: 'none' as const }),
+        ...(isMobile && !freeDrag
+          ? {}
+          : { width: COMPACT_PANEL_WIDTH_PX, touchAction: 'none' as const }),
       }}
-      className={`compact-call-container flex flex-col ${isMobile ? 'w-full' : 'touch-none [&_video]:touch-none'}`}
+      className={`compact-call-container flex flex-col ${
+        isMobile && !freeDrag ? 'w-full' : 'touch-none [&_video]:touch-none'
+      } ${freeDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       <CompactCallVideoArea
         isMobile={isMobile}
         isCollapsed={isCollapsed}
         onCollapsedChange={setIsCollapsed}
         withOutShadows={withOutShadows}
-        dragAttributes={attributes as object}
-        dragListeners={listeners as object}
+        dragAttributes={freeDrag ? undefined : (attributes as object)}
+        dragListeners={freeDrag ? undefined : (listeners as object)}
         compactViewMode={compactViewMode}
         currentParticipant={currentParticipant}
         currentAudioTrack={currentAudioTrack ?? null}

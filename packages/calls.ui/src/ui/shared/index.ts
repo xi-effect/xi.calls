@@ -1,5 +1,6 @@
 export { FocusToggle } from './FocusToggle';
 export { ParticipantPinToggle, tileOverlayButtonClassName } from './ParticipantPinToggle';
+export { ScreenShareStageToggle } from './ScreenShareStageToggle';
 export { TrackToggle } from './TrackToggle';
 export { DevicesBar } from './DevicesBar';
 export { DeviceHoverMenu } from './DeviceHoverMenu';

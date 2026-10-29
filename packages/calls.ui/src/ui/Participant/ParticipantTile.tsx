@@ -21,6 +21,7 @@ import { MicrophoneOff, RedLine } from '@xipkg/icons';
 import { VideoTrack } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@xipkg/avatar';
 import { ParticipantPinToggle } from '../shared/ParticipantPinToggle';
+import { ScreenShareStageToggle } from '../shared/ScreenShareStageToggle';
 import { FocusToggle } from '../shared/FocusToggle';
 import { ParticipantName } from './ParticipantName';
 import { RaisedHandIndicator } from '../shared/RaisedHandIndicator';
@@ -159,6 +160,7 @@ export const ParticipantTile = ({
   };
 
   const isMobile = useMedia('(max-width: 640px)');
+  const showStageControls = trackReference.source === Track.Source.ScreenShare && !hidePinToggle;
 
   return (
     <div
@@ -304,10 +306,20 @@ export const ParticipantTile = ({
             </div>
           )}
 
-          {showFocusToggle ? <FocusToggle trackRef={trackReference} /> : null}
-          {!hidePinToggle ? (
-            <ParticipantPinToggle trackRef={trackReference} withFocusToggle={showFocusToggle} />
-          ) : null}
+          {showStageControls ? (
+            <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+              {showFocusToggle ? <FocusToggle trackRef={trackReference} inline /> : null}
+              <ScreenShareStageToggle trackRef={trackReference} />
+              <ParticipantPinToggle trackRef={trackReference} inline />
+            </div>
+          ) : (
+            <>
+              {showFocusToggle ? <FocusToggle trackRef={trackReference} /> : null}
+              {!hidePinToggle ? (
+                <ParticipantPinToggle trackRef={trackReference} withFocusToggle={showFocusToggle} />
+              ) : null}
+            </>
+          )}
         </ParticipantContextIfNeeded>
       </TrackRefContextIfNeeded>
     </div>

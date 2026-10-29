@@ -160,23 +160,31 @@ html:not([data-theme='dark']) .lk-participant-tile .lk-participant-placeholder,
   }
 }
 
-/* Кнопка закрепления участника */
-.lk-participant-tile .lk-pin-toggle-button {
+/* Кнопка закрепления прячется до hover; разворот демонстрации виден всегда */
+.lk-participant-tile .lk-pin-toggle-button,
+.lk-participant-tile .lk-screen-share-stage-button {
   background-color: color-mix(in srgb, var(--xi-background-surface) 88%, transparent) !important;
   color: var(--xi-icon-primary);
-  opacity: 0;
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
   backdrop-filter: blur(6px);
 }
 
-/* На десктопе кнопка закрепления показывается по hover */
+.lk-participant-tile .lk-pin-toggle-button {
+  opacity: 0;
+}
+
+.lk-participant-tile .lk-screen-share-stage-button {
+  opacity: 0.9;
+}
+
+/* На десктопе закреп показывается по hover */
 @media (min-width: 1025px) {
   .lk-participant-tile:hover .lk-pin-toggle-button {
     opacity: 0.8 !important;
   }
 }
 
-/* На мобилке и планшетах кнопка закрепления всегда видна */
+/* На мобилке и планшетах закреп всегда виден */
 @media (max-width: 1024px) {
   .lk-participant-tile .lk-pin-toggle-button {
     opacity: 0.8 !important;
@@ -186,4 +194,30 @@ html:not([data-theme='dark']) .lk-participant-tile .lk-participant-placeholder,
 /* Закреплённый участник — кнопка всегда видна */
 .lk-participant-tile .lk-pin-toggle-button[aria-pressed='true'] {
   opacity: 1 !important;
+}
+
+/* В группе с закрепом LiveKit оставляет focus-кнопке position:absolute */
+.lk-participant-tile .lk-focus-toggle-button.lk-screen-share-focus-inline {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  opacity: 0.9 !important;
+}
+
+/* Демонстрация выше интерфейса (z-2100). Меню, тултипы и модалки остаются сверху. */
+body:has(.screen-share-stage) [data-radix-popper-content-wrapper] {
+  z-index: 2200;
+}
+
+body:has(.screen-share-stage) .calls-portaled-overlay {
+  z-index: 2200 !important;
+}
+
+body:has(.screen-share-stage) [data-state='open'].fixed.inset-0.z-50 {
+  z-index: 2150 !important;
+}
+
+.screen-share-stage .compact-call-container {
+  max-width: calc(100vw - 32px);
 }

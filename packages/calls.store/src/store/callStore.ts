@@ -39,6 +39,12 @@ type useCallStoreT = {
   /** Режим вида компакт-ВКС: одна плитка, несколько плиток или только аудио */
   compactViewMode: CompactViewModeT;
 
+  /**
+   * Демонстрация экрана на весь экран приложения.
+   * identity участника LiveKit; null — обычный интерфейс.
+   */
+  screenShareStageIdentity: string | null;
+
   // Текущая активная доска (для синхронизации с новыми участниками)
   activeBoardId: string | undefined;
   activeClassroom: string | undefined;
@@ -86,6 +92,7 @@ export const useCallStore = create<useCallStoreT>()(
       preferredFocusLayout: 'horizontal',
       activeCorner: 'top-left',
       compactViewMode: 'basic',
+      screenShareStageIdentity: null,
 
       // Текущая активная доска
       activeBoardId: undefined,

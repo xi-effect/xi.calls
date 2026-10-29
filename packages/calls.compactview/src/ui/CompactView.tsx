@@ -22,6 +22,7 @@ import { PiPProvider, usePiP } from '../providers';
 import { useParticipantSounds, useParticipantJoinSync } from '@xipkg/calls-hooks';
 import { COMPACT_MOBILE_CONTENT_GAP_PX, COMPACT_MOBILE_OVERLAY_FALLBACK_PX } from '../constants';
 import { chatPositionStyle, cornerStyle, useBoardChromeInsets } from '../boardChromeInsets';
+import { ScreenShareStage } from './ScreenShareStage';
 
 type CompactViewPropsT = {
   children: React.ReactNode;
@@ -181,6 +182,8 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
 
 const CompactViewInner = ({ children }: CompactViewPropsT) => {
   const { mode, token } = useCallStore();
+  const screenShareStageIdentity = useCallStore((state) => state.screenShareStageIdentity);
+  const isStarted = useCallStore((state) => state.isStarted);
   const { room } = useRoom();
   const pip = usePiP();
   const isPiPActive = !!pip?.isPiPActive;
@@ -188,6 +191,13 @@ const CompactViewInner = ({ children }: CompactViewPropsT) => {
   // Синхронизация состояния при подключении новых участников (работает и в compact mode)
   useParticipantJoinSync();
   useParticipantSounds();
+
+  useEffect(() => {
+    if (!screenShareStageIdentity) return;
+    if (!room || !token || !isStarted) {
+      useCallStore.getState().updateStore('screenShareStageIdentity', null);
+    }
+  }, [isStarted, room, screenShareStageIdentity, token]);
 
   const navigation = useCallsNavigation();
   const { updateStore: updateChatStore } = useChatStore();
@@ -232,10 +242,16 @@ const CompactViewInner = ({ children }: CompactViewPropsT) => {
     );
   }
 
+  const stageLayer =
+    screenShareStageIdentity && room && token && isStarted ? (
+      <ScreenShareStage key={screenShareStageIdentity} identity={screenShareStageIdentity} />
+    ) : null;
+
   if (mode === 'full') {
     return (
       <>
         {contentWrapper}
+        {stageLayer}
         <PermissionsDialog />
       </>
     );
@@ -244,7 +260,8 @@ const CompactViewInner = ({ children }: CompactViewPropsT) => {
   // Всегда один и тот же Compact — при PiP только скрываем оверлей (hideOverlay).
   return (
     <>
-      <Compact hideOverlay={isPiPActive}>{children}</Compact>
+      <Compact hideOverlay={isPiPActive || Boolean(screenShareStageIdentity)}>{children}</Compact>
+      {stageLayer}
       <PermissionsDialog />
     </>
   );

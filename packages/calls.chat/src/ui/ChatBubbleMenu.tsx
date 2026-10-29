@@ -80,7 +80,7 @@ export const ChatBubbleMenu = ({ editor }: ChatBubbleMenuProps) => {
         strategy: 'fixed',
         offset: 8,
       }}
-      className="border-border-default bg-background-surface z-200 flex gap-1 rounded-lg border p-1 shadow-lg"
+      className="calls-portaled-overlay border-border-default bg-background-surface z-200 flex gap-1 rounded-lg border p-1 shadow-lg"
     >
       <FormatButton
         editor={editor}

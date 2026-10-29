@@ -1,4 +1,5 @@
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-core';
+import { Track } from 'livekit-client';
 import type { CompactViewModeT } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
 import { ChevronUp, External } from '@xipkg/icons';
@@ -8,7 +9,12 @@ import { usePiP } from '../providers';
 import { CompactCallCollapsedBar } from './CompactCallCollapsedBar';
 import { CompactNavigationControls } from './CompactNavigationControls';
 import { CompactMultiViewControls } from './CompactMultiViewControls';
-import { ParticipantTile, ParticipantPinToggle, tileOverlayButtonClassName } from '@xipkg/calls-ui';
+import {
+  ParticipantTile,
+  ParticipantPinToggle,
+  ScreenShareStageToggle,
+  tileOverlayButtonClassName,
+} from '@xipkg/calls-ui';
 import { COMPACT_PANEL_WIDTH_PX, TILE_GAP_PX, TILE_HEIGHT_16_9_PX } from '../constants';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 
@@ -191,6 +197,9 @@ export function CompactCallVideoArea({
       {/* Оверлей с Pin (и опционально PiP) для basic и expanded на десктопе */}
       {showPinPiPOverlay && (
         <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+          {overlayTrackRef.source === Track.Source.ScreenShare ? (
+            <ScreenShareStageToggle trackRef={overlayTrackRef} inline />
+          ) : null}
           <ParticipantPinToggle trackRef={overlayTrackRef} inline />
           {showPiPButton && (
             <Tooltip>

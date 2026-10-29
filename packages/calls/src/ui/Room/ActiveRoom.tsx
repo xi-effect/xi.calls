@@ -31,6 +31,7 @@ export const ActiveRoom = () => {
 
   // Применяем блюр только в полном режиме (в compact — CompactCall)
   const mode = useCallStore((state) => state.mode);
+  const screenShareStageIdentity = useCallStore((state) => state.screenShareStageIdentity);
   const videoTrackForBlur = mode === 'full' ? videoTrack : null;
   useVideoBlur(videoTrackForBlur);
   // WASM подключается только после входа в комнату: PreJoin и публикация обычного
@@ -39,6 +40,9 @@ export const ActiveRoom = () => {
   // Громкость mic и NC — всегда, пока идёт звонок (ActiveRoom смонтирован и в compact).
   useMicrophoneVolume(audioTrack);
   useNoiseCancellation(room);
+
+  // Демонстрация на весь экран: интерфейс звонка скрыт, хуки комнаты остаются.
+  if (screenShareStageIdentity) return null;
 
   return (
     <div className="flex h-full min-h-0 flex-col">

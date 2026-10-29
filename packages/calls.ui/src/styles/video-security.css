@@ -91,6 +91,23 @@
   pointer-events: none !important;
 }
 
+.screen-share-stage video {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+  outline: none !important;
+  pointer-events: auto !important;
+}
+
+.screen-share-stage video::-webkit-media-controls,
+.screen-share-stage video::-webkit-media-controls-enclosure,
+.screen-share-stage video::-webkit-media-controls-panel {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Дополнительная защита от dev tools */
 #videoConferenceContainer {
   -webkit-touch-callout: none !important;
