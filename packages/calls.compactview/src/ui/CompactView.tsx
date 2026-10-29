@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState, type CSSProperties } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -21,16 +21,10 @@ import { useRoom } from '@xipkg/calls-providers';
 import { PiPProvider, usePiP } from '../providers';
 import { useParticipantSounds, useParticipantJoinSync } from '@xipkg/calls-hooks';
 import { COMPACT_MOBILE_CONTENT_GAP_PX, COMPACT_MOBILE_OVERLAY_FALLBACK_PX } from '../constants';
+import { chatPositionStyle, cornerStyle, useBoardChromeInsets } from '../boardChromeInsets';
 
 type CompactViewPropsT = {
   children: React.ReactNode;
-};
-
-const OPPOSITE_CORNER: Record<CornerT, CornerT> = {
-  'top-left': 'top-right',
-  'top-right': 'top-left',
-  'bottom-left': 'bottom-right',
-  'bottom-right': 'bottom-left',
 };
 
 const useCompactDragActive = () => {
@@ -53,7 +47,7 @@ const useCompactDragActive = () => {
   return isDragging;
 };
 
-const DroppableCorner = ({ id, className }: { id: string; className: string }) => {
+const DroppableCorner = ({ id, style }: { id: string; style: CSSProperties }) => {
   const { setNodeRef } = useDroppable({
     id,
   });
@@ -62,22 +56,23 @@ const DroppableCorner = ({ id, className }: { id: string; className: string }) =
   return (
     <div
       ref={setNodeRef}
-      className={`pointer-events-none absolute z-100 size-1/3 ${className} transition-all duration-200 ${
+      style={style}
+      className={`pointer-events-none absolute z-20 size-1/3 transition-all duration-200 ${
         isDragging ? 'bg-status-info-background/20 ring-border-selected rounded-lg ring-2' : ''
       }`}
     />
   );
 };
 
-const DroppableAreas: FC = () => {
+const DroppableAreas: FC<{ insets: ReturnType<typeof useBoardChromeInsets> }> = ({ insets }) => {
   const isDragging = useCompactDragActive();
 
   return (
     <>
-      <DroppableCorner id="top-left" className="top-16 left-4" />
-      <DroppableCorner id="top-right" className="top-16 right-4" />
-      <DroppableCorner id="bottom-left" className="bottom-18 left-4" />
-      <DroppableCorner id="bottom-right" className="right-4 bottom-18" />
+      <DroppableCorner id="top-left" style={cornerStyle('top-left', insets)} />
+      <DroppableCorner id="top-right" style={cornerStyle('top-right', insets)} />
+      <DroppableCorner id="bottom-left" style={cornerStyle('bottom-left', insets)} />
+      <DroppableCorner id="bottom-right" style={cornerStyle('bottom-right', insets)} />
       {/* Превью не должно перехватывать касание: на планшете слой под пальцем отменяет жест. */}
       <DragOverlay style={{ pointerEvents: 'none' }}>
         {isDragging ? <CompactCall /> : null}
@@ -131,7 +126,7 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
   };
 
   const isBoardPage = navigation.pathnameIncludes('/board');
-  const bottomOffset = isBoardPage ? 'bottom-[72px]' : 'bottom-4';
+  const insets = useBoardChromeInsets(isBoardPage);
 
   const mobileContentMarginTop =
     hideOverlay || !isMobile
@@ -139,28 +134,8 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
       : (headerHeight > 0 ? headerHeight : COMPACT_MOBILE_OVERLAY_FALLBACK_PX) +
         COMPACT_MOBILE_CONTENT_GAP_PX;
 
-  const getCornerPosition = (corner: CornerT) => {
-    switch (corner) {
-      case 'top-left':
-        return 'top-16 left-4';
-      case 'top-right':
-        return 'top-16 right-4';
-      case 'bottom-left':
-        return `${bottomOffset} left-4`;
-      case 'bottom-right':
-        return `${bottomOffset} right-4`;
-    }
-  };
-
-  /** Противоположный угол для чата (та же логика позиционирования, другой угол) */
-  const getChatPositionClasses = (corner: CornerT) => {
-    const opposite = OPPOSITE_CORNER[corner];
-    const horizontal = opposite.includes('left') ? 'left-22' : 'right-4';
-    return `top-32 ${bottomOffset} ${horizontal}`;
-  };
-
   const container = (
-    <div className={`relative flex h-dvh flex-col bg-transparent`}>
+    <div className={`relative flex h-dvh flex-col bg-transparent`} data-board-chrome-aware="">
       {isMobile ? (
         <>
           {!hideOverlay && (
@@ -179,10 +154,11 @@ export const Compact: FC<CompactPropsT> = ({ children, hideOverlay = false }) =>
         <>
           {!hideOverlay && (
             <>
-              <DroppableAreas />
-              <Chat compactPositionClassName={getChatPositionClasses(activeCorner)} />
+              <DroppableAreas insets={insets} />
+              <Chat compactPositionStyle={chatPositionStyle(activeCorner, insets)} />
               <div
-                className={`absolute z-100 ${getCornerPosition(activeCorner)} transition-all duration-500 ease-out`}
+                className="absolute z-20 transition-all duration-500 ease-out"
+                style={cornerStyle(activeCorner, insets)}
               >
                 <CompactCall />
               </div>

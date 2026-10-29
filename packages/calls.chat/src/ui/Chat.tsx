@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, type CSSProperties } from 'react';
 import type { JSONContent } from '@tiptap/core';
 import { Button } from '@xipkg/button';
 import { Close, Trash } from '@xipkg/icons';
@@ -16,11 +16,17 @@ import { ChatMessageContent } from './ChatMessageContent';
 type ChatProps = {
   /** В компакт-режиме: классы позиционирования (как у CompactCall: top-16 bottom-4 left-4 и т.д.) */
   compactPositionClassName?: string;
+  /** В компакт-режиме: отступы от краёв. Нужны, когда тулбар доски занимает не только низ. */
+  compactPositionStyle?: CSSProperties;
   /** Встроить чат в родителя (PiP): без fixed/modal, на всю доступную высоту */
   embedded?: boolean;
 };
 
-export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps = {}) => {
+export const Chat = ({
+  compactPositionClassName,
+  compactPositionStyle,
+  embedded = false,
+}: ChatProps = {}) => {
   const { t, i18n } = useTranslation('calls');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendChatMessage, deleteChatMessage, closeChat } = useChat();
@@ -167,13 +173,14 @@ export const Chat = ({ compactPositionClassName, embedded = false }: ChatProps =
     );
   }
 
-  if (compactPositionClassName) {
+  if (compactPositionClassName || compactPositionStyle) {
     return (
       <div
         className={cn(
-          'border-border-default bg-background-surface fixed z-100 flex min-h-0 w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
+          'border-border-default bg-background-surface fixed z-20 flex min-h-0 w-[328px] flex-col overflow-hidden rounded-2xl border p-4 pr-1 shadow-lg',
           compactPositionClassName,
         )}
+        style={compactPositionStyle}
       >
         {chatContent}
       </div>
