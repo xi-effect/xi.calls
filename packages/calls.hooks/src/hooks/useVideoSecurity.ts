@@ -1,80 +1,87 @@
 import { useEffect } from 'react';
 
 /**
- * Хук для глобальной блокировки браузерных элементов управления видео
- * Применяется ко всему контейнеру ВКС
+ * Чат и поля ввода внутри #videoConferenceContainer.
+ * Атрибуты onselectstart/oncopy на контейнере сюда не подходят: они гасят
+ * событие у всех потомков и не умеют смотреть на target.
+ */
+const SELECTABLE_REGION_SELECTOR = [
+  '[data-allow-text-selection]',
+  '.select-text',
+  'textarea',
+  'select',
+  'input:not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="reset"]):not([type="file"]):not([type="color"]):not([type="image"])',
+  '[contenteditable]:not([contenteditable="false"])',
+].join(',');
+
+const nodeElement = (node: EventTarget | Node | null): Element | null => {
+  if (node instanceof Element) return node;
+  if (node instanceof Node) return node.parentElement;
+  return null;
+};
+
+const isInSelectableRegion = (node: EventTarget | Node | null) =>
+  Boolean(nodeElement(node)?.closest(SELECTABLE_REGION_SELECTOR));
+
+const blockUnlessTargetSelectable = (event: Event) => {
+  if (isInSelectableRegion(event.target)) return;
+  event.preventDefault();
+  event.stopPropagation();
+};
+
+/** copy часто целится в контейнер, а не в узел с выделением. */
+const blockCopyUnlessTextSelection = (event: Event) => {
+  if (isInSelectableRegion(event.target)) return;
+
+  const selection = document.getSelection();
+  const anchor = selection && !selection.isCollapsed ? selection.anchorNode : null;
+  if (isInSelectableRegion(anchor)) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+};
+
+/**
+ * Хук для глобальной блокировки браузерных элементов управления видео.
+ * Применяется ко всему контейнеру ВКС, кроме текста чата и полей ввода.
+ *
+ * Слушатели вешаются только если контейнер уже есть на маунте Call.
+ * После PreJoin его ещё нет, и эффект с пустыми deps больше не запускается —
+ * выделение в чате работает. Возврат с доски монтирует Call заново уже со
+ * стартовавшей комнатой: контейнер есть сразу, и без исключения selectstart
+ * гасит выделение сообщений.
  */
 export const useVideoSecurity = () => {
   useEffect(() => {
     const container = document.getElementById('videoConferenceContainer');
     if (!container) return;
 
-    // Блокируем контекстное меню для всего контейнера
-    const handleContextMenu = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    // Блокируем выделение текста
-    const handleSelectStart = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    // Блокируем drag & drop
-    const handleDragStart = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    // Блокируем копирование
-    const handleCopy = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    // Блокируем печать
-    const handlePrint = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    // Блокируем F12 и другие dev tools shortcuts
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Блокируем F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
-        (e.ctrlKey && e.key === 'u') ||
-        (e.ctrlKey && e.key === 's')
+        event.key === 'F12' ||
+        (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
+        (event.ctrlKey && event.key === 'u') ||
+        (event.ctrlKey && event.key === 's')
       ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+        event.preventDefault();
+        event.stopPropagation();
       }
     };
 
-    // Применяем все обработчики к контейнеру
-    container.addEventListener('contextmenu', handleContextMenu);
-    container.addEventListener('selectstart', handleSelectStart);
-    container.addEventListener('dragstart', handleDragStart);
-    container.addEventListener('copy', handleCopy);
+    const handlePrint = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    container.addEventListener('contextmenu', blockUnlessTargetSelectable);
+    container.addEventListener('selectstart', blockUnlessTargetSelectable);
+    container.addEventListener('dragstart', blockUnlessTargetSelectable);
+    container.addEventListener('copy', blockCopyUnlessTextSelection);
     container.addEventListener('beforeprint', handlePrint);
     container.addEventListener('keydown', handleKeyDown);
 
-    // Дополнительные атрибуты для блокировки
-    container.setAttribute('oncontextmenu', 'return false');
-    container.setAttribute('ondragstart', 'return false');
-    container.setAttribute('onselectstart', 'return false');
-    container.setAttribute('oncopy', 'return false');
     container.setAttribute('onbeforeprint', 'return false');
 
-    // Применяем CSS стили для блокировки
     container.style.userSelect = 'none';
     container.style.webkitUserSelect = 'none';
     // @ts-expect-error - moz префиксы не типизированы в TypeScript
@@ -89,12 +96,17 @@ export const useVideoSecurity = () => {
     container.style.khtmlUserSelect = 'none';
 
     return () => {
-      container.removeEventListener('contextmenu', handleContextMenu);
-      container.removeEventListener('selectstart', handleSelectStart);
-      container.removeEventListener('dragstart', handleDragStart);
-      container.removeEventListener('copy', handleCopy);
+      container.removeEventListener('contextmenu', blockUnlessTargetSelectable);
+      container.removeEventListener('selectstart', blockUnlessTargetSelectable);
+      container.removeEventListener('dragstart', blockUnlessTargetSelectable);
+      container.removeEventListener('copy', blockCopyUnlessTextSelection);
       container.removeEventListener('beforeprint', handlePrint);
       container.removeEventListener('keydown', handleKeyDown);
+      container.removeAttribute('onbeforeprint');
+      container.removeAttribute('oncontextmenu');
+      container.removeAttribute('ondragstart');
+      container.removeAttribute('onselectstart');
+      container.removeAttribute('oncopy');
     };
   }, []);
 };

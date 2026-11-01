@@ -43,6 +43,9 @@ type CompactCallVideoAreaProps = {
   onMultiPrev: () => void;
   onMultiNext: () => void;
   onAudioExpand: () => void;
+  /** Размер плитки в полноэкранной демонстрации на телефоне */
+  tileWidth?: number;
+  tileHeight?: number;
 };
 
 export function CompactCallVideoArea({
@@ -68,6 +71,8 @@ export function CompactCallVideoArea({
   onMultiPrev,
   onMultiNext,
   onAudioExpand,
+  tileWidth,
+  tileHeight,
 }: CompactCallVideoAreaProps) {
   const { t } = useTranslation('calls');
   const pip = usePiP();
@@ -134,9 +139,9 @@ export function CompactCallVideoArea({
         isMobile
           ? undefined
           : {
-              width: COMPACT_PANEL_WIDTH_PX,
+              width: tileWidth != null ? '100%' : COMPACT_PANEL_WIDTH_PX,
               touchAction: 'none',
-              ...(compactViewMode === 'basic' ? { height: TILE_HEIGHT_16_9_PX } : {}),
+              ...(compactViewMode === 'basic' ? { height: tileHeight ?? TILE_HEIGHT_16_9_PX } : {}),
             }
       }
     >
@@ -239,6 +244,7 @@ export function CompactCallVideoArea({
           onNext={onNext}
           currentIndex={currentIndex}
           totalParticipants={totalParticipants}
+          persistent={tileHeight != null}
         />
       )}
     </div>

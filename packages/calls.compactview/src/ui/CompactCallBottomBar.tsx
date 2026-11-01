@@ -49,6 +49,8 @@ type CompactCallBottomBarPropsT = {
   onBackToBoard: () => void;
   onMaximize: (syncToAll?: boolean) => void;
   isTutor: boolean;
+  /** Узкая панель поверх демонстрации: одна строка без нижнего safe-area */
+  stageCompact?: boolean;
 };
 
 export function CompactCallBottomBar({
@@ -61,6 +63,7 @@ export function CompactCallBottomBar({
   onBackToBoard,
   onMaximize,
   isTutor,
+  stageCompact = false,
 }: CompactCallBottomBarPropsT) {
   const { t } = useTranslation('calls');
   const screenShareStage = useCallStore((state) => state.screenShareStageIdentity);
@@ -78,7 +81,14 @@ export function CompactCallBottomBar({
   );
 
   return (
-    <div className="flex h-[40px] shrink-0 flex-row pb-[max(0px,env(safe-area-inset-bottom))]">
+    <div
+      className={cn(
+        'flex h-10 shrink-0 flex-row',
+        stageCompact
+          ? 'max-w-full [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0'
+          : 'pb-[max(0px,env(safe-area-inset-bottom))]',
+      )}
+    >
       <div className={barCn}>
         <DevicesBar
           className="h-[32px] w-[32px]"

@@ -30,13 +30,20 @@ export const CompactCall = ({
   saveUserChoices = true,
   withOutShadows = false,
   freeDrag = false,
+  stageFrame = null,
 }: {
   saveUserChoices?: boolean;
   withOutShadows?: boolean;
   /** Панель тащится целиком в любую точку, в том числе на телефоне */
   freeDrag?: boolean;
+  /**
+   * Поверх демонстрации. lockCompactModes — только портрет:
+   * в альбоме оставляем 16:9 и переключение на «только звук».
+   */
+  stageFrame?: { width: number; tileHeight: number; lockCompactModes?: boolean } | null;
 }) => {
   const isMobile = usePhoneLayout();
+  const lockCompactModes = stageFrame?.lockCompactModes === true;
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: freeDrag ? 'screen-share-stage-compact' : 'draggable-call',
     disabled: freeDrag ? false : isMobile,
@@ -215,20 +222,26 @@ export const CompactCall = ({
         ...style,
         ...(isMobile && !freeDrag
           ? {}
-          : { width: COMPACT_PANEL_WIDTH_PX, touchAction: 'none' as const }),
+          : {
+              width: stageFrame?.width ?? COMPACT_PANEL_WIDTH_PX,
+              touchAction: 'none' as const,
+              maxWidth: '100%',
+            }),
       }}
       className={`compact-call-container flex flex-col ${
         isMobile && !freeDrag ? 'w-full' : 'touch-none [&_video]:touch-none'
       } ${freeDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       <CompactCallVideoArea
-        isMobile={isMobile}
         isCollapsed={isCollapsed}
         onCollapsedChange={setIsCollapsed}
         withOutShadows={withOutShadows}
         dragAttributes={freeDrag ? undefined : (attributes as object)}
         dragListeners={freeDrag ? undefined : (listeners as object)}
-        compactViewMode={compactViewMode}
+        compactViewMode={lockCompactModes ? 'basic' : compactViewMode}
+        tileWidth={stageFrame?.width}
+        tileHeight={stageFrame?.tileHeight}
+        isMobile={stageFrame ? false : isMobile}
         currentParticipant={currentParticipant}
         currentAudioTrack={currentAudioTrack ?? null}
         totalParticipants={totalParticipants}
@@ -267,7 +280,8 @@ export const CompactCall = ({
             deviceGroups: cameraGroups,
           },
         }}
-        isMobile={isMobile}
+        isMobile={lockCompactModes || (isMobile && stageFrame == null)}
+        stageCompact={lockCompactModes}
         compactViewMode={compactViewMode}
         onViewModeToggle={() => setCompactViewMode(getNextCompactViewMode(compactViewMode))}
         showBackToBoardButton={!!showBackToBoardButton}

@@ -3,9 +3,10 @@ import {
   useLocalParticipant,
   usePersistentUserChoices,
   useTrackToggle,
+  useTracks,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   DisconnectButton,
   LessonRecordButton,
@@ -15,18 +16,25 @@ import {
 } from '@xipkg/calls-ui';
 import { useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
-import { useCallStore } from '@xipkg/calls-store';
+import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
-import { WhiteBoard } from '@xipkg/icons';
+import { ArrowLeft, Grid, Speaker, SpeakerHorizontal, WhiteBoard } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import { useCallBackNavigation } from '@xipkg/calls-hooks';
+import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
 import { ReactionButton } from '@xipkg/calls-reactions';
+import { Settings } from '@xipkg/calls-ui';
+import { useMedia } from '@xipkg/calls-utils';
+import { MobileCommandSheet } from './MobileCommandSheet';
 import { useTranslation } from 'react-i18next';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { t } = useTranslation('calls');
+  const isMobile = useMedia('(max-width: 720px)');
+  const [commandsOpen, setCommandsOpen] = useState(false);
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
   });
@@ -77,8 +85,23 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { room } = useRoom();
   const navigation = useCallsNavigation();
 
-  const { useCurrentUser } = useCalls().auth;
+  const calls = useCalls();
+  const { useCurrentUser } = calls.auth;
   const { data: user } = useCurrentUser();
+  const callId = navigation.getCallId();
+  const { data: classroom } = calls.room.useGetClassroom(Number(callId));
+  const { leaveToClassroom } = useCallBackNavigation();
+  const { focusMode, setFocusMode } = useFocusModeStore();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const carouselType = useCallStore((state) => state.carouselType);
+  const preferredFocusLayout = useCallStore((state) => state.preferredFocusLayout);
+  const layoutTracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
+    { onlySubscribed: false },
+  );
   const isTutor = user?.default_layout === 'tutor';
 
   const showBackToBoardButton =
@@ -103,6 +126,100 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
 
     navigation.navigateToClassroomBoard(activeClassroom, activeBoardId);
   };
+
+  const hasScreenShare = layoutTracks.some(
+    (track) =>
+      track.publication?.source === Track.Source.ScreenShare && track.publication?.isSubscribed,
+  );
+  const participantCount = layoutTracks.filter(
+    (track) => track.source === Track.Source.Camera,
+  ).length;
+  const canUseFocusLayout = hasScreenShare || participantCount > 2;
+
+  const toggleLayout = () => {
+    const nextType = carouselType === 'grid' && canUseFocusLayout ? preferredFocusLayout : 'grid';
+    updateStore('carouselType', nextType);
+  };
+
+  const viewIcon =
+    carouselType === 'horizontal' ? (
+      <Speaker className="fill-icon-primary" />
+    ) : carouselType === 'vertical' ? (
+      <SpeakerHorizontal className="fill-icon-primary" />
+    ) : (
+      <Grid className="fill-icon-primary" />
+    );
+
+  const mobileControlClass =
+    'bg-background-surface border-border-default flex h-12 w-full items-center justify-center rounded-2xl border p-0';
+
+  if (isMobile) {
+    return (
+      <div
+        className={cn(
+          'flex w-full shrink-0 flex-col px-4 pt-1 pb-[max(12px,env(safe-area-inset-bottom))]',
+          isChatOpen && 'invisible',
+        )}
+      >
+        {classroom?.name ? (
+          <p className="text-text-secondary mb-1 truncate text-left text-xs leading-4">
+            {classroom.name}
+          </p>
+        ) : null}
+        <div className="flex items-center gap-2">
+          <Button
+            id={ONBOARDING_IDS.BACK_BUTTON}
+            type="button"
+            variant="none"
+            className={cn(mobileControlClass, 'min-w-0 flex-1')}
+            aria-label={t('upBar.backTooltip')}
+            data-umami-event="call-back-button"
+            onClick={() => {
+              if (focusMode) setFocusMode(false);
+              leaveToClassroom();
+            }}
+          >
+            <ArrowLeft className="fill-icon-primary" />
+          </Button>
+          <div className={cn(mobileControlClass, 'min-w-0 flex-1')}>
+            <ReactionButton className="h-10 w-10" />
+          </div>
+          <Button
+            type="button"
+            variant="none"
+            className={cn(mobileControlClass, 'min-w-0 flex-1 disabled:opacity-50')}
+            disabled={!canUseFocusLayout && carouselType === 'grid'}
+            aria-label={t('upBar.view')}
+            data-umami-event="call-toggle-layout"
+            data-umami-event-layout={carouselType}
+            onClick={toggleLayout}
+          >
+            {viewIcon}
+          </Button>
+          <div className={cn(mobileControlClass, 'min-w-0 flex-1')}>
+            <RaiseHandButton className="h-10 w-10" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <MobileCommandSheet
+              open={commandsOpen}
+              onOpenChange={setCommandsOpen}
+              microphoneEnabled={isMicrophoneEnabled}
+              cameraEnabled={isCameraEnabled}
+              onMicrophoneToggle={(enabled) => void handleMicrophoneToggle(enabled)}
+              onCameraToggle={(enabled) => void handleCameraToggle(enabled)}
+              showBoard={!!isTutor}
+              showBackToBoard={Boolean(showBackToBoardButton)}
+              onBackToBoard={handleBackToBoard}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
+          </div>
+        </div>
+        <Settings open={settingsOpen} onOpenChange={setSettingsOpen}>
+          <span className="sr-only">{t('settings.title')}</span>
+        </Settings>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -219,5 +219,5 @@ body:has(.screen-share-stage) [data-state='open'].fixed.inset-0.z-50 {
 }
 
 .screen-share-stage .compact-call-container {
-  max-width: calc(100vw - 32px);
+  max-width: calc(100vw - 16px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
 }

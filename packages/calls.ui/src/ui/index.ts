@@ -1,6 +1,8 @@
 export { UpBar } from './UpBar';
+export { Settings } from './UpBar/Settings';
 export {
   WhiteBoardButton,
+  WhiteboardsModal,
   DisconnectButton,
   ScreenShareButton,
   LessonRecordButton,

@@ -20,12 +20,15 @@ type ChatProps = {
   compactPositionStyle?: CSSProperties;
   /** Встроить чат в родителя (PiP): без fixed/modal, на всю доступную высоту */
   embedded?: boolean;
+  /** Шторка вместо боковой колонки: телефон в альбомной ориентации шире 639px */
+  forceSheet?: boolean;
 };
 
 export const Chat = ({
   compactPositionClassName,
   compactPositionStyle,
   embedded = false,
+  forceSheet = false,
 }: ChatProps = {}) => {
   const { t, i18n } = useTranslation('calls');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -97,7 +100,10 @@ export const Chat = ({
                   key={message.id}
                   className={`group flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="text-text-primary flex max-w-[90%] flex-col gap-1 rounded-lg select-text">
+                  <div
+                    data-allow-text-selection=""
+                    className="text-text-primary flex max-w-[90%] flex-col gap-1 rounded-lg select-text"
+                  >
                     <div className="text-text-primary flex flex-row items-center gap-1 text-xs font-medium">
                       {!isOwnMessage && (
                         <UserProfile
@@ -159,11 +165,15 @@ export const Chat = ({
     );
   }
 
-  if (isMobile) {
+  if (isMobile || forceSheet) {
     return (
       <Modal open={isChatOpen} onOpenChange={(open) => !open && closeChat()}>
         <ModalContent
-          className="border-border-default bg-background-surface flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1"
+          className={cn(
+            'border-border-default bg-background-surface flex h-[85dvh] max-h-[85dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-0 overflow-hidden rounded-2xl border p-4 pr-1',
+            forceSheet &&
+              'h-[min(85dvh,calc(100dvh-24px))] w-[min(480px,calc(100vw-32px))] max-w-[min(480px,calc(100vw-32px))]',
+          )}
           aria-describedby={undefined}
         >
           <ModalTitle className="sr-only">{t('chat.title')}</ModalTitle>

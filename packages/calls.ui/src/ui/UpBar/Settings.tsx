@@ -42,6 +42,8 @@ import { useTranslation } from 'react-i18next';
 
 type SettingsPropsT = {
   children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 // Компонент для выбора устройства (перемонтируется по key при смене разрешения, чтобы обновить список)
@@ -113,7 +115,7 @@ const DeviceSelector = ({
   );
 };
 
-export const Settings = ({ children }: SettingsPropsT) => {
+export const Settings = ({ children, open, onOpenChange }: SettingsPropsT) => {
   const { t } = useTranslation('calls');
   const { room } = useRoom();
   const {
@@ -249,7 +251,7 @@ export const Settings = ({ children }: SettingsPropsT) => {
   );
 
   return (
-    <Sheet>
+    <Sheet {...(onOpenChange ? { open, onOpenChange } : {})}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="bg-background-surface text-text-primary w-100 rounded-tl-2xl rounded-bl-2xl border-none p-4 shadow-2xl">
         <SheetHeader className="mb-6 flex h-10 flex-row items-center justify-between space-y-0">

@@ -37,11 +37,20 @@
     }
   },
   "bottomBar": {
+    "commands": "Управление",
+    "microphone": "Микрофон",
+    "camera": "Камера",
+    "chat": "Чат",
+    "raiseHand": "Поднять руку",
+    "lowerHand": "Опустить руку",
+    "reactions": "Реакции",
+    "leave": "Завершить звонок",
     "toBoard": "К доске",
     "toBoardTooltip": "Вернуться к доске для совместной работы",
     "stopScreenShare": "Остановить показ экрана",
     "shareScreen": "Поделиться экраном",
     "selectBoard": "Выбрать доску для совместной работы",
+    "board": "Доска",
     "recordLesson": "Записать урок",
     "stopRecording": "Остановить запись",
     "recordingNow": "Идёт запись"

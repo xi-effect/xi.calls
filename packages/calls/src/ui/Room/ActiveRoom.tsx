@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
 import { useLocalParticipant } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { Chat } from '@xipkg/calls-chat';
 import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
-import { useCallStore } from '@xipkg/calls-store';
+import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
+import { useMedia } from '@xipkg/calls-utils';
+import { cn } from '@xipkg/utils';
 import {
   useMicrophoneVolume,
   useNoiseCancellation,
@@ -25,6 +28,12 @@ export const ActiveRoom = () => {
   // экземпляра синхронизации — двойные data-channel рассылки при смене режима/участников
   // усиливали "шторм" сообщений в момент перехода на доску.
   const { room } = useRoom();
+  const isMobile = useMedia('(max-width: 720px)');
+  const setFocusMode = useFocusModeStore((state) => state.setFocusMode);
+
+  useEffect(() => {
+    return () => setFocusMode(false);
+  }, [setFocusMode]);
   const { cameraTrack, microphoneTrack } = useLocalParticipant();
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
   const audioTrack = microphoneTrack?.track as LocalAudioTrack | undefined;
@@ -47,10 +56,17 @@ export const ActiveRoom = () => {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <CallsOnboarding />
-      <div className="shrink-0">
-        <UpBar />
-      </div>
-      <div className="flex min-h-0 flex-1 items-stretch justify-center gap-4 overflow-hidden sm:px-4">
+      {isMobile ? null : (
+        <div className="shrink-0">
+          <UpBar />
+        </div>
+      )}
+      <div
+        className={cn(
+          'flex min-h-0 flex-1 items-stretch justify-center gap-4 overflow-hidden sm:px-4',
+          isMobile && 'pt-[env(safe-area-inset-top)]',
+        )}
+      >
         <div className="text-text-primary relative flex min-h-0 w-full min-w-0 flex-1 justify-center">
           <VideoGrid />
           <ReactionsOverlay />

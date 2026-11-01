@@ -8,6 +8,8 @@ interface CompactNavigationControlsProps {
   onNext: () => void;
   currentIndex: number;
   totalParticipants: number;
+  /** На тач-экране шире 640px hover нет — стрелки остаются видимыми */
+  persistent?: boolean;
 }
 
 /**
@@ -21,8 +23,10 @@ export function CompactNavigationControls({
   onNext,
   currentIndex,
   totalParticipants,
+  persistent = false,
 }: CompactNavigationControlsProps) {
   const { t } = useTranslation('calls');
+  const hoverOnly = persistent ? '' : 'sm:opacity-0 sm:group-hover:opacity-100';
 
   if (totalParticipants <= 1) {
     return null;
@@ -32,7 +36,9 @@ export function CompactNavigationControls({
     <div className="pointer-events-none absolute inset-0">
       {/* Индикатор участников вверху */}
       <div className="pointer-events-auto absolute top-2 left-1/2 -translate-x-1/2">
-        <div className="bg-background-subtle/80 flex gap-1 rounded-full px-2 py-1 backdrop-blur-sm transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+        <div
+          className={`bg-background-subtle/80 flex gap-1 rounded-full px-2 py-1 backdrop-blur-sm transition-opacity duration-200 ${hoverOnly}`}
+        >
           {Array.from({ length: totalParticipants }, (_, index) => (
             <button
               key={index}
@@ -53,7 +59,9 @@ export function CompactNavigationControls({
       </div>
 
       {/* Кнопка "Предыдущий участник" */}
-      <div className="pointer-events-auto absolute top-1/2 left-2 -translate-y-1/2 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+      <div
+        className={`pointer-events-auto absolute top-1/2 left-2 -translate-y-1/2 transition-opacity duration-200 ${hoverOnly}`}
+      >
         <button
           type="button"
           disabled={!canPrev}
@@ -66,7 +74,9 @@ export function CompactNavigationControls({
       </div>
 
       {/* Кнопка "Следующий участник" */}
-      <div className="pointer-events-auto absolute top-1/2 right-2 -translate-y-1/2 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+      <div
+        className={`pointer-events-auto absolute top-1/2 right-2 -translate-y-1/2 transition-opacity duration-200 ${hoverOnly}`}
+      >
         <button
           type="button"
           disabled={!canNext}

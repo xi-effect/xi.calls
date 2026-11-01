@@ -13,21 +13,32 @@ import {
 } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
 import { Chat } from '@xipkg/calls-chat';
-import { COMPACT_PANEL_WIDTH_PX } from '../constants';
 import { usePiP } from '../providers';
 import { CompactCall } from './CompactCall';
 import { CompactPointerSensor, CompactTouchSensor } from './compactDragSensors';
+import {
+  clampStagePosition,
+  computeStageFrame,
+  defaultStagePosition,
+  sameStageFrame,
+  stagePanelHeight,
+  type StageFrame,
+} from './stageLayout';
 
-const EDGE_PX = 16;
 const STAGE_GONE_MS = 500;
 
-function clampStagePosition(x: number, y: number, width: number, height: number) {
-  const maxX = Math.max(EDGE_PX, window.innerWidth - width - EDGE_PX);
-  const maxY = Math.max(EDGE_PX, window.innerHeight - height - EDGE_PX);
-  return {
-    x: Math.min(Math.max(EDGE_PX, x), maxX),
-    y: Math.min(Math.max(EDGE_PX, y), maxY),
-  };
+function initialStageFrame(): StageFrame {
+  if (typeof window === 'undefined') {
+    return {
+      handheld: false,
+      landscape: false,
+      lockCompactModes: false,
+      width: 400,
+      tileHeight: 225,
+      insets: { top: 0, right: 0, bottom: 0, left: 0 },
+    };
+  }
+  return computeStageFrame();
 }
 
 type ScreenShareStagePropsT = {
@@ -40,7 +51,10 @@ export const ScreenShareStage = ({ identity }: ScreenShareStagePropsT) => {
   const closePiP = usePiP()?.closePiP;
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: EDGE_PX, y: EDGE_PX });
+  const movedRef = useRef(false);
+  const landscapeRef = useRef<boolean | null>(null);
+  const [frame, setFrame] = useState(initialStageFrame);
+  const [position, setPosition] = useState(() => defaultStagePosition(initialStageFrame()));
 
   const tracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }], {
     onlySubscribed: false,
@@ -112,37 +126,61 @@ export const ScreenShareStage = ({ identity }: ScreenShareStagePropsT) => {
   }, []);
 
   useLayoutEffect(() => {
-    const node = panelRef.current;
-    if (!node) return undefined;
+    const sync = () => {
+      const next = computeStageFrame();
+      setFrame((prev) => (sameStageFrame(prev, next) ? prev : next));
+      const flipped = landscapeRef.current !== null && landscapeRef.current !== next.landscape;
+      landscapeRef.current = next.landscape;
+      if (flipped) movedRef.current = false;
 
-    const clamp = () => {
-      const current = panelRef.current;
-      if (!current) return;
       setPosition((prev) => {
-        const next = clampStagePosition(prev.x, prev.y, current.offsetWidth, current.offsetHeight);
-        if (next.x === prev.x && next.y === prev.y) return prev;
-        return next;
+        if (!movedRef.current) {
+          const placed = defaultStagePosition(next);
+          if (placed.x === prev.x && placed.y === prev.y) return prev;
+          return placed;
+        }
+        const node = panelRef.current;
+        const clamped = clampStagePosition(
+          prev.x,
+          prev.y,
+          node?.offsetWidth ?? next.width,
+          node?.offsetHeight ?? stagePanelHeight(next),
+          next.insets,
+        );
+        if (clamped.x === prev.x && clamped.y === prev.y) return prev;
+        return clamped;
       });
     };
 
-    clamp();
-    const observer = new ResizeObserver(clamp);
-    observer.observe(node);
-    window.addEventListener('resize', clamp);
+    sync();
+    const viewport = window.visualViewport;
+    window.addEventListener('resize', sync);
+    window.addEventListener('orientationchange', sync);
+    viewport?.addEventListener('resize', sync);
+    viewport?.addEventListener('scroll', sync);
+    const node = panelRef.current;
+    const observer = new ResizeObserver(sync);
+    if (node) observer.observe(node);
     return () => {
+      window.removeEventListener('resize', sync);
+      window.removeEventListener('orientationchange', sync);
+      viewport?.removeEventListener('resize', sync);
+      viewport?.removeEventListener('scroll', sync);
       observer.disconnect();
-      window.removeEventListener('resize', clamp);
     };
   }, []);
 
   const handleDragEnd = (event: DragEndEvent) => {
+    movedRef.current = true;
     const node = panelRef.current;
+    const current = computeStageFrame();
     setPosition((prev) => {
       const next = clampStagePosition(
         prev.x + event.delta.x,
         prev.y + event.delta.y,
-        node?.offsetWidth ?? COMPACT_PANEL_WIDTH_PX,
-        node?.offsetHeight ?? 320,
+        node?.offsetWidth ?? current.width,
+        node?.offsetHeight ?? stagePanelHeight(current),
+        current.insets,
       );
       if (next.x === prev.x && next.y === prev.y) return prev;
       return next;
@@ -164,24 +202,53 @@ export const ScreenShareStage = ({ identity }: ScreenShareStagePropsT) => {
     >
       <div className="relative h-full w-full">
         {track && publication ? (
-          <ScreenShareZoom trackRef={track} className="rounded-none">
-            <VideoTrack
-              trackRef={track}
-              manageSubscription={false}
-              className="h-full w-full bg-black object-contain"
-            />
-          </ScreenShareZoom>
+          frame.handheld ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
+              <VideoTrack
+                trackRef={track}
+                manageSubscription={false}
+                className="h-full w-full bg-black object-contain"
+              />
+            </div>
+          ) : (
+            <ScreenShareZoom trackRef={track} className="rounded-none">
+              <VideoTrack
+                trackRef={track}
+                manageSubscription={false}
+                className="h-full w-full bg-black object-contain"
+              />
+            </ScreenShareZoom>
+          )
         ) : null}
         {track ? (
-          <div className="bg-background-surface/80 pointer-events-none absolute bottom-4 left-4 z-20 flex h-6 items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur">
+          <div
+            className="bg-background-surface/80 pointer-events-none absolute z-20 flex h-6 max-w-[calc(100%-96px)] items-center gap-1.5 rounded-lg px-1.5 py-1 backdrop-blur"
+            style={
+              frame.handheld
+                ? {
+                    top: 'max(12px, env(safe-area-inset-top))',
+                    left: 'max(12px, env(safe-area-inset-left))',
+                  }
+                : {
+                    bottom: 'max(16px, env(safe-area-inset-bottom))',
+                    left: 'max(16px, env(safe-area-inset-left))',
+                  }
+            }
+          >
             <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
-            <span className="text-xs-base-size text-text-primary leading-[16px]">
+            <span className="text-xs-base-size text-text-primary truncate leading-[16px]">
               {t('participant.screenSharePrefix')}
               {sharerName ? <>&nbsp;{sharerName}</> : null}
             </span>
           </div>
         ) : null}
-        <div className="absolute top-3 right-3 z-40 flex items-center gap-1">
+        <div
+          className="absolute z-40 flex items-center gap-1"
+          style={{
+            top: 'max(12px, env(safe-area-inset-top))',
+            right: 'max(12px, env(safe-area-inset-right))',
+          }}
+        >
           <ScreenShareStageToggle trackRef={track ?? undefined} inline />
           {track ? <ParticipantPinToggle trackRef={track} inline /> : null}
         </div>
@@ -198,11 +265,27 @@ export const ScreenShareStage = ({ identity }: ScreenShareStagePropsT) => {
           className="absolute z-30 w-max"
           style={{ left: position.x, top: position.y }}
         >
-          <CompactCall freeDrag />
+          <CompactCall
+            freeDrag
+            stageFrame={
+              frame.handheld
+                ? {
+                    width: frame.width,
+                    tileHeight: frame.tileHeight,
+                    lockCompactModes: frame.lockCompactModes,
+                  }
+                : null
+            }
+          />
         </div>
       </DndContext>
 
-      <Chat compactPositionStyle={{ top: 56, right: 16, bottom: 16, zIndex: 20 }} />
+      <Chat
+        forceSheet={frame.handheld}
+        compactPositionStyle={
+          frame.handheld ? undefined : { top: 56, right: 16, bottom: 16, zIndex: 20 }
+        }
+      />
     </div>,
     document.body,
   );
