@@ -38,6 +38,8 @@
   },
   "bottomBar": {
     "commands": "Controls",
+    "devices": "Devices",
+    "noDevices": "No devices available",
     "microphone": "Microphone",
     "camera": "Camera",
     "chat": "Chat",

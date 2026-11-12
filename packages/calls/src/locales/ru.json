@@ -38,6 +38,8 @@
   },
   "bottomBar": {
     "commands": "Управление",
+    "devices": "Устройства",
+    "noDevices": "Нет доступных устройств",
     "microphone": "Микрофон",
     "camera": "Камера",
     "chat": "Чат",

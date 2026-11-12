@@ -6,7 +6,7 @@ import {
   useTracks,
 } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack, Track } from 'livekit-client';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   DisconnectButton,
   LessonRecordButton,
@@ -14,11 +14,22 @@ import {
   WhiteBoardButton,
   DevicesBar,
 } from '@xipkg/calls-ui';
-import { useDeviceMenuGroups } from '@xipkg/calls-hooks';
+import { useCannotUseDevice, useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { ChatButton, useChatStore } from '@xipkg/calls-chat';
-import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
+import { openPermissionsDialog, useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { cn } from '@xipkg/utils';
-import { ArrowLeft, Grid, Speaker, SpeakerHorizontal, WhiteBoard } from '@xipkg/icons';
+import {
+  ArrowLeft,
+  CameraOff,
+  Conference,
+  Grid,
+  Microphone,
+  MicrophoneOff,
+  RedLine,
+  Speaker,
+  SpeakerHorizontal,
+  WhiteBoard,
+} from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
 import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
@@ -29,12 +40,16 @@ import { ReactionButton } from '@xipkg/calls-reactions';
 import { Settings } from '@xipkg/calls-ui';
 import { useMedia } from '@xipkg/calls-utils';
 import { MobileCommandSheet } from './MobileCommandSheet';
+import { MobileDeviceDrawer } from './MobileDeviceDrawer';
+import { MobileMediaButton } from './MobileMediaButton';
 import { useTranslation } from 'react-i18next';
 
 export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const { t } = useTranslation('calls');
   const isMobile = useMedia('(max-width: 720px)');
   const [commandsOpen, setCommandsOpen] = useState(false);
+  const [devicesOpen, setDevicesOpen] = useState(false);
+  const devicesOpenedAt = useRef(0);
   const { saveAudioInputEnabled, saveVideoInputEnabled } = usePersistentUserChoices({
     preventSave: !saveUserChoices,
   });
@@ -46,6 +61,8 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   const videoTrack = cameraTrack?.track as LocalVideoTrack | undefined;
 
   const { microphoneGroups, cameraGroups } = useDeviceMenuGroups();
+  const microphoneBlocked = useCannotUseDevice('audioinput');
+  const cameraBlocked = useCannotUseDevice('videoinput');
 
   const microphoneToggle = useTrackToggle({
     source: Track.Source.Microphone,
@@ -181,21 +198,65 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
           >
             <ArrowLeft className="fill-icon-primary" />
           </Button>
-          <div className={cn(mobileControlClass, 'min-w-0 flex-1')}>
-            <ReactionButton className="h-10 w-10" />
-          </div>
-          <Button
-            type="button"
-            variant="none"
-            className={cn(mobileControlClass, 'min-w-0 flex-1 disabled:opacity-50')}
-            disabled={!canUseFocusLayout && carouselType === 'grid'}
-            aria-label={t('upBar.view')}
-            data-umami-event="call-toggle-layout"
-            data-umami-event-layout={carouselType}
-            onClick={toggleLayout}
+          <MobileMediaButton
+            label={t('bottomBar.microphone')}
+            enabled={isMicrophoneEnabled}
+            permissionBlocked={microphoneBlocked}
+            audioTrack={audioTrack}
+            className={cn(mobileControlClass, 'min-w-0 flex-1')}
+            umamiEvent="call-toggle-microphone"
+            onToggle={() => {
+              if (microphoneBlocked) {
+                openPermissionsDialog();
+                return;
+              }
+              void handleMicrophoneToggle(!isMicrophoneEnabled);
+            }}
+            onLongPress={() => {
+              devicesOpenedAt.current = Date.now();
+              setDevicesOpen(true);
+            }}
           >
-            {viewIcon}
-          </Button>
+            <span className="relative flex h-6 w-6 items-center justify-center">
+              {isMicrophoneEnabled && !microphoneBlocked ? (
+                <Microphone className="fill-status-success-text h-6 w-6" />
+              ) : (
+                <>
+                  <MicrophoneOff className="fill-icon-primary h-6 w-6" />
+                  <RedLine className="fill-icon-danger absolute h-6 w-6" />
+                </>
+              )}
+            </span>
+          </MobileMediaButton>
+          <MobileMediaButton
+            label={t('bottomBar.camera')}
+            enabled={isCameraEnabled}
+            permissionBlocked={cameraBlocked}
+            className={cn(mobileControlClass, 'min-w-0 flex-1')}
+            umamiEvent="call-toggle-camera"
+            onToggle={() => {
+              if (cameraBlocked) {
+                openPermissionsDialog();
+                return;
+              }
+              void handleCameraToggle(!isCameraEnabled);
+            }}
+            onLongPress={() => {
+              devicesOpenedAt.current = Date.now();
+              setDevicesOpen(true);
+            }}
+          >
+            <span className="relative flex h-6 w-6 items-center justify-center">
+              {isCameraEnabled && !cameraBlocked ? (
+                <Conference className="fill-status-success-text h-6 w-6" />
+              ) : (
+                <>
+                  <CameraOff className="fill-icon-primary h-6 w-6" />
+                  <RedLine className="fill-icon-danger absolute h-6 w-6" />
+                </>
+              )}
+            </span>
+          </MobileMediaButton>
           <div className={cn(mobileControlClass, 'min-w-0 flex-1')}>
             <RaiseHandButton className="h-10 w-10" />
           </div>
@@ -203,10 +264,10 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
             <MobileCommandSheet
               open={commandsOpen}
               onOpenChange={setCommandsOpen}
-              microphoneEnabled={isMicrophoneEnabled}
-              cameraEnabled={isCameraEnabled}
-              onMicrophoneToggle={(enabled) => void handleMicrophoneToggle(enabled)}
-              onCameraToggle={(enabled) => void handleCameraToggle(enabled)}
+              viewIcon={viewIcon}
+              viewDisabled={!canUseFocusLayout && carouselType === 'grid'}
+              viewLayout={carouselType}
+              onToggleView={toggleLayout}
               showBoard={!!isTutor}
               showBackToBoard={Boolean(showBackToBoardButton)}
               onBackToBoard={handleBackToBoard}
@@ -217,6 +278,16 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
         <Settings open={settingsOpen} onOpenChange={setSettingsOpen}>
           <span className="sr-only">{t('settings.title')}</span>
         </Settings>
+        <MobileDeviceDrawer
+          open={devicesOpen}
+          onOpenChange={(open) => {
+            // Палец ещё на кнопке, когда шит появляется под ним: ближайший
+            // pointerup иначе считается кликом по оверлею и сразу закрывает меню.
+            if (!open && Date.now() - devicesOpenedAt.current < 500) return;
+            setDevicesOpen(open);
+          }}
+          groups={[...microphoneGroups, ...cameraGroups]}
+        />
       </div>
     );
   }

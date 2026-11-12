@@ -1,17 +1,12 @@
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { Track } from 'livekit-client';
 import { supportsScreenSharing } from '@livekit/components-core';
 import { useDisconnectButton, useRoomContext, useTrackToggle } from '@livekit/components-react';
 import {
-  CameraOff,
   Chat,
-  Conference,
   Endcall,
   MenuDots,
   Settings as SettingsIcon,
-  Microphone,
-  MicrophoneOff,
-  RedLine,
   Screenshare,
   WhiteBoard,
 } from '@xipkg/icons';
@@ -24,9 +19,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@xipkg/sheet';
-import { WhiteboardsModal } from '@xipkg/calls-ui';
+import { EmojiGlyph, WhiteboardsModal } from '@xipkg/calls-ui';
 import { useCallStore } from '@xipkg/calls-store';
 import { useChat } from '@xipkg/calls-chat';
+import { REACTION_OPTIONS, useReactions } from '@xipkg/calls-reactions';
 import { cn } from '@xipkg/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -35,10 +31,10 @@ const SWIPE_CLOSE_PX = 56;
 type MobileCommandSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  microphoneEnabled: boolean;
-  cameraEnabled: boolean;
-  onMicrophoneToggle: (enabled: boolean) => void;
-  onCameraToggle: (enabled: boolean) => void;
+  viewIcon: ReactNode;
+  viewDisabled: boolean;
+  viewLayout: string;
+  onToggleView: () => void;
   showBoard: boolean;
   showBackToBoard: boolean;
   onBackToBoard: () => void;
@@ -51,10 +47,10 @@ const rowClassName =
 export const MobileCommandSheet = ({
   open,
   onOpenChange,
-  microphoneEnabled,
-  cameraEnabled,
-  onMicrophoneToggle,
-  onCameraToggle,
+  viewIcon,
+  viewDisabled,
+  viewLayout,
+  onToggleView,
   showBoard,
   showBackToBoard,
   onBackToBoard,
@@ -63,6 +59,7 @@ export const MobileCommandSheet = ({
   const { t } = useTranslation('calls');
   const updateStore = useCallStore((state) => state.updateStore);
   const { toggleChat } = useChat();
+  const { sendReaction, isOnCooldown } = useReactions();
   const { buttonProps } = useDisconnectButton({});
   const [boardOpen, setBoardOpen] = useState(false);
   const [dragY, setDragY] = useState(0);
@@ -141,39 +138,42 @@ export const MobileCommandSheet = ({
           </div>
           <SheetTitle className="sr-only">{t('bottomBar.commands')}</SheetTitle>
           <div className="flex flex-col gap-2 px-2 pb-2">
+            <div className="bg-background-page rounded-2xl px-2 py-2">
+              <p className="text-text-secondary px-2 pb-2 text-xs">{t('bottomBar.reactions')}</p>
+              <div className="grid grid-cols-6 gap-1">
+                {REACTION_OPTIONS.map((option) => (
+                  <button
+                    key={option.emoji}
+                    type="button"
+                    aria-label={t(option.labelKey)}
+                    title={t(option.labelKey)}
+                    disabled={isOnCooldown}
+                    className="flex h-10 w-full items-center justify-center rounded-xl bg-transparent disabled:opacity-40"
+                    data-umami-event="call-send-reaction"
+                    onClick={() => sendReaction(option.emoji)}
+                  >
+                    <EmojiGlyph
+                      emoji={option.emoji}
+                      className="h-6 w-6"
+                      aria-label={t(option.labelKey)}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
             <button
               type="button"
-              className={rowClassName}
-              onClick={() => onMicrophoneToggle(!microphoneEnabled)}
+              className={cn(rowClassName, 'disabled:opacity-50')}
+              disabled={viewDisabled}
+              data-umami-event="call-toggle-layout"
+              data-umami-event-layout={viewLayout}
+              onClick={() => {
+                close();
+                onToggleView();
+              }}
             >
-              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center">
-                {microphoneEnabled ? (
-                  <Microphone className="fill-status-success-text h-6 w-6" />
-                ) : (
-                  <>
-                    <MicrophoneOff className="fill-icon-primary h-6 w-6" />
-                    <RedLine className="fill-icon-danger absolute h-6 w-6" />
-                  </>
-                )}
-              </span>
-              <span className="truncate text-base">{t('bottomBar.microphone')}</span>
-            </button>
-            <button
-              type="button"
-              className={rowClassName}
-              onClick={() => onCameraToggle(!cameraEnabled)}
-            >
-              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center">
-                {cameraEnabled ? (
-                  <Conference className="fill-status-success-text h-6 w-6" />
-                ) : (
-                  <>
-                    <CameraOff className="fill-icon-primary h-6 w-6" />
-                    <RedLine className="fill-icon-danger absolute h-6 w-6" />
-                  </>
-                )}
-              </span>
-              <span className="truncate text-base">{t('bottomBar.camera')}</span>
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center">{viewIcon}</span>
+              <span className="truncate text-base">{t('upBar.view')}</span>
             </button>
             {screenShareSupported ? (
               <button
