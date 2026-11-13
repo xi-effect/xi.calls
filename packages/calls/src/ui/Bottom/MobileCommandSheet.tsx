@@ -58,6 +58,7 @@ export const MobileCommandSheet = ({
 }: MobileCommandSheetProps) => {
   const { t } = useTranslation('calls');
   const updateStore = useCallStore((state) => state.updateStore);
+  const isNote = useCallStore((state) => state.activeMaterialKind) === 'note';
   const { toggleChat } = useChat();
   const { sendReaction, isOnCooldown } = useReactions();
   const { buttonProps } = useDisconnectButton({});
@@ -241,7 +242,9 @@ export const MobileCommandSheet = ({
                 }}
               >
                 <WhiteBoard className="fill-icon-primary h-6 w-6 shrink-0" />
-                <span className="truncate text-base">{t('bottomBar.toBoard')}</span>
+                <span className="truncate text-base">
+                  {t(isNote ? 'bottomBar.toNote' : 'bottomBar.toBoard')}
+                </span>
               </button>
             ) : null}
             <button

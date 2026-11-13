@@ -2,18 +2,27 @@ import type { CallsProviderDepsT } from '@xipkg/calls-providers';
 
 const DEMO_CLASSROOM_NAME = 'Демо-кабинет (без бэкенда)';
 
-const mockBoards = [
+const mockMaterials = [
   {
     id: '1',
     name: 'Демо-доска 1',
     content_kind: 'board' as const,
     student_access_mode: 'read_write' as const,
+    updated_at: '2026-11-01T00:00:00.000Z',
   },
   {
     id: '2',
     name: 'Демо-доска 2',
     content_kind: 'board' as const,
     student_access_mode: 'read_write' as const,
+    updated_at: '2026-11-02T00:00:00.000Z',
+  },
+  {
+    id: '3',
+    name: 'Демо-заметка',
+    content_kind: 'note' as const,
+    student_access_mode: 'read_write' as const,
+    updated_at: '2026-11-03T00:00:00.000Z',
   },
 ];
 
@@ -44,11 +53,14 @@ export const createMockCallsDeps = (): CallsProviderDepsT => ({
         data: { id: String(Date.now()) },
       }),
     }),
-    useGetClassroomMaterialsList: () => ({
-      data: mockBoards,
-      isLoading: false,
-      isError: false,
-    }),
+    useGetClassroomMaterialsList: ({ content_type, content_kind }) => {
+      const kind = content_kind ?? content_type;
+      return {
+        data: mockMaterials.filter((item) => item.content_kind === kind),
+        isLoading: false,
+        isError: false,
+      };
+    },
   },
 
   callAuth: {

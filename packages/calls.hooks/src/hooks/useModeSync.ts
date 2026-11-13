@@ -2,15 +2,37 @@ import { useCallback, useEffect, useRef } from 'react';
 import { RoomEvent } from 'livekit-client';
 import type { Room } from 'livekit-client';
 import { useCallStore } from '@xipkg/calls-store';
-import { useCalls, useRoom, useCallsNavigation } from '@xipkg/calls-providers';
+import {
+  useCalls,
+  useRoom,
+  useCallsNavigation,
+  isOnSharedMaterial,
+  isSharedMaterialPath,
+  navigateToSharedMaterial,
+  type ActiveMaterialT,
+  type SharedMaterialKindT,
+} from '@xipkg/calls-providers';
 
 /** Один раз за сессию комнаты применяем начальные метаданные (чтобы при монтировании второго CompactCall в DragOverlay не редиректило) */
 const initialMetadataAppliedForRoomRef = { current: null as Room | null };
 
 /** Метаданные комнаты с бэкенда (обновляются через PUT .../metadata/) */
 type RoomMetadataPayloadT = {
-  active_material_id?: number;
+  active_material?: {
+    id?: unknown;
+    content_kind?: unknown;
+  } | null;
   active_classroom_id?: string;
+};
+
+const parseActiveMaterial = (
+  value: RoomMetadataPayloadT['active_material'],
+): ActiveMaterialT | null => {
+  if (!value || typeof value !== 'object') return null;
+  const id = typeof value.id === 'string' ? value.id.trim() : '';
+  if (!id) return null;
+  if (value.content_kind !== 'board' && value.content_kind !== 'note') return null;
+  return { id, content_kind: value.content_kind };
 };
 
 const parseRoomMetadata = (metadata: string | undefined): RoomMetadataPayloadT | null => {
@@ -41,17 +63,16 @@ const useModeSyncCore = () => {
       const payload = parseRoomMetadata(metadata);
       if (!payload) return;
 
-      const activeMaterialId =
-        payload.active_material_id !== undefined ? payload.active_material_id : null;
+      const activeMaterial = parseActiveMaterial(payload.active_material);
       const metadataClassroomId = payload.active_classroom_id;
 
       const currentActiveClassroom = useCallStore.getState().activeClassroom;
       const targetClassroom = metadataClassroomId ?? currentActiveClassroom ?? classroomIdFromRoute;
 
-      if (activeMaterialId === 0 || activeMaterialId === null) {
-        const isOnBoardPage = navigation.pathnameIncludes('/board');
+      if (!activeMaterial) {
+        const isOnMaterialPage = isSharedMaterialPath(navigation.pathname);
         if (
-          !isOnBoardPage &&
+          !isOnMaterialPage &&
           (navigation.isOnClassroomOverviewWithActiveCall() ||
             navigation.isOnOtherPageWithCompactCall())
         ) {
@@ -61,14 +82,15 @@ const useModeSyncCore = () => {
         updateStore('localFullView', false);
         updateStore('mode', 'full');
         updateStore('activeBoardId', undefined);
+        updateStore('activeMaterialKind', undefined);
         updateStore('activeClassroom', undefined);
 
         if (targetClassroom) {
           navigation.navigateToCall(targetClassroom);
         }
       } else {
-        const boardId = String(activeMaterialId);
-        updateStore('activeBoardId', boardId);
+        updateStore('activeBoardId', activeMaterial.id);
+        updateStore('activeMaterialKind', activeMaterial.content_kind);
         updateStore(
           'activeClassroom',
           targetClassroom ?? metadataClassroomId ?? currentActiveClassroom,
@@ -77,16 +99,21 @@ const useModeSyncCore = () => {
         const localFullView = useCallStore.getState().localFullView;
         if (localFullView) return;
 
-        const isAlreadyOnTargetBoard =
-          targetClassroom &&
-          navigation.params.classroomId === targetClassroom &&
-          navigation.params.boardId === boardId;
+        const isAlreadyOnTarget = isOnSharedMaterial(
+          navigation,
+          activeMaterial.id,
+          targetClassroom,
+          activeMaterial.content_kind,
+        );
 
         updateStore('mode', 'compact');
-        if (targetClassroom && !isAlreadyOnTargetBoard) {
-          navigation.navigateToClassroomBoard(targetClassroom, boardId);
-        } else if (!targetClassroom && navigation.params.boardId !== boardId) {
-          navigation.navigateToBoard(boardId);
+        if (!isAlreadyOnTarget) {
+          navigateToSharedMaterial(
+            navigation,
+            activeMaterial.id,
+            targetClassroom,
+            activeMaterial.content_kind,
+          );
         }
       }
     },
@@ -94,15 +121,20 @@ const useModeSyncCore = () => {
   );
 
   const syncModeToOthers = useCallback(
-    (mode: 'compact' | 'full', boardId?: string, classroom?: string) => {
+    (
+      mode: 'compact' | 'full',
+      materialId?: string,
+      classroom?: string,
+      contentKind: SharedMaterialKindT = 'board',
+    ) => {
       try {
         if (!mode || !['compact', 'full'].includes(mode)) {
           console.error('❌ Invalid mode for sync:', mode);
           return;
         }
 
-        if (boardId && typeof boardId !== 'string') {
-          console.error('❌ Invalid boardId for sync:', boardId);
+        if (materialId && typeof materialId !== 'string') {
+          console.error('❌ Invalid material id for sync:', materialId);
           return;
         }
 
@@ -112,16 +144,24 @@ const useModeSyncCore = () => {
           return;
         }
 
-        const active_material_id = mode === 'full' ? 0 : Number(boardId);
-
-        if (mode === 'compact' && boardId) {
-          updateStore('activeBoardId', boardId);
-          updateStore('activeClassroom', classroom);
+        if (mode === 'full') {
+          updateStore('activeMaterialKind', undefined);
+          void conferenceMetadata.updateConferenceMetadata({
+            classroom_id: classroomId,
+            active_material: null,
+          });
+          return;
         }
+
+        if (!materialId) return;
+
+        updateStore('activeBoardId', materialId);
+        updateStore('activeMaterialKind', contentKind);
+        updateStore('activeClassroom', classroom);
 
         void conferenceMetadata.updateConferenceMetadata({
           classroom_id: classroomId,
-          active_material_id,
+          active_material: { id: materialId, content_kind: contentKind },
         });
       } catch (error) {
         console.error('❌ Error syncing mode via API:', error);

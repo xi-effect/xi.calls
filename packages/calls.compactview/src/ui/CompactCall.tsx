@@ -11,11 +11,18 @@ import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import { useClassroomPins, useDeviceMenuGroups } from '@xipkg/calls-hooks';
 import { useCompactAvailableHeight, useCompactNavigation } from '../hooks';
 import { useVideoBlur, useSyncModeToOthers } from '@xipkg/calls-hooks';
-import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import {
+  isOnSharedMaterial,
+  navigateToSharedMaterial,
+  useRoom,
+  useCalls,
+  useCallsNavigation,
+} from '@xipkg/calls-providers';
 import { usePiP } from '../providers';
 import { usePhoneLayout } from '@xipkg/calls-utils';
 import { CompactCallVideoArea } from './CompactCallVideoArea';
 import { CompactCallBottomBar } from './CompactCallBottomBar';
+import { TutorCallGuide, noteTutorCallReturnedToConference } from '@xipkg/calls-ui';
 import {
   COMPACT_BOTTOM_BAR_PX,
   COMPACT_PANEL_WIDTH_PX,
@@ -117,6 +124,7 @@ export const CompactCall = ({
 
   const syncModeToOthers = useSyncModeToOthers();
   const activeBoardId = useCallStore((state) => state.activeBoardId);
+  const activeMaterialKind = useCallStore((state) => state.activeMaterialKind);
   const activeClassroom = useCallStore((state) => state.activeClassroom);
   const { room } = useRoom();
   const token = useCallStore((state) => state.token);
@@ -125,9 +133,12 @@ export const CompactCall = ({
 
   const isTutor = user?.default_layout === 'tutor';
   const isBoardPage = callsNavigation.pathnameIncludes('/board');
-  const isOnBoardPage =
-    callsNavigation.params.classroomId === activeClassroom &&
-    callsNavigation.params.boardId === activeBoardId;
+  const isOnBoardPage = isOnSharedMaterial(
+    callsNavigation,
+    activeBoardId,
+    activeClassroom,
+    activeMaterialKind,
+  );
   const showBackToBoardButton =
     mode === 'compact' && !!activeBoardId && !!activeClassroom && !isOnBoardPage;
 
@@ -173,11 +184,12 @@ export const CompactCall = ({
 
   const handleBackToBoard = useCallback(() => {
     if (!activeBoardId || !activeClassroom) return;
-    callsNavigation.navigateToClassroomBoard(activeClassroom, activeBoardId);
-  }, [activeBoardId, activeClassroom, callsNavigation]);
+    navigateToSharedMaterial(callsNavigation, activeBoardId, activeClassroom, activeMaterialKind);
+  }, [activeBoardId, activeMaterialKind, activeClassroom, callsNavigation]);
 
   const handleMaximize = useCallback(
     (syncToAll: boolean = false) => {
+      noteTutorCallReturnedToConference();
       pip?.closePiP();
       if (!room || !token || room.state !== 'connected') return;
       const callParam = callsNavigation.search.call;
@@ -191,6 +203,7 @@ export const CompactCall = ({
         updateStore('localFullView', false);
         updateStore('mode', 'full');
         updateStore('activeBoardId', undefined);
+        updateStore('activeMaterialKind', undefined);
         updateStore('activeClassroom', undefined);
         syncModeToOthers('full', undefined, targetCallId);
       } else {
@@ -232,6 +245,7 @@ export const CompactCall = ({
         isMobile && !freeDrag ? 'w-full' : 'touch-none [&_video]:touch-none'
       } ${freeDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
+      <TutorCallGuide surface="compact" />
       <CompactCallVideoArea
         isCollapsed={isCollapsed}
         onCollapsedChange={setIsCollapsed}

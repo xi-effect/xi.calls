@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@xipkg/dropdown';
-import { Account, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
+import { Account, FileSmall, Maximize, SoundTwo, Users, WhiteBoard } from '@xipkg/icons';
 import { cn } from '@xipkg/utils';
 import { useCallStore, type CompactViewModeT } from '@xipkg/calls-store';
 import type { DeviceMenuGroupT } from '@xipkg/calls-hooks';
@@ -67,6 +67,7 @@ export function CompactCallBottomBar({
 }: CompactCallBottomBarPropsT) {
   const { t } = useTranslation('calls');
   const screenShareStage = useCallStore((state) => state.screenShareStageIdentity);
+  const isNote = useCallStore((state) => state.activeMaterialKind) === 'note';
   const nextViewMode = getNextCompactViewMode(compactViewMode);
   const viewModeToggleMeta = {
     expanded: { Icon: Users, label: t('compactView.mode.expanded') },
@@ -129,12 +130,18 @@ export function CompactCallBottomBar({
                 variant="primary"
                 className="h-8 w-8 rounded-xl p-0"
                 onClick={onBackToBoard}
-                aria-label={t('compactView.toBoardAria')}
+                aria-label={t(isNote ? 'compactView.toNoteAria' : 'compactView.toBoardAria')}
               >
-                <WhiteBoard className="fill-action-primary-text h-6 w-6" />
+                {isNote ? (
+                  <FileSmall className="fill-action-primary-text h-6 w-6" />
+                ) : (
+                  <WhiteBoard className="fill-action-primary-text h-6 w-6" />
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('compactView.toBoardTooltip')}</TooltipContent>
+            <TooltipContent>
+              {t(isNote ? 'compactView.toNoteTooltip' : 'compactView.toBoardTooltip')}
+            </TooltipContent>
           </Tooltip>
         </div>
       )}
@@ -146,7 +153,7 @@ export function CompactCallBottomBar({
         <RaiseHandButton className="h-8 w-8 min-w-8" />
       </div>
 
-      <div className={cn(barCn, 'ml-1')}>
+      <div id="tutor-call-compact-actions" className={cn(barCn, 'ml-1')}>
         {!screenShareStage &&
           (isTutor ? (
             <DropdownMenu>
@@ -169,12 +176,14 @@ export function CompactCallBottomBar({
                   {t('compactView.returnMenuLabel')}
                 </DropdownMenuLabel>
                 <DropdownMenuItem
+                  id="tutor-call-return-only-me"
                   onClick={() => onMaximize(false)}
                   className="text-text-primary cursor-pointer text-sm"
                 >
                   {t('compactView.returnOnlyMe')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  id="tutor-call-return-everyone"
                   onClick={() => onMaximize(true)}
                   className="text-text-primary cursor-pointer text-sm"
                 >
@@ -186,6 +195,7 @@ export function CompactCallBottomBar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  id="tutor-call-return"
                   size="icon"
                   variant="none"
                   onClick={() => onMaximize(false)}
@@ -197,7 +207,7 @@ export function CompactCallBottomBar({
               <TooltipContent>{t('compactView.returnToConference')}</TooltipContent>
             </Tooltip>
           ))}
-        <DisconnectButton className="h-[32px] w-[32px] rounded-xl" />
+        <DisconnectButton id="tutor-call-end" className="h-[32px] w-[32px] rounded-xl" />
       </div>
     </div>
   );

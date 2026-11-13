@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocalParticipant } from '@livekit/components-react';
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { Chat } from '@xipkg/calls-chat';
-import { UpBar, VideoGrid, CallsOnboarding } from '@xipkg/calls-ui';
+import { UpBar, VideoGrid, CallsOnboarding, TutorCallGuide } from '@xipkg/calls-ui';
 import { useCallStore, useFocusModeStore } from '@xipkg/calls-store';
 import { useMedia } from '@xipkg/calls-utils';
 import { cn } from '@xipkg/utils';
@@ -56,6 +56,7 @@ export const ActiveRoom = () => {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <CallsOnboarding />
+      <TutorCallGuide surface="conference" />
       {isMobile ? null : (
         <div className="shrink-0">
           <UpBar />

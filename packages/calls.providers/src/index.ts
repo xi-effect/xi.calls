@@ -12,10 +12,13 @@ export { CallsSessionProvider, useCallsSession } from './session/CallsSessionPro
 export type {
   CallsNavigationT,
   UseCallsNavigationHookT,
+  SharedMaterialKindT,
   CallsSessionPortT,
   ConferenceMetadataPortT,
   CallsAppConfigPortT,
+  ActiveMaterialT,
   CallsLiveKitConfigT,
   CallsNoiseCancellationConfigT,
   CallsRuntimeConfigT,
 } from './config';
+export { isOnSharedMaterial, isSharedMaterialPath, navigateToSharedMaterial } from './config';

@@ -7,6 +7,7 @@ import { driver, type DriveStep } from 'driver.js';
 import { useTranslation } from 'react-i18next';
 import 'driver.js/dist/driver.css';
 import '../../styles/driver.css';
+import { readTutorCallSession } from './tutorCallSession';
 
 const ONBOARDING_STORAGE_KEY = 'calls_onboarding_completed';
 
@@ -18,7 +19,7 @@ export const CallsOnboarding = () => {
   useEffect(() => {
     // Проверяем, был ли уже пройден онбординг
     const onboardingCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (onboardingCompleted === 'true') {
+    if (onboardingCompleted === 'true' || readTutorCallSession()) {
       return;
     }
 

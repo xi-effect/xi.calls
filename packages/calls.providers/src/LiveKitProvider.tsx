@@ -98,6 +98,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     clearConferenceUiState();
 
     updateStore('activeBoardId', undefined);
+    updateStore('activeMaterialKind', undefined);
     updateStore('activeClassroom', undefined);
 
     if (navigation.search.call) {
@@ -115,6 +116,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
     if (activeClassroom && callId && activeClassroom !== callId) {
       updateStore('activeBoardId', undefined);
+      updateStore('activeMaterialKind', undefined);
       updateStore('activeClassroom', undefined);
       // Переход в другой звонок в рамках одного SPA-сеанса (без полного disconnect/reload) —
       // сбрасываем UI-состояние предыдущего звонка (в т.ч. чат), чтобы оно не «утекало» в новый.

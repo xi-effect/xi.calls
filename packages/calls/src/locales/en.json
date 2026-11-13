@@ -49,10 +49,12 @@
     "leave": "Leave call",
     "toBoard": "To board",
     "toBoardTooltip": "Return to the collaborative board",
+    "toNote": "To note",
+    "toNoteTooltip": "Return to the collaborative note",
     "stopScreenShare": "Stop screen sharing",
     "shareScreen": "Share screen",
-    "selectBoard": "Choose a board for collaboration",
-    "board": "Board",
+    "selectBoard": "Choose a board or a note",
+    "board": "Board and note",
     "recordLesson": "Record lesson",
     "stopRecording": "Stop recording",
     "recordingNow": "Recording"
@@ -162,15 +164,19 @@
     }
   },
   "whiteboards": {
-    "title": "Collaborative board",
+    "title": "Collaboration",
+    "kindBoard": "Board",
+    "kindNote": "Note",
     "searchPlaceholder": "Search",
-    "loading": "Loading boards...",
-    "loadError": "Failed to load boards",
+    "loading": "Loading...",
+    "loadError": "Failed to load the list",
     "updatedAt": "Updated: {{date}}",
     "creating": "Creating...",
     "createNew": "Create new",
     "collaborativeLabel": "Open the board in collaborative mode for all call participants",
     "collaborativeLabelDesktop": "Open the board in collaborative mode<br></br>for all call participants",
+    "collaborativeLabelNote": "Open the note in collaborative mode for all call participants",
+    "collaborativeLabelNoteDesktop": "Open the note in collaborative mode<br></br>for all call participants",
     "select": "Select",
     "cancel": "Cancel",
     "access": {
@@ -207,6 +213,32 @@
     "done": "Done",
     "progress": "{{current}} of {{total}}"
   },
+  "tutorGuide": {
+    "prejoin-devices": {
+      "title": "Camera, microphone, and sound",
+      "body": "You can set everything up before joining. The browser will ask for camera and microphone access — without it, others cannot see or hear you."
+    },
+    "prejoin-join": {
+      "title": "Join",
+      "body": "When the devices are ready, this button enters the call."
+    },
+    "conference-board": {
+      "title": "Shared board",
+      "body": "This button opens the board everyone in the call can work on."
+    },
+    "board-modal": {
+      "title": "Classroom board",
+      "body": "Choose a board from this classroom. Everyone in the call is taken to it and works on it together."
+    },
+    "board-pick": {
+      "title": "Demo board",
+      "body": "This classroom already has a demo board. We'll select it and open it."
+    },
+    "compact-end": {
+      "title": "Call on the board",
+      "body": "You can end the call or return to the full conference. We'll end it now."
+    }
+  },
   "errorPage": {
     "contactIntro": "If the error keeps happening — write <desktop>to us about it</desktop>",
     "inTelegram": "in",
@@ -235,6 +267,8 @@
     "expand": "Expand",
     "toBoardAria": "To board",
     "toBoardTooltip": "Back to board",
+    "toNoteAria": "To note",
+    "toNoteTooltip": "Back to note",
     "returnToConference": "Return to conference",
     "returnMenuLabel": "Return to conference",
     "returnOnlyMe": "Only me",

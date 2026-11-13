@@ -16,6 +16,7 @@ import { Route as BoardBoardIdRouteImport } from './pages/board/$boardId'
 import { Route as CallCallIdRouteImport } from './pages/call/$callId'
 import { Route as ClassroomsClassroomIdIndexRouteImport } from './pages/classrooms/$classroomId/index'
 import { Route as ClassroomsClassroomIdBoardsBoardIdRouteImport } from './pages/classrooms/$classroomId/boards/$boardId'
+import { Route as ClassroomsClassroomIdNotesNoteIdRouteImport } from './pages/classrooms/$classroomId/notes/$noteId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,6 +55,12 @@ const ClassroomsClassroomIdBoardsBoardIdRoute =
     path: '/classrooms/$classroomId/boards/$boardId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ClassroomsClassroomIdNotesNoteIdRoute =
+  ClassroomsClassroomIdNotesNoteIdRouteImport.update({
+    id: '/classrooms/$classroomId/notes/$noteId',
+    path: '/classrooms/$classroomId/notes/$noteId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
   '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
+  '/classrooms/$classroomId/notes/$noteId': typeof ClassroomsClassroomIdNotesNoteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -72,6 +80,7 @@ export interface FileRoutesByTo {
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId': typeof ClassroomsClassroomIdIndexRoute
   '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
+  '/classrooms/$classroomId/notes/$noteId': typeof ClassroomsClassroomIdNotesNoteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,6 +91,7 @@ export interface FileRoutesById {
   '/call/$callId': typeof CallCallIdRoute
   '/classrooms/$classroomId/': typeof ClassroomsClassroomIdIndexRoute
   '/classrooms/$classroomId/boards/$boardId': typeof ClassroomsClassroomIdBoardsBoardIdRoute
+  '/classrooms/$classroomId/notes/$noteId': typeof ClassroomsClassroomIdNotesNoteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/call/$callId'
     | '/classrooms/$classroomId/'
     | '/classrooms/$classroomId/boards/$boardId'
+    | '/classrooms/$classroomId/notes/$noteId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/call/$callId'
     | '/classrooms/$classroomId'
     | '/classrooms/$classroomId/boards/$boardId'
+    | '/classrooms/$classroomId/notes/$noteId'
   id:
     | '__root__'
     | '/'
@@ -111,6 +123,7 @@ export interface FileRouteTypes {
     | '/call/$callId'
     | '/classrooms/$classroomId/'
     | '/classrooms/$classroomId/boards/$boardId'
+    | '/classrooms/$classroomId/notes/$noteId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -121,6 +134,7 @@ export interface RootRouteChildren {
   CallCallIdRoute: typeof CallCallIdRoute
   ClassroomsClassroomIdIndexRoute: typeof ClassroomsClassroomIdIndexRoute
   ClassroomsClassroomIdBoardsBoardIdRoute: typeof ClassroomsClassroomIdBoardsBoardIdRoute
+  ClassroomsClassroomIdNotesNoteIdRoute: typeof ClassroomsClassroomIdNotesNoteIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -174,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClassroomsClassroomIdBoardsBoardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/classrooms/$classroomId/notes/$noteId': {
+      id: '/classrooms/$classroomId/notes/$noteId'
+      path: '/classrooms/$classroomId/notes/$noteId'
+      fullPath: '/classrooms/$classroomId/notes/$noteId'
+      preLoaderRoute: typeof ClassroomsClassroomIdNotesNoteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -186,6 +207,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClassroomsClassroomIdIndexRoute: ClassroomsClassroomIdIndexRoute,
   ClassroomsClassroomIdBoardsBoardIdRoute:
     ClassroomsClassroomIdBoardsBoardIdRoute,
+  ClassroomsClassroomIdNotesNoteIdRoute: ClassroomsClassroomIdNotesNoteIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

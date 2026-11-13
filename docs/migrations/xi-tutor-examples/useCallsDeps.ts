@@ -55,7 +55,11 @@ export const useCallsDeps = (): CallsProviderDepsT => {
         error: metadataError,
       },
       conferenceMetadata: {
-        updateConferenceMetadata: (data) => updateConferenceMetadata.mutateAsync(data),
+        updateConferenceMetadata: (data) =>
+          updateConferenceMetadata.mutateAsync({
+            classroom_id: data.classroom_id,
+            active_material: data.active_material,
+          }),
       },
       appConfig: {
         getClassroomJoinLink: (classroomId) =>

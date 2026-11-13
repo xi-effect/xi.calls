@@ -9,7 +9,7 @@ import {
   useDndMonitor,
 } from '@dnd-kit/core';
 import { CompactPointerSensor, CompactTouchSensor } from './compactDragSensors';
-import { useCallsNavigation } from '@xipkg/calls-providers';
+import { isSharedMaterialPath, useCallsNavigation } from '@xipkg/calls-providers';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { CompactCall } from './CompactCall';
 import { Chat, useChatStore } from '@xipkg/calls-chat';
@@ -204,7 +204,7 @@ const CompactViewInner = ({ children }: CompactViewPropsT) => {
 
   useEffect(() => {
     const { activeClassroom } = useCallStore.getState();
-    const isOnBoardPage = navigation.pathnameIncludes('/board');
+    const isOnBoardPage = isSharedMaterialPath(navigation.pathname);
 
     if ((!room || !token) && navigation.search.call && !isOnBoardPage && !activeClassroom) {
       navigation.clearCallSearchParam();
@@ -221,6 +221,7 @@ const CompactViewInner = ({ children }: CompactViewPropsT) => {
 
       // Очищаем информацию о доске при отключении
       updateCallStore('activeBoardId', undefined);
+      updateCallStore('activeMaterialKind', undefined);
       updateCallStore('activeClassroom', undefined);
 
       updateCallStore('mode', 'full');

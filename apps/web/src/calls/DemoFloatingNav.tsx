@@ -1,5 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useCallStore } from '@xipkg/calls-store';
+import { startTutorCallGuide } from '@xipkg/calls-ui';
 
 const DEMO_LINK_CLASS =
   'text-brand-80 hover:text-brand-100 rounded-lg px-2 py-1 text-xs transition-colors hover:bg-gray-5';
@@ -38,6 +40,7 @@ const readStoredPosition = (): PositionT | null => {
 
 /** Плавающее меню навигации между сценариями демо (вне основной вёрстки страниц) */
 export const DemoFloatingNav = () => {
+  const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef<PositionT | null>(null);
   const dragRef = useRef<{ pointerId: number; offsetX: number; offsetY: number } | null>(null);
@@ -197,6 +200,25 @@ export const DemoFloatingNav = () => {
           >
             Звук и видео
           </Link>
+          <button
+            type="button"
+            className={`${DEMO_LINK_CLASS} text-left`}
+            onClick={() => {
+              startTutorCallGuide('1', 'demo');
+              const { updateStore } = useCallStore.getState();
+              updateStore('isStarted', false);
+              updateStore('mode', 'full');
+              updateStore('activeBoardId', undefined);
+              updateStore('activeMaterialKind', undefined);
+              void navigate({
+                to: '/call/$callId',
+                params: { callId: 'demo' },
+                search: { call: 'demo' },
+              });
+            }}
+          >
+            Гайд xi.tutor
+          </button>
         </nav>
       </div>
     </div>

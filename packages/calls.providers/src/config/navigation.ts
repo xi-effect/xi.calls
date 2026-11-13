@@ -1,9 +1,12 @@
 export type CallsNavigationSearchT = Record<string, string | undefined>;
 
+export type SharedMaterialKindT = 'board' | 'note';
+
 export type CallsNavigationParamsT = {
   callId?: string;
   classroomId?: string;
   boardId?: string;
+  noteId?: string;
 };
 
 export type CallsNavigationT = {
@@ -18,6 +21,11 @@ export type CallsNavigationT = {
   navigateToClassroomBoard(
     classroomId: string,
     boardId: string,
+    options?: { replace?: boolean },
+  ): void;
+  navigateToClassroomNote(
+    classroomId: string,
+    noteId: string,
     options?: { replace?: boolean },
   ): void;
   navigateToBoard(
@@ -37,3 +45,41 @@ export type CallsNavigationT = {
 
 /** Реализацию поставляет хост-приложение (xi.tutor) */
 export type UseCallsNavigationHookT = () => CallsNavigationT;
+
+export const isSharedMaterialPath = (pathname: string) =>
+  pathname.includes('/board') || pathname.includes('/notes');
+
+export const isOnSharedMaterial = (
+  navigation: Pick<CallsNavigationT, 'params'>,
+  materialId: string | undefined,
+  classroomId: string | undefined,
+  kind: SharedMaterialKindT | undefined,
+) => {
+  if (!materialId || navigation.params.classroomId !== classroomId) return false;
+  if (kind === 'note') return navigation.params.noteId === materialId;
+  return navigation.params.boardId === materialId;
+};
+
+export const navigateToSharedMaterial = (
+  navigation: Pick<
+    CallsNavigationT,
+    'navigateToClassroomBoard' | 'navigateToClassroomNote' | 'navigateToBoard'
+  >,
+  materialId: string,
+  classroomId: string | undefined,
+  kind: SharedMaterialKindT | undefined,
+  options?: { replace?: boolean; search?: CallsNavigationSearchT },
+) => {
+  if (kind === 'note') {
+    if (!classroomId) return;
+    navigation.navigateToClassroomNote(classroomId, materialId, options);
+    return;
+  }
+
+  if (classroomId) {
+    navigation.navigateToClassroomBoard(classroomId, materialId, options);
+    return;
+  }
+
+  navigation.navigateToBoard(materialId, options);
+};

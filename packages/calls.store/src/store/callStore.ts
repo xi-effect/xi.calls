@@ -45,8 +45,9 @@ type useCallStoreT = {
    */
   screenShareStageIdentity: string | null;
 
-  // Текущая активная доска (для синхронизации с новыми участниками)
+  // Текущий материал совместной работы (доска или заметка)
   activeBoardId: string | undefined;
+  activeMaterialKind: 'board' | 'note' | undefined;
   activeClassroom: string | undefined;
 
   /** Локальный переключатель: пользователь сам ушёл в полную ВКС («Только меня»), комната на сервере остаётся на доске */
@@ -94,8 +95,8 @@ export const useCallStore = create<useCallStoreT>()(
       compactViewMode: 'basic',
       screenShareStageIdentity: null,
 
-      // Текущая активная доска
       activeBoardId: undefined,
+      activeMaterialKind: undefined,
       activeClassroom: undefined,
 
       localFullView: false,

@@ -31,4 +31,9 @@ export {
   ScreenShareZoom,
   TrackMutedIndicator,
 } from './Participant';
-export { CallsOnboarding } from './Onboarding';
+export {
+  CallsOnboarding,
+  TutorCallGuide,
+  noteTutorCallReturnedToConference,
+  startTutorCallGuide,
+} from './Onboarding';

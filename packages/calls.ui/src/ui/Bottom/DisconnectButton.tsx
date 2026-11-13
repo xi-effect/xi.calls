@@ -4,7 +4,7 @@ import { useCallStore } from '@xipkg/calls-store';
 import { Button } from '@xipkg/button';
 import { cn } from '@xipkg/utils';
 
-export const DisconnectButton = ({ className }: { className?: string }) => {
+export const DisconnectButton = ({ className, id }: { className?: string; id?: string }) => {
   const { buttonProps } = useDisconnectButton({});
 
   const updateStore = useCallStore((state) => state.updateStore);
@@ -17,6 +17,7 @@ export const DisconnectButton = ({ className }: { className?: string }) => {
 
   return (
     <Button
+      id={id}
       variant="none"
       type="button"
       disabled={buttonProps.disabled}

@@ -214,6 +214,7 @@ export const MediaDevices = ({ audioTrack, videoTrack, noiseCancellation }: Medi
           </div>
         </div>
         <Button
+          id="tutor-call-join"
           onClick={() => (hasActiveCallSession ? returnToFullCall() : handleJoin())}
           className="mt-6 w-full"
           disabled={isConnecting && !hasActiveCallSession}

@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { StartCallDataT } from '@xipkg/calls-types';
+import type { SharedMaterialKindT } from './navigation';
+
+export type ActiveMaterialT = {
+  id: string;
+  content_kind: SharedMaterialKindT;
+};
 
 export type AuthPortT = {
   useCurrentUser(disabled?: boolean): {
@@ -22,6 +28,8 @@ export type ClassroomPortT = {
   useGetClassroomMaterialsList(params: {
     classroomId: string;
     content_type: string;
+    /** Алиас для хоста (xi.tutor), где фильтр списка называется content_kind */
+    content_kind?: 'board' | 'note' | null;
     disabled?: boolean;
   }): {
     data?: any[];
@@ -50,11 +58,11 @@ export type UpdateParticipantMetadataPortT = {
   error?: unknown;
 };
 
-/** Синхронизация режима ВКС/доски через метаданные комнаты (LiveKit + бэкенд) */
+/** Синхронизация режима ВКС и материала через метаданные комнаты (LiveKit + бэкенд) */
 export type ConferenceMetadataPortT = {
   updateConferenceMetadata(data: {
     classroom_id: string;
-    active_material_id: number;
+    active_material: ActiveMaterialT | null;
   }): Promise<void>;
 };
 

@@ -1,4 +1,5 @@
 import { Header, UserTile, MediaDevices } from './components';
+import { TutorCallGuide } from '@xipkg/calls-ui';
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import {
   Track,
@@ -212,8 +213,12 @@ export const PreJoin = () => {
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <div className="min-h-full p-5 pb-8">
+          <TutorCallGuide surface="prejoin" />
           <Header />
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
+          <div
+            id="tutor-call-preview"
+            className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2"
+          >
             <UserTile audioTrack={audioTrack} videoTrack={videoTrack} />
             <MediaDevices
               audioTrack={audioTrack}

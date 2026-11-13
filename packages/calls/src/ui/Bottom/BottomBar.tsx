@@ -28,11 +28,17 @@ import {
   RedLine,
   Speaker,
   SpeakerHorizontal,
+  FileSmall,
   WhiteBoard,
 } from '@xipkg/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@xipkg/tooltip';
 import { Button } from '@xipkg/button';
-import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import {
+  navigateToSharedMaterial,
+  useRoom,
+  useCalls,
+  useCallsNavigation,
+} from '@xipkg/calls-providers';
 import { useCallBackNavigation } from '@xipkg/calls-hooks';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
 import { RaiseHandButton } from '@xipkg/calls-risehand';
@@ -97,7 +103,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
   );
 
   const { isChatOpen } = useChatStore();
-  const { mode, activeBoardId, activeClassroom, token } = useCallStore();
+  const { mode, activeBoardId, activeMaterialKind, activeClassroom, token } = useCallStore();
   const updateStore = useCallStore((state) => state.updateStore);
   const { room } = useRoom();
   const navigation = useCallsNavigation();
@@ -141,7 +147,7 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
     updateStore('localFullView', false);
     updateStore('mode', 'compact');
 
-    navigation.navigateToClassroomBoard(activeClassroom, activeBoardId);
+    navigateToSharedMaterial(navigation, activeBoardId, activeClassroom, activeMaterialKind);
   };
 
   const hasScreenShare = layoutTracks.some(
@@ -346,12 +352,22 @@ export const BottomBar = ({ saveUserChoices = true }: ControlBarProps) => {
                   className="bg-action-primary-background-pressed hover:bg-action-primary-background-default absolute top-1 left-[-132px] m-0 h-10 w-[128px] rounded-xl px-2"
                   data-umami-event="call-back-to-board"
                 >
-                  <WhiteBoard className="fill-action-primary-text h-5 w-5" />
-                  <span className="text-text-on-accent ml-2">{t('bottomBar.toBoard')}</span>
+                  {activeMaterialKind === 'note' ? (
+                    <FileSmall className="fill-action-primary-text h-5 w-5" />
+                  ) : (
+                    <WhiteBoard className="fill-action-primary-text h-5 w-5" />
+                  )}
+                  <span className="text-text-on-accent ml-2">
+                    {t(activeMaterialKind === 'note' ? 'bottomBar.toNote' : 'bottomBar.toBoard')}
+                  </span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" align="center">
-                {t('bottomBar.toBoardTooltip')}
+                {t(
+                  activeMaterialKind === 'note'
+                    ? 'bottomBar.toNoteTooltip'
+                    : 'bottomBar.toBoardTooltip',
+                )}
               </TooltipContent>
             </Tooltip>
           )}

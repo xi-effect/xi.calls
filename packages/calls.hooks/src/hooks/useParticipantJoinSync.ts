@@ -1,6 +1,13 @@
 import { useEffect, useCallback } from 'react';
 import { RoomEvent, RemoteParticipant } from 'livekit-client';
-import { useRoom, useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import {
+  isSharedMaterialPath,
+  navigateToSharedMaterial,
+  useRoom,
+  useCalls,
+  useCallsNavigation,
+  type SharedMaterialKindT,
+} from '@xipkg/calls-providers';
 import { useCallStore } from '@xipkg/calls-store';
 import { useLiveKitDataChannel, useLiveKitDataChannelListener } from './useLiveKitDataChannel';
 
@@ -15,6 +22,7 @@ type StateResponsePayload = {
   mode: 'compact' | 'full';
   boardId?: string;
   classroom?: string;
+  contentKind?: SharedMaterialKindT;
 };
 
 /**
@@ -31,6 +39,7 @@ export const useParticipantJoinSync = () => {
   const isTutor = user?.default_layout === 'tutor';
   const mode = useCallStore((state) => state.mode);
   const activeBoardId = useCallStore((state) => state.activeBoardId);
+  const activeMaterialKind = useCallStore((state) => state.activeMaterialKind);
   const activeClassroom = useCallStore((state) => state.activeClassroom);
   const updateStore = useCallStore((state) => state.updateStore);
 
@@ -53,6 +62,7 @@ export const useParticipantJoinSync = () => {
               mode: 'compact',
               boardId: activeBoardId,
               classroom: activeClassroom,
+              contentKind: activeMaterialKind ?? 'board',
             };
 
             sendMessageToParticipant(
@@ -66,7 +76,7 @@ export const useParticipantJoinSync = () => {
         console.error('❌ Error handling state request:', error);
       }
     },
-    [isTutor, mode, activeBoardId, activeClassroom, sendMessageToParticipant],
+    [isTutor, mode, activeBoardId, activeMaterialKind, activeClassroom, sendMessageToParticipant],
   );
 
   // Обработка ответа на запрос состояния (для новых участников)
@@ -90,7 +100,7 @@ export const useParticipantJoinSync = () => {
           // Получаем текущий режим и состояние доски
           const currentMode = useCallStore.getState().mode;
           const currentActiveBoardId = useCallStore.getState().activeBoardId;
-          const isOnBoardPage = window.location.pathname.includes('/board');
+          const isOnMaterialPage = isSharedMaterialPath(window.location.pathname);
 
           // Если студент уже в full mode и НЕ на доске, проверяем, был ли он на доске ранее
           // Если был activeBoardId (студент был на доске и переключился на full),
@@ -98,30 +108,24 @@ export const useParticipantJoinSync = () => {
           // Если НЕТ activeBoardId (студент только что подключился), то переключаемся на доску
           const wasOnBoard = currentActiveBoardId !== undefined;
 
-          if (currentMode === 'full' && !isOnBoardPage && wasOnBoard) {
+          if (currentMode === 'full' && !isOnMaterialPage && wasOnBoard) {
             // Студент сам переключился на full mode с доски - игнорируем ответ о compact mode
             return;
           }
 
           // Если репетитор в compact mode на доске, переключаемся на эту доску
           if (payload.mode === 'compact' && payload.boardId) {
-            // Обновляем режим в store
-            updateStore('mode', 'compact');
-            updateStore('activeBoardId', payload.boardId);
-            updateStore('activeClassroom', payload.classroom);
-
-            // Переходим на доску с обязательным параметром call для сохранения ВКС
+            const contentKind = payload.contentKind === 'note' ? 'note' : 'board';
             const classroomId = payload.classroom || activeClassroom;
 
-            if (payload.classroom) {
-              navigation.navigateToClassroomBoard(payload.classroom, payload.boardId);
-            } else if (payload.boardId && classroomId) {
-              navigation.navigateToBoard(payload.boardId, {
-                search: { call: classroomId },
-              });
-            } else if (payload.boardId) {
-              navigation.navigateToBoard(payload.boardId);
-            }
+            updateStore('mode', 'compact');
+            updateStore('activeBoardId', payload.boardId);
+            updateStore('activeMaterialKind', contentKind);
+            updateStore('activeClassroom', classroomId);
+
+            navigateToSharedMaterial(navigation, payload.boardId, classroomId, contentKind, {
+              search: classroomId ? { call: classroomId } : undefined,
+            });
           }
         }
       } catch (error) {
@@ -166,6 +170,7 @@ export const useParticipantJoinSync = () => {
             mode: 'compact',
             boardId: activeBoardId,
             classroom: activeClassroom,
+            contentKind: activeMaterialKind ?? 'board',
           };
 
           sendMessageToParticipant(
@@ -193,6 +198,7 @@ export const useParticipantJoinSync = () => {
             mode: 'compact',
             boardId: activeBoardId,
             classroom: activeClassroom,
+            contentKind: activeMaterialKind ?? 'board',
           };
 
           sendMessageToParticipant(
@@ -231,7 +237,15 @@ export const useParticipantJoinSync = () => {
     return () => {
       room.off(RoomEvent.ParticipantConnected, handleParticipantConnected);
     };
-  }, [room, isTutor, mode, activeBoardId, activeClassroom, sendMessageToParticipant]);
+  }, [
+    room,
+    isTutor,
+    mode,
+    activeBoardId,
+    activeMaterialKind,
+    activeClassroom,
+    sendMessageToParticipant,
+  ]);
 
   // Запрос состояния при подключении (для новых участников, не репетиторов)
   useEffect(() => {

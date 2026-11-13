@@ -15,6 +15,7 @@ export const useTanstackCallsNavigation: UseCallsNavigationHookT = () => {
     callId?: string;
     classroomId?: string;
     boardId?: string;
+    noteId?: string;
   };
   const search = useSearch({ strict: false }) as Record<string, string | undefined>;
 
@@ -56,6 +57,14 @@ export const useTanstackCallsNavigation: UseCallsNavigationHookT = () => {
         navigate({
           to: '/classrooms/$classroomId/boards/$boardId',
           params: { classroomId, boardId },
+          search: { call: classroomId },
+          replace: options?.replace,
+        });
+      },
+      navigateToClassroomNote: (classroomId, noteId, options) => {
+        navigate({
+          to: '/classrooms/$classroomId/notes/$noteId',
+          params: { classroomId, noteId },
           search: { call: classroomId },
           replace: options?.replace,
         });

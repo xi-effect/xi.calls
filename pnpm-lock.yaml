@@ -211,34 +211,34 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-reactions':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.reactions
       '@xipkg/calls-risehand':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.9
@@ -353,25 +353,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.9
@@ -453,31 +453,31 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-chat':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.chat
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-risehand':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.risehand
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.9
@@ -601,19 +601,19 @@ importers:
         specifier: 10.67.0
         version: 10.67.0
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       i18next:
         specifier: 24.2.2
@@ -677,13 +677,13 @@ importers:
   packages/calls.providers:
     dependencies:
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -744,25 +744,25 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-ui':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/dropdown':
         specifier: 3.1.0
@@ -841,19 +841,19 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-ui':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.ui
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/icons':
         specifier: ^3.1.9
@@ -914,7 +914,7 @@ importers:
   packages/calls.store:
     dependencies:
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       react:
         specifier: ^19.2.8
@@ -1035,22 +1035,22 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(@types/react@19.2.17)(react@19.2.8)
       '@xipkg/calls-config':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.config
       '@xipkg/calls-hooks':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.hooks
       '@xipkg/calls-providers':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.providers
       '@xipkg/calls-store':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.store
       '@xipkg/calls-types':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.types
       '@xipkg/calls-utils':
-        specifier: ^0.1.58
+        specifier: ^0.1.60
         version: link:../calls.utils
       '@xipkg/checkbox':
         specifier: 5.1.0
@@ -1088,6 +1088,9 @@ importers:
       '@xipkg/slider':
         specifier: 2.3.0
         version: 2.3.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
+      '@xipkg/switcher-animate':
+        specifier: 1.1.0
+        version: 1.1.0(react-dom@19.2.8)(react@19.2.8)
       '@xipkg/toggle':
         specifier: 4.2.0
         version: 4.2.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
@@ -6086,6 +6089,19 @@ packages:
       - react-dom
     dev: false
 
+  /@xipkg/switcher-animate@1.1.0(react-dom@19.2.8)(react@19.2.8):
+    resolution: {integrity: sha512-hI5N54I5UHukwlHkOm0rvRYslM6O59M6WQWmW416GiV7NpkIUSgsdIjMmade8J6PcooL0CY+kIWykimM6C6yrQ==}
+    peerDependencies:
+      react: ^19
+    dependencies:
+      '@xipkg/utils': 1.8.0(react@19.2.8)
+      motion: 12.43.0(react-dom@19.2.8)(react@19.2.8)
+      react: 19.2.8
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - react-dom
+    dev: false
+
   /@xipkg/tailwind@1.0.0:
     resolution: {integrity: sha512-TemsD+7JR4kRg5a3+q+9qZrbk5tr9XVFr7ib6+N0uPSOJUz7n9Vc+ptpwWmIZRCjp6LDYGaeyaeCq57S4oBs4A==}
     dev: true
@@ -7389,6 +7405,27 @@ packages:
       tslib: 2.8.1
     dev: false
 
+  /framer-motion@12.43.0(react-dom@19.2.8)(react@19.2.8):
+    resolution: {integrity: sha512-1eaL3RvR/kAlbG7UYcpMptEyzPoENO0c6w7ZnB3/hh2vSAz/6uGAFn6fdoqTBguNstf3MsFhJHsD/0DHiclG+g==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      motion-dom: 12.43.0
+      motion-utils: 12.39.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      tslib: 2.8.1
+    dev: false
+
   /fs-extra@9.1.0:
     resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
     engines: {node: '>=10'}
@@ -8373,8 +8410,34 @@ packages:
       motion-utils: 12.39.0
     dev: false
 
+  /motion-dom@12.43.0:
+    resolution: {integrity: sha512-azKON4d9S65PEoFUiQTMTgPheEmzf2QngdRc50AKfJp9Q9mmcBVw22c8eMq9k8kxOFHdL7+WZY7N/5F/lwiDag==}
+    dependencies:
+      motion-utils: 12.39.0
+    dev: false
+
   /motion-utils@12.39.0:
     resolution: {integrity: sha512-8nadJAJjTtqRkmRF36FoJTrywK9nnFmnPwnSMyxaOCU7GDjN9RTMJIxx9De8ErM+vpPhMccr/6fo5WciyQLnMQ==}
+    dev: false
+
+  /motion@12.43.0(react-dom@19.2.8)(react@19.2.8):
+    resolution: {integrity: sha512-BQgQbSa9Hn3/mtbib0MK53y6JSANa+YKUKlaYnWzAVDH424RYQ5LVpV3pNiWH00BA2z4ojsSdMzqT7g2FQwjuQ==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      framer-motion: 12.43.0(react-dom@19.2.8)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      tslib: 2.8.1
     dev: false
 
   /ms@2.1.3:

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { WhiteboardsModal } from './WhiteboardsModal';
 import { Button } from '@xipkg/button';
 import { ONBOARDING_IDS } from '@xipkg/calls-config';
+import { readTutorCallSession, writeTutorCallPhase } from '../Onboarding/tutorCallSession';
 
 export const WhiteBoardButton = () => {
   const { t } = useTranslation('calls');
@@ -12,6 +13,15 @@ export const WhiteBoardButton = () => {
 
   const handleClick = () => {
     setIsModalOpen(true);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (open) return;
+    const phase = readTutorCallSession()?.callPhase;
+    if (phase === 'board-modal' || phase === 'board-pick') {
+      writeTutorCallPhase('conference-board');
+    }
   };
 
   return (
@@ -34,7 +44,7 @@ export const WhiteBoardButton = () => {
         </TooltipContent>
       </Tooltip>
 
-      {isModalOpen ? <WhiteboardsModal open onOpenChange={setIsModalOpen} /> : null}
+      {isModalOpen ? <WhiteboardsModal open onOpenChange={handleOpenChange} /> : null}
     </>
   );
 };

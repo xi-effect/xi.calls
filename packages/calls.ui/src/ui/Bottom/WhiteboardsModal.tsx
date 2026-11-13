@@ -11,22 +11,27 @@ import { Button } from '@xipkg/button';
 import { ScrollArea } from '@xipkg/scrollarea';
 import { Badge } from '@xipkg/badge';
 import { Checkbox } from '@xipkg/checkbox';
-import { useEffect, useState } from 'react';
+import { SwitcherAnimate } from '@xipkg/switcher-animate';
+import { useEffect, useMemo, useState } from 'react';
 import { Search } from '@xipkg/icons';
 import { useCallStore } from '@xipkg/calls-store';
 import { useSyncModeToOthers } from '@xipkg/calls-hooks';
-import { useCalls, useCallsNavigation } from '@xipkg/calls-providers';
+import {
+  navigateToSharedMaterial,
+  useCalls,
+  useCallsNavigation,
+  type SharedMaterialKindT,
+} from '@xipkg/calls-providers';
 import { useMedia } from '@xipkg/calls-utils';
 import { Trans, useTranslation } from 'react-i18next';
-
-// Типы материалов определены в @xipkg/calls-types -> ClassroomMaterialsT
+import { readTutorCallSession } from '../Onboarding/tutorCallSession';
 
 type WhiteboardsModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const toBoardId = (id: unknown): string | null => {
+const toMaterialId = (id: unknown): string | null => {
   if (typeof id === 'number' && Number.isFinite(id)) return String(id);
   if (typeof id === 'string' && id.trim().length > 0) return id.trim();
   return null;
@@ -45,88 +50,92 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
   const classroomId = callId ?? activeClassroom;
   const { data: user } = auth.useCurrentUser();
   const isTutor = user?.default_layout === 'tutor';
+  const [kind, setKind] = useState<SharedMaterialKindT>('board');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
   const [isCollaborativeMode, setIsCollaborativeMode] = useState(true);
+  const isNote = kind === 'note';
+  const materialTabs = useMemo(
+    () => [
+      { id: 'board', label: t('whiteboards.kindBoard') },
+      { id: 'note', label: t('whiteboards.kindNote') },
+    ],
+    [t],
+  );
+  const contentHeightClass = isMobile ? 'h-[min(50dvh,400px)]' : 'h-[400px]';
 
   useEffect(() => {
     if (open) return;
+    setKind('board');
     setSearchQuery('');
-    setSelectedBoardId(null);
+    setSelectedMaterialId(null);
     setIsCollaborativeMode(true);
   }, [open]);
 
-  // Хук для создания новой доски
   const { addClassroomMaterials } = room.useAddClassroomMaterials();
 
   const {
-    data: boards,
+    data: materials,
     isLoading,
     isError,
   } = room.useGetClassroomMaterialsList({
     classroomId: classroomId || '',
-    content_type: 'board',
+    content_type: kind,
+    content_kind: kind,
     disabled: !classroomId || !isTutor,
   });
 
-  const filteredWhiteboards = (boards || [])
-    // только доски с доступом совместная работа (read_write)
-    .filter((b) => b.content_kind === 'board' && b.student_access_mode === 'read_write')
-    // фильтр по поисковой строке
-    .filter((b) =>
-      searchQuery.trim() ? b.name.toLowerCase().includes(searchQuery.trim().toLowerCase()) : true,
+  const guideBoardId = readTutorCallSession()?.boardId ?? null;
+  const filteredMaterials = (materials || [])
+    .filter((item) => item.content_kind === kind && item.student_access_mode === 'read_write')
+    .filter((item) =>
+      searchQuery.trim()
+        ? String(item.name ?? '')
+            .toLowerCase()
+            .includes(searchQuery.trim().toLowerCase())
+        : true,
     );
 
-  const handleBoardSelect = (boardId: unknown) => {
-    setSelectedBoardId(toBoardId(boardId));
+  const openMaterial = (materialId: string) => {
+    updateStore('localFullView', false);
+    updateStore('activeBoardId', materialId);
+    updateStore('activeMaterialKind', kind);
+    updateStore('activeClassroom', classroomId);
+
+    if (isCollaborativeMode) {
+      syncModeToOthers('compact', materialId, classroomId, kind);
+    }
+
+    navigateToSharedMaterial(navigation, materialId, classroomId, kind);
+    updateStore('mode', 'compact');
+    onOpenChange(false);
   };
 
-  const handleCreateNewBoard = async () => {
+  const handleCreate = async () => {
     if (!classroomId) return;
 
     try {
       const result = await addClassroomMaterials({
         classroomId,
-        content_kind: 'board',
-        student_access_mode: 'read_write', // Режим совместного редактирования
+        content_kind: kind,
+        student_access_mode: 'read_write',
       });
 
-      const newBoardId = toBoardId(result?.data?.id);
-      if (!newBoardId) return;
+      const materialId = toMaterialId(result?.data?.id);
+      if (!materialId) return;
 
-      setSelectedBoardId(newBoardId);
-
+      setSelectedMaterialId(materialId);
       if (isCollaborativeMode) {
-        syncModeToOthers('compact', newBoardId, classroomId);
+        syncModeToOthers('compact', materialId, classroomId, kind);
       }
     } catch (error) {
-      console.error('❌ Error creating new board:', error);
+      console.error('❌ Error creating material:', error);
     }
   };
 
   const handleConfirm = () => {
-    if (!selectedBoardId) return;
-
-    // Сначала цель перехода и навигация, потом compact: иначе zustand синхронно
-    // перестраивает дерево (Call → CompactView) и повторный переход на ту же доску
-    // может не успеть уйти в роутер. localFullView сбрасываем — иначе после
-    // «Вернуть только меня» applyRoomMetadata игнорирует переход на доску.
-    updateStore('localFullView', false);
-    updateStore('activeBoardId', selectedBoardId);
-    updateStore('activeClassroom', classroomId);
-
-    if (isCollaborativeMode) {
-      syncModeToOthers('compact', selectedBoardId, classroomId);
-    }
-
-    if (classroomId) {
-      navigation.navigateToClassroomBoard(classroomId, selectedBoardId);
-    } else {
-      navigation.navigateToBoard(selectedBoardId);
-    }
-
-    updateStore('mode', 'compact');
-    onOpenChange(false);
+    if (!selectedMaterialId) return;
+    openMaterial(selectedMaterialId);
   };
 
   const accessLabel = (mode: string) => {
@@ -135,9 +144,15 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
     return t('whiteboards.access.draft');
   };
 
+  const demoIndex = Math.max(
+    0,
+    filteredMaterials.findIndex((item) => String(item.id) === guideBoardId),
+  );
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
+        id="tutor-call-boards"
         className={
           isMobile
             ? 'text-text-primary flex max-h-[90dvh] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl'
@@ -150,6 +165,17 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
           <ModalTitle className="text-m-base sm:text-l-base text-text-primary max-w-[calc(100%-48px)] sm:max-w-full">
             {t('whiteboards.title')}
           </ModalTitle>
+          <SwitcherAnimate
+            tabs={materialTabs}
+            activeTab={kind}
+            onChange={(next) => {
+              if (next !== 'board' && next !== 'note') return;
+              setKind(next);
+              setSelectedMaterialId(null);
+              setSearchQuery('');
+            }}
+            className="bg-background-subtle! w-full"
+          />
           <Input
             before={<Search className="fill-icon-secondary" />}
             placeholder={t('whiteboards.searchPlaceholder')}
@@ -160,54 +186,58 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
         </ModalHeader>
 
         <div
-          className={isMobile ? 'min-h-0 flex-1 overflow-hidden px-4 py-4 pr-2' : 'py-4 pr-2 pl-6'}
+          className={`${contentHeightClass} shrink-0 overflow-hidden ${isMobile ? 'px-4 py-4 pr-2' : 'py-4 pr-2 pl-6'}`}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex h-full items-center justify-center">
               <p className="text-text-secondary">{t('whiteboards.loading')}</p>
             </div>
           ) : isError ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex h-full items-center justify-center">
               <p className="text-text-danger">{t('whiteboards.loadError')}</p>
             </div>
           ) : (
-            <ScrollArea className={`h-full w-full ${isMobile ? 'max-h-[50dvh]' : 'max-h-[400px]'}`}>
+            <ScrollArea className="h-full w-full">
               <div className="space-y-4 pr-4">
-                {filteredWhiteboards.map((board) => (
+                {filteredMaterials.map((material, index) => (
                   <div
-                    key={board.id}
+                    key={material.id}
+                    id={
+                      kind === 'board' && index === demoIndex ? 'tutor-call-demo-board' : undefined
+                    }
+                    data-tutor-board-id={kind === 'board' ? String(material.id) : undefined}
                     className={`hover:bg-background-page border-border-default flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 ${
-                      selectedBoardId === String(board.id)
+                      selectedMaterialId === String(material.id)
                         ? 'border-border-focus bg-status-info-background'
                         : ''
                     }`}
-                    onClick={() => handleBoardSelect(board.id)}
+                    onClick={() => setSelectedMaterialId(toMaterialId(material.id))}
                   >
-                    {board.student_access_mode && (
+                    {material.student_access_mode && (
                       <Badge
                         variant="default"
                         className={
-                          board.student_access_mode === 'read_write'
+                          material.student_access_mode === 'read_write'
                             ? 'text-s-base bg-background-subtle text-text-primary px-2 py-1 font-medium'
-                            : board.student_access_mode === 'read_only'
+                            : material.student_access_mode === 'read_only'
                               ? 'text-s-base bg-tag-cyan-background text-tag-cyan-accent px-2 py-1 font-medium'
                               : 'text-s-base bg-tag-violet-background text-tag-violet-accent px-2 py-1 font-medium'
                         }
                       >
-                        {accessLabel(board.student_access_mode)}
+                        {accessLabel(material.student_access_mode)}
                       </Badge>
                     )}
-                    <h3 className="text-m-base text-text-primary">{board.name}</h3>
+                    <h3 className="text-m-base text-text-primary">{material.name}</h3>
                     <p className="text-xs-base text-text-secondary">
                       {t('whiteboards.updatedAt', {
-                        date: new Date(board.updated_at).toLocaleDateString(),
+                        date: new Date(material.updated_at).toLocaleDateString(),
                       })}
                     </p>
                   </div>
                 ))}
                 <div
                   className="bg-status-info-background group flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl p-4"
-                  onClick={handleCreateNewBoard}
+                  onClick={handleCreate}
                 >
                   <h3 className="text-s-base text-text-link group-hover:text-text-link">
                     {addClassroomMaterials.isPending
@@ -233,10 +263,14 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
               className="text-s-base text-text-primary cursor-pointer"
             >
               {isMobile ? (
-                t('whiteboards.collaborativeLabel')
+                t(isNote ? 'whiteboards.collaborativeLabelNote' : 'whiteboards.collaborativeLabel')
               ) : (
                 <Trans
-                  i18nKey="whiteboards.collaborativeLabelDesktop"
+                  i18nKey={
+                    isNote
+                      ? 'whiteboards.collaborativeLabelNoteDesktop'
+                      : 'whiteboards.collaborativeLabelDesktop'
+                  }
                   ns="calls"
                   components={{ br: <br /> }}
                 />
@@ -245,9 +279,10 @@ export const WhiteboardsModal = ({ open, onOpenChange }: WhiteboardsModalProps) 
           </div>
           <div className={`flex gap-2 ${isMobile ? 'flex-col' : ''}`}>
             <Button
+              id="tutor-call-boards-confirm"
               size="m"
               onClick={handleConfirm}
-              disabled={!selectedBoardId}
+              disabled={!selectedMaterialId}
               className={isMobile ? 'min-h-11 w-full' : ''}
             >
               {t('whiteboards.select')}
