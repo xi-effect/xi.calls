@@ -2,7 +2,13 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { useCallStore, useUserChoicesStore } from '@xipkg/calls-store';
 import { getBaselineAudioCaptureOptions } from '@xipkg/calls-config';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { DisconnectReason, Track, VideoPresets, type RemoteTrackPublication } from 'livekit-client';
+import {
+  DisconnectReason,
+  Track,
+  VideoPresets,
+  type RemoteTrackPublication,
+  type RoomConnectOptions,
+} from 'livekit-client';
 import { useRoom } from './RoomProvider';
 import { KeepVideosPlaying } from './KeepVideosPlaying';
 import { useCallsNavigation } from './navigation/CallsNavigationProvider';
@@ -13,6 +19,25 @@ import { useCallsRuntimeConfig } from './CallsRuntimeConfigProvider';
 const DISCONNECT_GRACE_MS = 5_000;
 /** В скрытой вкладке таймеры и сеть троттлятся, поэтому ждём переподключение дольше */
 const HIDDEN_DISCONNECT_GRACE_MS = 20_000;
+/**
+ * Дефолт SDK — 15с. Под нагрузкой рукопожатие с LiveKit длится дольше, клиент
+ * закрывает сокет сам, и браузер пишет «WebSocket is closed before the connection
+ * is established». 30с дают сигналу дойти, не обрывая попытку, которая вот-вот
+ * завершится.
+ */
+const SIGNAL_WEBSOCKET_TIMEOUT_MS = 30_000;
+/** То же окно на ICE после сигнала. Раньше 30с стояло только в dev. */
+const PEER_CONNECTION_TIMEOUT_MS = 30_000;
+/**
+ * Не открываем следующий сокет в том же тике, в котором SDK абортит предыдущий:
+ * второй `room.connect` закрывает ещё не открытый WebSocket.
+ */
+const RECONNECT_BACKOFF_MS = 2_000;
+/**
+ * Сколько раз сами зовём `room.connect`, после того как попытка SDK уже упала.
+ * Первый вход идёт через `LiveKitRoom` и в этот счётчик не входит.
+ */
+const MAX_MANUAL_RECONNECTS = 2;
 
 type LiveKitProviderPropsT = {
   children: React.ReactNode;
@@ -50,6 +75,17 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
   const { isStarted } = useCallStore();
   const disconnectGraceTimeoutRef = useRef<number | null>(null);
+  const reconnectTimerRef = useRef<number | null>(null);
+  const reconnectInFlightRef = useRef<Promise<boolean> | null>(null);
+  const manualReconnectsRef = useRef(0);
+
+  const liveKitConnectOptions = useMemo<RoomConnectOptions>(
+    () => ({
+      websocketTimeout: SIGNAL_WEBSOCKET_TIMEOUT_MS,
+      peerConnectionTimeout: PEER_CONNECTION_TIMEOUT_MS,
+    }),
+    [],
+  );
 
   // Повторное включение камеры кнопкой идёт через room.options, а не через проп
   // LiveKitRoom: useTrackToggle вызывает setCameraEnabled без своих options.
@@ -81,14 +117,23 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
     };
   }, [room, audioOutputDeviceId]);
 
+  const clearPendingReconnect = useCallback(() => {
+    if (reconnectTimerRef.current !== null) {
+      window.clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }, []);
+
   const clearPendingDisconnect = useCallback(() => {
     if (disconnectGraceTimeoutRef.current) {
       clearTimeout(disconnectGraceTimeoutRef.current);
       disconnectGraceTimeoutRef.current = null;
     }
-  }, []);
+    clearPendingReconnect();
+  }, [clearPendingReconnect]);
 
   const finalizeDisconnect = useCallback(() => {
+    manualReconnectsRef.current = 0;
     updateStore('connect', false);
     updateStore('isStarted', false);
     updateStore('mode', 'full');
@@ -110,6 +155,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
   const handleConnect = useCallback(() => {
     clearPendingDisconnect();
+    manualReconnectsRef.current = 0;
     updateStore('connect', true);
 
     const { activeClassroom } = useCallStore.getState();
@@ -127,26 +173,81 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
   /**
    * `LiveKitRoom` вызывает `room.connect` только при смене своих пропсов, поэтому
    * после неожиданного разрыва сессия сама не восстанавливается: комната остаётся
-   * disconnected, а `connect` в стоворе — true. Раньше при скрытой вкладке мы вообще
+   * disconnected, а `connect` в сторе — true. Раньше при скрытой вкладке мы вообще
    * выходили из обработчика, и ученик продолжал видеть интерфейс звонка, из которого
    * его уже выкинуло. Переподключаемся руками и сносим UI, если не получилось.
+   *
+   * Один полёт: повторный вызов ждёт уже идущий `room.connect`. Второй параллельный
+   * connect абортит сигнальный сокет, который ещё в рукопожатии.
    */
-  const attemptReconnect = useCallback(async () => {
-    const url = isDevMode ? serverUrlDev : serverUrl;
-    const activeToken = (isDevMode ? devToken : token) ?? '';
+  const attemptReconnect = useCallback(() => {
+    if (reconnectInFlightRef.current) return reconnectInFlightRef.current;
 
-    if (!url || !activeToken) return false;
-    if (room.state !== 'disconnected') return true;
+    const run = (async (): Promise<boolean> => {
+      const url = isDevMode ? serverUrlDev : serverUrl;
+      const activeToken = (isDevMode ? devToken : token) ?? '';
 
-    try {
-      await room.connect(url, activeToken);
-      console.log('LiveKit: manual reconnect succeeded');
-      return true;
-    } catch (error) {
-      console.warn('LiveKit: manual reconnect failed', error);
-      return false;
-    }
-  }, [devToken, isDevMode, room, serverUrl, serverUrlDev, token]);
+      if (!url || !activeToken) return false;
+      if (!useCallStore.getState().connect) return false;
+      // connecting / reconnecting — это уже попытка SDK. Новый connect её оборвёт.
+      if (room.state !== 'disconnected') return true;
+      if (manualReconnectsRef.current >= MAX_MANUAL_RECONNECTS) {
+        console.warn('LiveKit: manual reconnect budget exhausted');
+        return false;
+      }
+
+      manualReconnectsRef.current += 1;
+
+      try {
+        await room.connect(url, activeToken, liveKitConnectOptions);
+        manualReconnectsRef.current = 0;
+        console.log('LiveKit: manual reconnect succeeded');
+        return true;
+      } catch (error) {
+        console.warn('LiveKit: manual reconnect failed', error);
+        return false;
+      }
+    })();
+
+    reconnectInFlightRef.current = run;
+    void run.finally(() => {
+      if (reconnectInFlightRef.current === run) {
+        reconnectInFlightRef.current = null;
+      }
+    });
+
+    return run;
+  }, [devToken, isDevMode, liveKitConnectOptions, room, serverUrl, serverUrlDev, token]);
+
+  const scheduleReconnect = useCallback(
+    (options?: { ignoreBudget?: boolean }) => {
+      // Не смотрим на in-flight: `Disconnected` приходит синхронно из ещё не
+      // завершившегося `room.connect`. Если ждать его, следующая попытка не
+      // планируется. Сам `attemptReconnect` не откроет второй сокет, пока
+      // комната не `disconnected`.
+      if (reconnectTimerRef.current !== null) return;
+
+      if (options?.ignoreBudget) {
+        manualReconnectsRef.current = 0;
+      }
+      if (manualReconnectsRef.current >= MAX_MANUAL_RECONNECTS) {
+        console.warn('LiveKit: manual reconnect budget exhausted');
+        return;
+      }
+
+      reconnectTimerRef.current = window.setTimeout(() => {
+        reconnectTimerRef.current = null;
+        void attemptReconnect();
+      }, RECONNECT_BACKOFF_MS);
+    },
+    [attemptReconnect],
+  );
+
+  // Эффект подписок живёт всё время звонка. Если держать `scheduleReconnect`
+  // в его зависимостях, новая ссылка на колбэк (сменился token) снимет
+  // уже запланированный повтор в cleanup.
+  const scheduleReconnectRef = useRef(scheduleReconnect);
+  scheduleReconnectRef.current = scheduleReconnect;
 
   const handleDisconnect = useCallback(
     (reason?: DisconnectReason) => {
@@ -178,14 +279,18 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
 
       console.warn('LiveKit: disconnected, scheduling UI teardown', { reason, state: room.state });
 
-      void attemptReconnect();
+      scheduleReconnect();
 
       const graceMs = document.hidden ? HIDDEN_DISCONNECT_GRACE_MS : DISCONNECT_GRACE_MS;
 
       disconnectGraceTimeoutRef.current = window.setTimeout(() => {
         disconnectGraceTimeoutRef.current = null;
 
+        // Повтор ещё в очереди (backoff) или уже в `room.connect`. Снимать UI
+        // рано: следующая неудача сама поставит новый grace.
         if (
+          reconnectTimerRef.current !== null ||
+          reconnectInFlightRef.current ||
           room.state === 'connected' ||
           room.state === 'reconnecting' ||
           room.state === 'connecting'
@@ -197,7 +302,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
         finalizeDisconnect();
       }, graceMs);
     },
-    [attemptReconnect, clearPendingDisconnect, finalizeDisconnect, room],
+    [scheduleReconnect, clearPendingDisconnect, finalizeDisconnect, room],
   );
 
   const handleError = useCallback((error: Error) => {
@@ -306,7 +411,9 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       }
 
       if (room.state === 'disconnected' && useCallStore.getState().connect) {
-        void attemptReconnect();
+        // Возврат на вкладку — новая попытка, даже если бюджет фоновых ретраев
+        // уже кончился, пока вкладка была скрыта.
+        scheduleReconnectRef.current({ ignoreBudget: true });
       }
     };
 
@@ -340,7 +447,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       retriedTrackSids.clear();
       clearPendingDisconnect();
     };
-  }, [isStarted, connect, room, clearPendingDisconnect, attemptReconnect]);
+  }, [isStarted, connect, room, clearPendingDisconnect]);
 
   const lkToken = (isDevMode ? devToken : token) ?? '';
   const canConnect = Boolean(lkToken) && Boolean(connect);
@@ -355,7 +462,7 @@ export const LiveKitProvider = ({ children }: LiveKitProviderPropsT) => {
       token={lkToken}
       serverUrl={isDevMode ? serverUrlDev : serverUrl}
       connect={canConnect}
-      connectOptions={isDevMode ? { peerConnectionTimeout: 30_000 } : undefined}
+      connectOptions={liveKitConnectOptions}
       onConnected={handleConnect}
       onDisconnected={handleDisconnect}
       onError={handleError}
