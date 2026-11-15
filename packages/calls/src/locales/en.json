@@ -214,29 +214,30 @@
     "progress": "{{current}} of {{total}}"
   },
   "tutorGuide": {
+    "ready": "Done",
     "prejoin-devices": {
-      "title": "Camera, microphone, and sound",
-      "body": "You can set everything up before joining. The browser will ask for camera and microphone access — without it, others cannot see or hear you."
+      "title": "Check your equipment",
+      "body": "Before the lesson, check the camera, microphone, and sound. If needed, allow access to the devices in the browser."
     },
     "prejoin-join": {
-      "title": "Join",
-      "body": "When the devices are ready, this button enters the call."
+      "title": "Joining the lesson",
+      "body": "When everything is ready, click “Join” to enter the lesson."
     },
     "conference-board": {
-      "title": "Shared board",
-      "body": "This button opens the board everyone in the call can work on."
+      "title": "Working together",
+      "body": "Here you can open a board or a note to work on it together with students."
     },
     "board-modal": {
-      "title": "Classroom board",
-      "body": "Choose a board from this classroom. Everyone in the call is taken to it and works on it together."
+      "title": "Choose a board",
+      "body": "Choose a board to open it for everyone in the lesson. You can write, draw, and go through tasks on it together."
     },
     "board-pick": {
       "title": "Demo board",
-      "body": "This classroom already has a demo board. We'll select it and open it."
+      "body": "We prepared a board with examples. We'll open it so you can try the lesson tools."
     },
     "compact-end": {
-      "title": "Call on the board",
-      "body": "You can end the call or return to the full conference. We'll end it now."
+      "title": "Call controls",
+      "body": "While working on the board, you can return to the video call or end the lesson."
     }
   },
   "errorPage": {
