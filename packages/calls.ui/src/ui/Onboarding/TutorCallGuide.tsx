@@ -128,8 +128,7 @@ export const TutorCallGuide = ({ surface }: { surface: TutorCallGuideSurface }) 
           showButtons: ['next', 'close'],
           nextBtnText: t('onboarding.next'),
           prevBtnText: t('onboarding.prev'),
-          doneBtnText:
-            stepPhase === 'compact-end' ? t('tutorGuide.ready') : t('onboarding.next'),
+          doneBtnText: stepPhase === 'compact-end' ? t('tutorGuide.ready') : t('onboarding.next'),
           progressText: t('onboarding.progress', {
             current: String(STEP_NUMBER[stepPhase]),
             total: '7',
